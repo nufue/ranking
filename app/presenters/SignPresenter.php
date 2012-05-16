@@ -3,29 +3,25 @@
 use Nette\Application\UI,
 	Nette\Security as NS;
 
-
 /**
  * Sign in/out presenters.
  *
  * @author     John Doe
  * @package    MyApplication
  */
-class SignPresenter extends BasePresenter
-{
-
+class SignPresenter extends BasePresenter {
 
 	/**
 	 * Sign in form component factory.
 	 * @return Nette\Application\UI\Form
 	 */
-	protected function createComponentSignInForm()
-	{
+	protected function createComponentSignInForm() {
 		$form = new UI\Form;
 		$form->addText('username', 'Username:')
-			->setRequired('Please provide a username.');
+				->setRequired('Please provide a username.');
 
 		$form->addPassword('password', 'Password:')
-			->setRequired('Please provide a password.');
+				->setRequired('Please provide a password.');
 
 		$form->addCheckbox('remember', 'Remember me on this computer');
 
@@ -35,10 +31,7 @@ class SignPresenter extends BasePresenter
 		return $form;
 	}
 
-
-
-	public function signInFormSubmitted($form)
-	{
+	public function signInFormSubmitted($form) {
 		try {
 			$values = $form->getValues();
 			if ($values->remember) {
@@ -48,16 +41,12 @@ class SignPresenter extends BasePresenter
 			}
 			$this->getUser()->login($values->username, $values->password);
 			$this->redirect('Homepage:');
-
 		} catch (NS\AuthenticationException $e) {
 			$form->addError($e->getMessage());
 		}
 	}
 
-
-
-	public function actionOut()
-	{
+	public function actionOut() {
 		$this->getUser()->logout();
 		$this->flashMessage('You have been signed out.');
 		$this->redirect('in');

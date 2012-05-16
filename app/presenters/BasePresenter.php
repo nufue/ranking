@@ -6,7 +6,6 @@
  * @author     John Doe
  * @package    MyApplication
  */
-abstract class BasePresenter extends Nette\Application\UI\Presenter
-{
-
+abstract class BasePresenter extends Nette\Application\UI\Presenter {
+	
 }
