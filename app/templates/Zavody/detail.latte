@@ -1,0 +1,31 @@
+{block content}
+<h1>{$zavod->nazev}</h1>
+
+<table>
+    <tr><th>Typ závodu</th><td>{$typyZavodu[$zavod->typ]}</td></tr>
+    <tr><th>Datum konání</th><td>{if $zavod->datum_od == $zavod->datum_do}{$zavod->datum_od|date:'j. n. Y'}{else}{$zavod->datum_od|date:'j. n. Y'} - {$zavod->datum_do|date:'j. n. Y'}{/if}</td></tr>
+</table>
+
+<h2>Účastníci závodu</h2>
+
+<table border="1">
+    <tbody>
+    <tr n:foreach="$zavodnici as $z">
+	<td>{$z->registrace}</td>
+	<td>{$z->cele_jmeno}</td>
+	<td>{$z->kategorie}</td>
+	<td>{$z->tym}</td>
+	<td>{$z->cips1}</td>
+	<td>{$z->umisteni1|number:1:',':' '}</td>
+	<td>{$z->umisteni1|umisteni:$zavod->typ}</td>
+	<td>{$z->cips2}</td>
+	<td>{$z->umisteni2|number:1:',':' '}</td>
+	<td>{$z->umisteni2|umisteni:$zavod->typ}</td>
+    </tr>
+    </tbody>
+    <thead>
+	<tr><th rowspan="2">REG</th><th rowspan="2">Jméno</th><th rowspan="2">KAT</th><th rowspan="2">Tým</th><th colspan="3">1. závod</th><th colspan="3">2. závod</th></tr>
+	<tr><th>CIPS</th><th>umístění</th><th>body</th><th>CIPS</th><th>umístění</th><th>body</th></tr>
+    </thead>
+    
+</table>

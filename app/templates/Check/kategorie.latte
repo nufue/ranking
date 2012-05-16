@@ -1,0 +1,10 @@
+{block content}
+{dump $kategorie}
+
+<table>
+    <tr><th>Jméno</th><th>Vyskytující se věkové kategorie</th></tr>
+    <tr n:foreach="$kategorie as $t">
+	<th>{$t['jmeno']}</th>
+	<td n:foreach="$t['zavody'] as $z">{$z['kategorie']}</td>
+    </tr>
+</table>
