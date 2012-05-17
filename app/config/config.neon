@@ -45,6 +45,9 @@ common:
 			
 		zavodnici:
 			class: Zavodnici
+		
+		zebricek:
+			class: Zebricek
 
 	factories:
 
