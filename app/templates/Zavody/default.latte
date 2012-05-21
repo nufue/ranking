@@ -2,13 +2,20 @@
 {block content}
 <h1>Seznam závodů roku {$rok}</h1>
 
-<table>
-    <tr><th>Název závodu</th><th>Typ závodu</th><th>Datum konání</th><th>Editovat</th></tr>
+
+<table border="1">
+    <tr><th>Název závodu</th><th>Typ závodu</th><th>Datum konání</th><th>Zobr.</th><th>Výsl.</th><th>Editovat</th></tr>
 <tr n:foreach="$zavody as $z">
     <td><a n:href="Zavody:detail $z->id">{$z->nazev}</a></td>
     <td>{$typyZavodu[$z->typ]}</td>
-    <td>{if $z->datum_od == $z->datum_do}{$z->datum_od|date:'j. n. Y'}{else}{$z->datum_od|date:'j. n. Y'} - {$z->datum_do|date:'j. n. Y'}{/if}
+    <td>{if $z->datum_od == $z->datum_do}{$z->datum_od|date:'j. n. Y'}
+{elseif $z->datum_od->format('n') == $z->datum_do->format('n')}{$z->datum_od|date:'j.'} - {$z->datum_do|date:'j. n. Y'}
+{else}{$z->datum_od|date:'j. n. Y'} - {$z->datum_do|date:'j. n. Y'}
+{/if}
     </td>
+    <td>{$z->zobrazovat}</td><td>{$z->vysledky}</td>
     <td><a n:href="Zavody:edit $z->id">edit</a></td>
 </tr>
 </table>
+
+<p><a n:href="add">přidat závod</a></p>

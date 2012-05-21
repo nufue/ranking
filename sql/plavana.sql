@@ -779,23 +779,39 @@ CREATE TABLE `zavody` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `rok` int(11) NOT NULL,
   `nazev` varchar(200) COLLATE utf8_czech_ci NOT NULL,
+  `kategorie` varchar(20) COLLATE utf8_czech_ci NOT NULL,
   `typ` enum('memi_senioru','1_liga','2_liga','bodovany_pohar','uzemni_prebor','divize','micr_zen','micr_u14','micr_u18','micr_u22','zavod_zeny','zavod_u14','zavod_u18','zavod_u22','prebor_u14','prebor_u18','prebor_u22') COLLATE utf8_czech_ci NOT NULL,
   `datum_od` date NOT NULL,
   `datum_do` date NOT NULL,
+  `zobrazovat` enum('ano','ne') COLLATE utf8_czech_ci NOT NULL,
+  `vysledky` enum('ano','ne') COLLATE utf8_czech_ci NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
-INSERT INTO `zavody` (`id`, `rok`, `nazev`, `typ`, `datum_od`, `datum_do`) VALUES
-(1,	2012,	'1. liga plavaná (1. kolo)',	'1_liga',	'2012-05-05',	'2012-05-06'),
-(2,	2012,	'Milo Cup',	'bodovany_pohar',	'2012-04-14',	'2012-04-15'),
-(3,	2012,	'Mazalův memoriál',	'bodovany_pohar',	'2012-04-21',	'2012-04-22'),
-(4,	2012,	'Nova Domus',	'bodovany_pohar',	'2012-04-28',	'2012-04-29'),
-(5,	2012,	'Pohár krále Jiřího 2012',	'bodovany_pohar',	'2012-05-12',	'2012-05-13'),
-(6,	2012,	'Nova Domus U18',	'zavod_u18',	'2012-04-28',	'2012-04-29'),
-(8,	2012,	'Nova Domus U14',	'zavod_u14',	'2012-04-28',	'2012-04-29'),
-(10,	2012,	'Středočeská juniorka U14 jarní kolo',	'prebor_u14',	'2012-04-14',	'2012-04-15'),
-(11,	2012,	'Středočeská juniorka jarní kolo U18',	'prebor_u18',	'2012-04-14',	'2012-04-15'),
-(12,	2012,	'Jarní Pražská juniorka U14',	'prebor_u14',	'2012-04-21',	'2012-04-22'),
-(13,	2012,	'Jarní Pražská juniorka U18',	'prebor_u18',	'2012-04-21',	'2012-04-22');
+INSERT INTO `zavody` (`id`, `rok`, `nazev`, `kategorie`, `typ`, `datum_od`, `datum_do`, `zobrazovat`, `vysledky`) VALUES
+(1,	2012,	'I. liga - 1. kolo',	'',	'1_liga',	'2012-05-05',	'2012-05-06',	'ano',	'ano'),
+(2,	2012,	'Milo Cup',	'',	'bodovany_pohar',	'2012-04-14',	'2012-04-15',	'ano',	'ano'),
+(3,	2012,	'Mazalův memoriál',	'',	'bodovany_pohar',	'2012-04-21',	'2012-04-22',	'ano',	'ano'),
+(4,	2012,	'Nova Domus',	'',	'bodovany_pohar',	'2012-04-28',	'2012-04-29',	'ano',	'ano'),
+(5,	2012,	'Pohár krále Jiřího 2012',	'',	'bodovany_pohar',	'2012-05-12',	'2012-05-13',	'ano',	'ano'),
+(6,	2012,	'Nova Domus',	'U18',	'zavod_u18',	'2012-04-28',	'2012-04-29',	'ano',	'ano'),
+(8,	2012,	'Nova Domus',	'U14',	'zavod_u14',	'2012-04-28',	'2012-04-29',	'ano',	'ano'),
+(10,	2012,	'Středočeská juniorka jarní kolo',	'U14',	'prebor_u14',	'2012-04-14',	'2012-04-15',	'ano',	'ano'),
+(11,	2012,	'Středočeská juniorka jarní kolo',	'U18',	'prebor_u18',	'2012-04-14',	'2012-04-15',	'ano',	'ano'),
+(12,	2012,	'Jarní Pražská juniorka',	'U14',	'prebor_u14',	'2012-04-21',	'2012-04-22',	'ano',	'ano'),
+(13,	2012,	'Jarní Pražská juniorka',	'U18',	'prebor_u18',	'2012-04-21',	'2012-04-22',	'ano',	'ano'),
+(15,	2012,	'II. liga - 1. kolo - A - BLACK BASS',	'',	'2_liga',	'2012-05-19',	'2012-05-20',	'ne',	'ne'),
+(16,	2012,	'II. liga - 1. kolo - B - COLMIC',	'',	'2_liga',	'2012-05-19',	'2012-05-20',	'ne',	'ne'),
+(17,	2012,	'II. liga - 1. kolo - C - FORET FISHING',	'',	'2_liga',	'2012-05-19',	'2012-05-20',	'ne',	'ne'),
+(18,	2012,	'I. liga - 2. kolo',	'',	'1_liga',	'2012-05-26',	'2012-05-27',	'ne',	'ne'),
+(19,	2012,	'II. liga - 2. kolo - A - BLACK BASS',	'',	'2_liga',	'2012-06-09',	'2012-06-10',	'ne',	'ne'),
+(20,	2012,	'II. liga - 2. kolo - B - COLMIC',	'',	'2_liga',	'2012-06-09',	'2012-06-10',	'ne',	'ne'),
+(21,	2012,	'II. liga - 2. kolo - C - FORET FISHING',	'',	'2_liga',	'2012-06-09',	'2012-06-10',	'ne',	'ne'),
+(22,	2012,	'I. liga - 3. kolo',	'',	'1_liga',	'2012-06-16',	'2012-06-17',	'ne',	'ne'),
+(23,	2012,	'II. liga - 3. kolo - A - BLACK BASS',	'',	'2_liga',	'2012-07-07',	'2012-07-08',	'ne',	'ne'),
+(24,	2012,	'II. liga - 3. kolo - B - COLMIC',	'',	'2_liga',	'2012-07-07',	'2012-07-08',	'ne',	'ne'),
+(25,	2012,	'II. liga - 3. kolo - C - FORET FISHING',	'',	'2_liga',	'2012-07-07',	'2012-07-08',	'ne',	'ne'),
+(26,	2012,	'Sensas Cup',	'',	'bodovany_pohar',	'2012-07-28',	'2012-07-29',	'ne',	'ne'),
+(27,	2012,	'17. MeMiČR',	'',	'memi_senioru',	'2012-08-04',	'2012-08-05',	'ne',	'ne');
 
--- 2012-05-16 14:54:48
+-- 2012-05-21 21:19:38

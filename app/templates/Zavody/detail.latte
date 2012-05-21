@@ -1,5 +1,7 @@
 {block content}
+
 <h1>{$zavod->nazev}</h1>
+
 
 <table>
     <tr><th>Typ závodu</th><td>{$typyZavodu[$zavod->typ]}</td></tr>
@@ -7,6 +9,8 @@
 </table>
 
 <h2>Účastníci závodu</h2>
+
+<p><a n:href="pridatVysledky $zavod->id">přidat výsledky</a></p>
 
 <table border="1">
     <tbody>
@@ -29,3 +33,5 @@
     </thead>
     
 </table>
+
+<p><a n:href="default">zpět</a></p>
