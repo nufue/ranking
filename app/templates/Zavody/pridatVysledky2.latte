@@ -2,6 +2,28 @@
 {block content}
 <h1>Přidat výsledky k závodu</h1>
 
-{control vysledkyParseForm}
+{dump $tabulka}
+{var $pocetRadku = 0}
+{form vysledkyParseForm}
+<table>
+	<tbody>
+		<tr n:foreach="$tabulka as $radek">
+			<td>{$form['prvni_radek']->getControl($pocetRadku)}</td>
+			<td n:foreach="$radek as $bunka">
+				{$bunka}
+			</td>
+			{?$pocetRadku++}
+		</tr>
+		<tr>
+			<td colspan="3">{input send}</td></tr>
+	</tbody>
+<thead>
+<th>Řádek</th>
+	{for $i = 0; $i < $pocetSloupcu; $i++}
+<th>{input 'sloupec'.$i}</th>
+	{/for}
+</thead>
+</table>
+{/form}
 
 <p><a n:href="detail $id">zpět</a></p>
