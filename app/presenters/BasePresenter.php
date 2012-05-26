@@ -7,5 +7,5 @@
  * @package    MyApplication
  */
 abstract class BasePresenter extends Nette\Application\UI\Presenter {
-	
+
 }

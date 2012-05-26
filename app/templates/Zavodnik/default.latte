@@ -1,0 +1,39 @@
+{block title}Žebříček LRU plavaná - detail závodníka{/block}
+{block content}
+
+<h1>{$zavodnik->cele_jmeno}</h1>
+<table id="hlavickaDetailuZebricku">
+	<tr><th>Rok</th><td>{$rok}</td></tr>
+	<tr><th>Kategorie</th><td>{$zavodnik->kategorie}</td></tr>
+</table>
+
+<h2>Výsledky závodů</h2>
+{var $bodyCelkem = 0}
+{var $bodyZebricek = 0}
+<table id="detailZebricku">
+    <tbody>
+    <tr n:class="$iterator->odd ? odd : even" n:foreach="$vysledky as $v">
+        <th class="vlevo"><a n:href="Zavody:detail $v['id_zavodu']">{$v['nazev_zavodu']}{if !empty($v['kategorie_zavodu'])} {$v['kategorie_zavodu']}{/if}</a></th>
+		<td class="vlevo">{$v['tym']}</td>
+        <td>{if $v['umisteni1'] == (int)$v['umisteni1']}{(int)$v['umisteni1']}{else}{$v['umisteni1']|number:1:',':' '}{/if}</td>
+        <td>{if $v['body1_zebricek']}<span class="zebricek">{/if}{$v['body1']}{if $v['body1_zebricek']}</span>{/if}</td>
+        <td>{if $v['umisteni2'] == (int)$v['umisteni2']}{(int)$v['umisteni2']}{else}{$v['umisteni2']|number:1:',':' '}{/if}</td>
+        <td>{if $v['body2_zebricek']}<span class="zebricek">{/if}{$v['body2']}{if $v['body2_zebricek']}</span>{/if}</td>
+		{?$bodyCelkem += $v['body1'] + $v['body2']}
+		{?$bodyZebricek += ($v['body1_zebricek'] ? $v['body1'] : 0) + ($v['body2_zebricek'] ? $v['body2'] : 0)}
+		
+    </tr>
+    </tbody>
+    <thead>
+        <tr><th rowspan="2">Název závodu</th><th rowspan="2">Tým</th><th colspan="2">1. závod</th><th colspan="2">2. závod</th></tr>
+        <tr><th>Umístění</th><th>Body</th><th>Umístění</th><th>Body</th></tr>
+    </thead>
+	<tfoot>
+		<tr><th colspan="2">Body celkem</th><td colspan="4">{$bodyCelkem}</td></tr>
+		<tr><th colspan="2">Body do žebříčku</th><td colspan="4"><span class="zebricek">{$bodyZebricek}</span></td></tr>
+	</tfoot>
+</table>
+<p>Modře označené výsledky se započítávají do žebříčku.</p>
+
+<p><a n:href="Homepage:default">zpět</a></p>
+

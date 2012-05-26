@@ -12,7 +12,7 @@ class Zavody extends Base {
     }
 
     public function getZavod($id) {
-        $dbResult = $this->database->query($query = "SELECT `id`, `nazev`, `typ`, `datum_od`, `datum_do`, `zobrazovat`, `vysledky` FROM zavody WHERE `id` = ?", $id)->fetch();
+        $dbResult = $this->database->query($query = "SELECT `id`, `nazev`, `typ`, `datum_od`, `datum_do`, `zobrazovat`, `vysledky`, `kategorie` FROM zavody WHERE `id` = ?", $id)->fetch();
         return $dbResult;
     }
 

@@ -1,33 +1,41 @@
-{block title}Žebříček LRU plavaná - celkem{/block}
+{block title}Žebříček LRU plavaná - {$typZebricku}{/block}
 {block content}
 
-<h1>Průběžný žebříček LRU plavaná - celkem</h1>
+<h1>Průběžný žebříček LRU plavaná - {$typZebricku}</h1>
 <h2>aktuální k {$datum_platnosti}</h2>
 
-<p>{if $zobrazitZavody}<a n:href="Homepage:default">nezobrazovat jednotlivé závody</a>{else}<a n:href="Homepage:default true">zobrazit i jednotlivé závody</a>{/if}</p>
+<p>{if $zobrazitZavody}<a n:href="Homepage:default $typ, false">nezobrazovat jednotlivé závody</a>{else}<a n:href="Homepage:default $typ, true">zobrazit i jednotlivé závody</a>{/if}</p>
+
+<p>{ifCurrent default 'celkem'}celkový žebříček{else}<a n:href="default 'celkem', $zobrazitZavody">celkový žebříček</a>{/ifCurrent} |
+	{ifCurrent default 'u23'}žebříček U23{else}<a n:href="default 'u23', $zobrazitZavody">žebříček U23</a>{/ifCurrent} |
+	{ifCurrent default 'u18'}žebříček U18{else}<a n:href="default 'u18', $zobrazitZavody">žebříček U18</a>{/ifCurrent} |
+	{ifCurrent default 'u14'}žebříček U14{else}<a n:href="default 'u14', $zobrazitZavody">žebříček U14</a>{/ifCurrent} |
+	{ifCurrent default 'zeny'}žebříček žen{else}<a n:href="default 'zeny', $zobrazitZavody">žebříček žen</a>{/ifCurrent}
+</p>
 
 <table id="zebricek">
-<tr><th>Pořadí</th><th>REG</th><th>Jméno</th><th>KAT</th><th>Organizace</th><th>Celkem závodů</th><th>Celkem bodů</th><th n:class="$zobrazitZavody ? thickRight : ''">Celkem bodů do žebříčku</th>
-    <th n:if="$zobrazitZavody" n:foreach="$zavody as $z">{$z['nazev']}</th></tr>
+	<tr><th>Pořadí</th><th>REG</th><th>Jméno</th><th>KAT</th><th>Organizace</th><th>Celkem závodů</th><th>Celkem bodů</th><th n:class="$zobrazitZavody ? thickRight : ''">Celkem bodů do žebříčku</th><th>Min. body do žeb.</th>
+		<th n:if="$zobrazitZavody" n:foreach="$zavody as $idZavodu => $z"><a n:href="Zavody:detail $idZavodu">{$z['nazev']}{if !empty($z['kategorie'])} {$z['kategorie']}{/if}</a></th></tr>
 
 {var $poradi = 1}
-<tr n:class="$iterator->odd ? odd : even" n:foreach="$zavodnici as $id => $z">
-	<td>{=$poradi++}</td>
-	<td>{$z['registrace']}</td>
-	<td class="vlevo"><a n:href="detail $id">{$z['jmeno']}</a></td>
-	<td>{$z['kategorie']}</td>
-	<td>{$z['tym']}</td>
-	<td>{$z['zavodu']}</td>
-	<td>{=array_sum($z['body_celkem'])}</td>
-	<td n:class="$zobrazitZavody ? thickRight : ''">{=array_sum($z['body_zebricek'])}</td>
-	
+	<tr n:class="$iterator->odd ? odd : even" n:foreach="$zavodnici as $id => $z">
+		<td>{=$poradi++}</td>
+		<td>{$z['registrace']}</td>
+		<td class="vlevo"><a n:href="Zavodnik:default $id">{$z['jmeno']}</a></td>
+		<td>{$z['kategorie']}</td>
+		<td>{$z['tym']}</td>
+		<td>{$z['zavodu']}</td>
+		<td>{=array_sum($z['body_celkem'])}</td>
+		<td>{=array_sum($z['body_zebricek'])}</td>
+		<td n:class="$zobrazitZavody ? thickRight : ''">{$z['min_body_zebricek']}</td>
+
 	{if $zobrazitZavody}
 	{foreach $zavody as $idZavodu => $v}
-	<td>
+		<td>
 		{if isset($z['vysledky'][$idZavodu])}{$z['vysledky'][$idZavodu]['body1']}+{$z['vysledky'][$idZavodu]['body2']}{else}-{/if}
-	</td>
+		</td>
 	{/foreach}
 	{/if}
-</tr>
+	</tr>
 
 </table>
