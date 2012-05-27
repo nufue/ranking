@@ -94,15 +94,19 @@ class Zebricek extends Base {
 
 				if ($v['umisteni1'] !== NULL) {
 					$zavodnici[$id]['vysledky'][$k]['body1'] = $body1;
+					$zavodnici[$id]['vysledky'][$k]['body1_zebricek'] = false;
 					$zavodnici[$id]['body_celkem'][] = $body1;
 				} else {
 					$zavodnici[$id]['vysledky'][$k]['body1'] = NULL;
+					$zavodnici[$id]['vysledky'][$k]['body1_zebricek'] = false;
 				}
 				if ($v['umisteni2'] !== NULL) {
 					$zavodnici[$id]['vysledky'][$k]['body2'] = $body2;
+					$zavodnici[$id]['vysledky'][$k]['body2_zebricek'] = false;
 					$zavodnici[$id]['body_celkem'][] = $body2;
 				} else {
 					$zavodnici[$id]['vysledky'][$k]['body2'] = NULL;
+					$zavodnici[$id]['vysledky'][$k]['body2_zebricek'] = false;
 				}
 			}
 		}
@@ -114,6 +118,26 @@ class Zebricek extends Base {
 				$zavodnici[$id]['min_body_zebricek'] = array_pop(array_values($zavodnici[$id]['body_zebricek']));
 			} else {
 				$zavodnici[$id]['min_body_zebricek'] = 0;
+			}
+
+			$bodyZebricekKopie = $zavodnici[$id]['body_zebricek'];
+			foreach ($z['vysledky'] as $k => $v) {
+				$body1 = $zavodnici[$id]['vysledky'][$k]['body1'];
+				if ($body1 !== NULL) {
+					$ind = array_search($body1, $bodyZebricekKopie);
+					if ($ind !== false) {
+						$zavodnici[$id]['vysledky'][$k]['body1_zebricek'] = true;
+						unset($bodyZebricekKopie[$ind]);
+					}
+				}
+				$body2 = $zavodnici[$id]['vysledky'][$k]['body2'];
+				if ($body2 !== NULL) {
+					$ind = array_search($body2, $bodyZebricekKopie);
+					if ($ind !== false) {
+						$zavodnici[$id]['vysledky'][$k]['body2_zebricek'] = true;
+						unset($bodyZebricekKopie[$ind]);
+					}
+				}
 			}
 		}
 
