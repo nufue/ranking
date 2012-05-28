@@ -48,7 +48,7 @@ class ZavodyPresenter extends BasePresenter {
 					}
 				});
 
-		if ($this->getAction() != 'edit' && $this->getAction() != 'detail' && $this->getAction() != 'pridatVysledky' && $this->getAction() != 'pridatVysledky2' && $this->id !== NULL) {
+		if ($this->getAction() != 'edit' && $this->getAction() != 'detail' && $this->getAction() != 'pridatVysledky3' && $this->getAction() != 'pridatVysledky' && $this->getAction() != 'pridatVysledky2' && $this->id !== NULL) {
 			$this->id = NULL;
 		}
 	}
@@ -283,9 +283,7 @@ class ZavodyPresenter extends BasePresenter {
 		}
 		$prvniRadek = $values['prvni_radek'];
 		$radku = 0;
-		if ($this->id !== NULL) {
-			$this->context->zavody->deleteVysledky($this->id);
-		}
+		$vysledky = array();
 		foreach ($tabulka as $radek) {
 			if ($radku++ < $prvniRadek)
 				continue;
@@ -298,19 +296,12 @@ class ZavodyPresenter extends BasePresenter {
 				continue;
 
 			$poznamka = '';
-			$idZavodnika = '';
-			if (!preg_match('~^\d+$~', $registrace))
-				$poznamka = 'nepůjde do žebříčku';
+			if (!preg_match('~^N?\d+$~', $registrace))
+				$poznamka = 'n';
 			else {
 				$zavodnik = $this->context->zavodnici->getZavodnik($registrace);
 				if ($zavodnik === NULL) {
-					$idZavodnika = $this->context->zavodnici->addZavodnik($registrace, $prijmeni, $kategorie);
-				} else {
-					$idZavodnika = $zavodnik->id;
-					if (empty($zavodnik->kategorie)) {
-						$this->context->kategorie->addZavodnikKategorie($idZavodnika, $kategorie, 2012);
-						// TODO rok
-					}
+					$poznamka = 'p';
 				}
 			}
 
@@ -337,10 +328,63 @@ class ZavodyPresenter extends BasePresenter {
 				$umisteni2 = str_replace(',', '.', $umisteni2);
 			}
 
-			if (!empty($idZavodnika)) {
-				$idZavodu = (int) $this->id;
-				$this->context->zavody->addVysledek($idZavodu, $idZavodnika, $tym, $cips1, $umisteni1, $cips2, $umisteni2);
+			$vysledky[] = array('prijmeni' => $prijmeni, 'registrace' => $registrace, 'kategorie' => $kategorie, 'tym' => $tym, 'cips1' => $cips1, 'umisteni1' => $umisteni1, 'cips2' => $cips2, 'umisteni2' => $umisteni2, 'poznamka' => $poznamka);
+		}
+		$this->context->session->getSection('vysledky')->vysledkyParsed = $vysledky;
+		$this->redirect('pridatVysledky3', $this->id);
+	}
+
+	public function actionPridatVysledky3($id) {
+		$this->template->id = $id;
+		$session = $this->context->session;
+		$section = $session->getSection('vysledky');
+		$this->template->vysledky = $section->vysledkyParsed;
+	}
+
+	public function createComponentConfirmResultsForm() {
+		$form = new Form;
+		$form->addSubmit('send', 'Uložit výsledky');
+		$form->onSuccess[] = callback($this, 'confirmResultsFormSubmitted');
+		return $form;
+	}
+
+	public function confirmResultsFormSubmitted(Form $form) {
+		$session = $this->context->session;
+		$section = $session->getSection('vysledky');
+		$vysledky = $section->vysledkyParsed;
+		if ($this->id !== NULL) {
+			$this->context->zavody->deleteVysledky($this->id);
+		}
+
+		$countSuccess = 0;
+		foreach ($vysledky as $v) {
+			if (!preg_match('~^N?\d+$~', $v['registrace'])) {
+				// nepujde do zebricku
+			} else {
+				$zavodnik = $this->context->zavodnici->getZavodnik($v['registrace']);
+				if ($zavodnik === NULL) {
+					$idZavodnika = $this->context->zavodnici->addZavodnik($v['registrace'], $v['prijmeni'], $v['kategorie']);
+				} else {
+					$idZavodnika = $zavodnik->id;
+					if (empty($zavodnik->kategorie)) {
+						$this->context->kategorie->addZavodnikKategorie($idZavodnika, $v['kategorie'], 2012);
+						// TODO rok
+					}
+				}
+				if (!empty($idZavodnika)) {
+					$idZavodu = (int) $this->id;
+					$this->context->zavody->addVysledek($idZavodu, $idZavodnika, $v['tym'], $v['cips1'], $v['umisteni1'], $v['cips2'], $v['umisteni2']);
+					$countSuccess++;
+				}
 			}
+		}
+		if ($countSuccess > 0) {
+			$this->flashMessage('Do závodu bylo přidáno ' . $countSuccess . ' závodníků.');
+			$this->context->zavody->confirmAddVysledek($this->id);
+			$this->redirect('detail', $this->id);
+		} else {
+			$this->flashMessage('Do závodu se nepodařilo přidat žádného závodníka.');
+			$this->redirect('detail', $this->id);
 		}
 	}
 

@@ -74,9 +74,9 @@ class Zebricek extends Base {
 		foreach ($result as $row) {
 			$id = $row->id_zavodnika;
 			if (!isset($zavodnici[$id]))
-				$zavodnici[$id] = array('jmeno' => $row->cele_jmeno, 'min_body_zebricek' => 0, 'zavodu' => 0, 'registrace' => $row->registrace, 'tym' => $row->tym, 'kategorie' => Kategorie::$kategorie[$row->kategorie], 'body_celkem' => array(), 'vysledky' => array($row->id_zavodu => array('zavod' => $row->id_zavodu, 'kategorie_zavodu' => $row->kategorie_zavodu, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2, 'body' => 0)));
+				$zavodnici[$id] = array('jmeno' => $row->cele_jmeno, 'min_body_zebricek' => 0, 'zavodu' => 0, 'registrace' => $row->registrace, 'tym' => $row->tym, 'kategorie' => Kategorie::$kategorie[$row->kategorie], 'body_celkem' => array(), 'cips_celkem' => array(), 'vysledky' => array($row->id_zavodu => array('zavod' => $row->id_zavodu, 'kategorie_zavodu' => $row->kategorie_zavodu, 'cips1' => $row->cips1, 'cips2' => $row->cips2, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2, 'body' => 0)));
 			else {
-				$zavodnici[$id]['vysledky'][$row->id_zavodu] = array('zavod' => $row->id_zavodu, 'kategorie_zavodu' => $row->kategorie_zavodu, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2, 'body' => 0);
+				$zavodnici[$id]['vysledky'][$row->id_zavodu] = array('zavod' => $row->id_zavodu, 'kategorie_zavodu' => $row->kategorie_zavodu, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2, 'cips1' => $row->cips1, 'cips2' => $row->cips2, 'body' => 0);
 			}
 			if ($row->umisteni1 !== NULL)
 				$zavodnici[$id]['zavodu']++;
@@ -91,11 +91,14 @@ class Zebricek extends Base {
 
 				$body1 = $this->getBody($typZavodu, $v['umisteni1']);
 				$body2 = $this->getBody($typZavodu, $v['umisteni2']);
+				$cips1 = $v['cips1'];
+				$cips2 = $v['cips2'];
 
 				if ($v['umisteni1'] !== NULL) {
 					$zavodnici[$id]['vysledky'][$k]['body1'] = $body1;
 					$zavodnici[$id]['vysledky'][$k]['body1_zebricek'] = false;
 					$zavodnici[$id]['body_celkem'][] = $body1;
+					$zavodnici[$id]['cips_celkem'][] = $cips1;
 				} else {
 					$zavodnici[$id]['vysledky'][$k]['body1'] = NULL;
 					$zavodnici[$id]['vysledky'][$k]['body1_zebricek'] = false;
@@ -104,6 +107,7 @@ class Zebricek extends Base {
 					$zavodnici[$id]['vysledky'][$k]['body2'] = $body2;
 					$zavodnici[$id]['vysledky'][$k]['body2_zebricek'] = false;
 					$zavodnici[$id]['body_celkem'][] = $body2;
+					$zavodnici[$id]['cips_celkem'][] = $cips2;
 				} else {
 					$zavodnici[$id]['vysledky'][$k]['body2'] = NULL;
 					$zavodnici[$id]['vysledky'][$k]['body2_zebricek'] = false;
@@ -115,7 +119,11 @@ class Zebricek extends Base {
 			if (count($zavodnici[$id]['body_zebricek']) > 12) {
 				rsort($zavodnici[$id]['body_zebricek']);
 				$zavodnici[$id]['body_zebricek'] = array_slice($zavodnici[$id]['body_zebricek'], 0, 12);
-				$zavodnici[$id]['min_body_zebricek'] = array_pop(array_values($zavodnici[$id]['body_zebricek']));
+			}
+			if (count($zavodnici[$id]['body_zebricek']) > 11) {
+				$temp = array_values($zavodnici[$id]['body_zebricek']);
+				rsort($temp);
+				$zavodnici[$id]['min_body_zebricek'] = array_pop($temp) + 1;
 			} else {
 				$zavodnici[$id]['min_body_zebricek'] = 0;
 			}
@@ -164,10 +172,10 @@ class Zebricek extends Base {
 		$result = $this->context->database->query("SELECT `zav`.`id` `id_zavodu`, `zav`.`nazev` `nazev_zavodu`, `zav`.`typ` `typ`, `zav`.`kategorie` `kategorie_zavodu`, `zz`.`tym`, `zk`.`kategorie`, `cips1`, `umisteni1`, `cips2`, `umisteni2` FROM `zavodnici_zavody` `zz` JOIN `zavodnici` `z` ON `zz`.`id_zavodnika` = `z`.`id` JOIN `zavody` `zav` ON `zz`.`id_zavodu` = `zav`.`id` JOIN `zavodnici_kategorie` `zk` ON `zz`.`id_zavodnika` = `zk`.`id_zavodnika` WHERE (`cips1` IS NOT NULL OR `cips2` IS NOT NULL) AND (`zav`.`zobrazovat` = 'ano') AND (`zav`.`vysledky` = 'ano') AND `z`.`id` = ? ORDER BY `zav`.`datum_od`", $idZavodnika);
 		foreach ($result as $row) {
 			if (!$headerSet) {
-				$zavodnik = array('zavodu' => 0, 'body_celkem' => array(), 'vysledky' => array($row->id_zavodu => array('nazev_zavodu' => $row->nazev_zavodu, 'tym' => $row['tym'], 'typ_zavodu' => $row->typ, 'kategorie_zavodu' => $row->kategorie_zavodu, 'id_zavodu' => $row->id_zavodu, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2)));
+				$zavodnik = array('zavodu' => 0, 'body_celkem' => array(), 'vysledky' => array($row->id_zavodu => array('nazev_zavodu' => $row->nazev_zavodu, 'tym' => $row['tym'], 'typ_zavodu' => $row->typ, 'kategorie_zavodu' => $row->kategorie_zavodu, 'id_zavodu' => $row->id_zavodu, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2, 'cips1' => $row->cips1, 'cips2' => $row->cips2)));
 				$headerSet = true;
 			} else {
-				$zavodnik['vysledky'][$row->id_zavodu] = array('nazev_zavodu' => $row->nazev_zavodu, 'tym' => $row['tym'], 'typ_zavodu' => $row->typ, 'kategorie_zavodu' => $row->kategorie_zavodu, 'id_zavodu' => $row->id_zavodu, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2);
+				$zavodnik['vysledky'][$row->id_zavodu] = array('nazev_zavodu' => $row->nazev_zavodu, 'tym' => $row['tym'], 'typ_zavodu' => $row->typ, 'kategorie_zavodu' => $row->kategorie_zavodu, 'id_zavodu' => $row->id_zavodu, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2, 'cips1' => $row->cips1, 'cips2' => $row->cips2);
 			}
 			if ($row->umisteni1 !== NULL)
 				$zavodnik['zavodu']++;
@@ -184,15 +192,19 @@ class Zebricek extends Base {
 			if ($v['umisteni1'] !== NULL) {
 				$zavodnik['vysledky'][$k]['body1'] = $body1;
 				$zavodnik['vysledky'][$k]['body1_zebricek'] = false;
+				$zavodnik['vysledky'][$k]['cips1'] = $v['cips1'];
 				$zavodnik['body_celkem'][] = $body1;
+				$zavodnik['cips_celkem'][] = $v['cips1'];
 			} else {
 				$zavodnik['vysledky'][$k]['body1'] = NULL;
 				$zavodnik['vysledky'][$k]['body1_zebricek'] = false;
 			}
 			if ($v['umisteni2'] !== NULL) {
 				$zavodnik['vysledky'][$k]['body2'] = $body2;
+				$zavodnik['vysledky'][$k]['cips2'] = $v['cips2'];
 				$zavodnik['vysledky'][$k]['body2_zebricek'] = false;
 				$zavodnik['body_celkem'][] = $body2;
+				$zavodnik['cips_celkem'][] = $v['cips2'];
 			} else {
 				$zavodnik['vysledky'][$k]['body2'] = NULL;
 				$zavodnik['vysledky'][$k]['body2_zebricek'] = false;
@@ -236,11 +248,13 @@ class Zebricek extends Base {
 	private function bodySort($a, $b) {
 		$sumA = array_sum($a['body_zebricek']);
 		$sumB = array_sum($b['body_zebricek']);
+		$sumCips1 = array_sum($a['cips_celkem']);
+		$sumCips2 = array_sum($b['cips_celkem']);
 		if ($sumA == $sumB) {
-			if ($a['zavodu'] > $b['zavodu']) {
-				return 1;
-			} else if ($a['zavodu'] < $b['zavodu']) {
+			if ($sumCips1 > $sumCips2) {
 				return -1;
+			} else if ($sumCips1 < $sumCips2) {
+				return 1;
 			} else {
 				return 0;
 			}
