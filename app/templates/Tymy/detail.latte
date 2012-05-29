@@ -1,0 +1,20 @@
+{block content}
+
+<h1>{$detail->nazev_tymu}</h1>
+
+<table>
+	<tr><th>Rok</th><td>{$detail->rok}</td></tr>
+	<tr><th>Liga</th><td>{$detail->liga}</td></tr>
+</table>
+
+<h2>Závodníci</h2>
+
+<table>
+<tr n:if="count($zavodnici) == 0">
+	<td>K tomuto týmu nejsou přiřazeni žádní závodníci.</td>
+</tr>
+<tr n:foreach="$zavodnici as $z">
+</tr>
+</table>
+
+{control addForm}

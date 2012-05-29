@@ -28,5 +28,15 @@ class Tymy extends Base {
 		}
 		return $result;
 	}
+	
+	public function getTymyRok($rok) {
+		return $this->database->query("SELECT t.*, count(tz.id_zavodnika) `pocet_zavodniku` FROM tymy t LEFT JOIN tymy_zavodnici tz ON t.id = tz.id_tymu WHERE rok = ? GROUP BY `id` ORDER BY `liga`, `kod`", $rok);
+	}
+	
+	public function getTym($id) {
+		$info = $this->database->query("SELECT * FROM tymy WHERE id = ?", $id)->fetch();
+		$zavodnici = $this->database->query("SELECT z.id, z.cele_jmeno, z.registrace FROM zavodnici z JOIN zavodnici_kategorie zk ON z.id = zk.id_zavodnika JOIN tymy_zavodnici tz ON tz.id_zavodnika = z.id WHERE tz.id_tymu = ? AND zk.rok = ?", $id, $info->rok)->fetchAll();
+		return array('info' => $info, 'zavodnici' => $zavodnici);
+	}
 
 }

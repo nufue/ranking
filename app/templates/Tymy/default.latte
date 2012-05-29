@@ -1,0 +1,18 @@
+{block content}
+
+<h1>Rok {$rok}</h1>
+
+<table>
+	<tbody>
+		
+	<tr n:foreach="$tymy as $t">
+		<td>{$ligy[$t->liga]}</td>
+		<td><a n:href="detail $t->id">{$t->nazev_tymu}</a></td>
+		<td>{$t->pocet_zavodniku}</td>
+	</tr>
+	</tbody>
+	<thead>
+		<tr><th>Liga</th><th>Název týmu</th><th>Závodníků</th></tr>
+	</thead>
+</table>
+
