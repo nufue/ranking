@@ -3,7 +3,7 @@
 
 <table>
     <tr n:foreach="$tymy as $t">
-	<th>{$t['jmeno']}</th>
+	<td>{$t['jmeno']}</td>
 	<td n:foreach="$t['zavody'] as $z">{$z['tym']}</td>
     </tr>
 </table>

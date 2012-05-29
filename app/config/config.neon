@@ -49,6 +49,9 @@ common:
 		zebricek:
 			class: Zebricek
 
+		suggest:
+			class: Suggest
+
 	factories:
 
 

@@ -38,7 +38,9 @@ table#detailZavodu,
 table#hlavickaZavodu,
 table#hlavickaDetailuZebricku,
 table#seznamZavodu,
-table#potvrzeniPridaniZebricku {
+table#potvrzeniPridaniZebricku,
+table#hlavickaTymu,
+table#slozeniTymu {
     border-collapse: collapse;
     border: 1px solid #aaa;
 }
@@ -49,7 +51,9 @@ table#detailZavodu td, table#detailZavodu th,
 table#hlavickaZavodu td, table#hlavickaZavodu th,
 table#hlavickaDetailuZebricku th, table#hlavickaDetailuZebricku td,
 table#seznamZavodu th, table#seznamZavodu td,
-table#potvrzeniPridaniZebricku th, table#potvrzeniPridaniZebricku td
+table#potvrzeniPridaniZebricku th, table#potvrzeniPridaniZebricku td,
+table#hlavickaTymu th, table#hlavickaTymu td,
+table#slozeniTymu th, table#slozeniTymu td
 {
     border: 1px solid #aaa;
     text-align: center;

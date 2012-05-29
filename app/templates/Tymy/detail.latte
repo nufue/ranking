@@ -2,19 +2,63 @@
 
 <h1>{$detail->nazev_tymu}</h1>
 
-<table>
+<table id="hlavickaTymu">
 	<tr><th>Rok</th><td>{$detail->rok}</td></tr>
-	<tr><th>Liga</th><td>{$detail->liga}</td></tr>
+	<tr><th>Liga</th><td>{$ligy[$detail->liga]}</td></tr>
 </table>
 
 <h2>Závodníci</h2>
 
-<table>
-<tr n:if="count($zavodnici) == 0">
-	<td>K tomuto týmu nejsou přiřazeni žádní závodníci.</td>
-</tr>
-<tr n:foreach="$zavodnici as $z">
-</tr>
+<p n:if="count($zavodnici) == 0">K tomuto týmu nejsou přiřazeni žádní závodníci.</p>
+
+<table n:if="count($zavodnici) > 0" id="slozeniTymu">
+	<tbody>
+	<tr n:foreach="$zavodnici as $z">
+		<td>{$z->registrace}</td>
+		<td><a n:href="Zavodnik:default $z->id">{$z->cele_jmeno}</a></td>
+		<td>{$kategoriePrevod[$z->kategorie]}</td>
+	</tr>
+	</tbody>
+	<thead>
+		<tr><th>REG</th><th>Jméno</th><th>Kategorie</th></tr>
+	</thead>
+	
 </table>
 
+<p><a href="#" id="addFormDivShow">editace závodníků</a></p>
+
+<div id="addFormDiv">
 {control addForm}
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#addFormDiv').hide();
+		$('#addFormDivShow').click(function() {
+			$('#addFormDiv').show();
+			$('#addFormDivShow').parent().hide();
+			});
+		$('.naseptavac').each(function(index) {
+			$(this).autocomplete({
+			minLength: 2,
+			source: function(request, response) {
+				$.ajax({
+					url: "{!$presenter->link('Tymy:suggest')}", 
+					data: { typedText: request.term },
+					success: function(data) {
+						
+						response( $.map( data.values, function( item ) {
+						return { label: item.cele_jmeno + " (" + item.registrace + ")" , value: item.cele_jmeno}
+						
+					}));
+						}
+					});
+			}
+		});
+		});
+		
+		
+	});
+</script>
+</div>
+
+<p><a n:href="default">zpět</a></p>
