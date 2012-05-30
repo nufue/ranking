@@ -1,10 +1,19 @@
-{block title}Žebříček LRU plavaná - detail závodníka{/block}
+{block title}{$zavodnik->cele_jmeno} - Žebříček LRU plavaná{/block}
 {block content}
 
 <h1>{$zavodnik->cele_jmeno}</h1>
 <table id="hlavickaDetailuZebricku">
 	<tr><th>Rok</th><td>{$rok}</td></tr>
 	<tr><th>Kategorie</th><td>{$zavodnik->kategorie}</td></tr>
+</table>
+
+<h2>Členství v týmech</h2>
+<table id="clenstviVTymech">
+	<tr n:foreach="$clenstvi as $c">
+		<td>{$ligy[$c->liga]}</td>
+		<td class="vlevo"><a n:href="Tymy:detail $c->id">{$c->nazev_tymu}</a></td>
+	</tr>
+
 </table>
 
 <h2>Výsledky závodů</h2>
@@ -40,5 +49,5 @@
 </table>
 <p>Modře označené výsledky se započítávají do žebříčku.</p>
 
-<p><a n:href="Homepage:default">zpět</a></p>
+<p>{if !empty($backlink)}<a href="{$backlink}">zpět</a>{else}<a n:href="Homepage:default">zpět</a>{/if}</p>
 

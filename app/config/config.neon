@@ -52,6 +52,12 @@ common:
 		suggest:
 			class: Suggest
 
+		authenticator:
+			class: Nette\Security\SimpleAuthenticator
+			arguments: [[
+				***REMOVED***: ***REMOVED***
+			]]
+
 	factories:
 
 

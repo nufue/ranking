@@ -1,14 +1,18 @@
+{block title}Týmy roku {$rok}{/block}
 {block content}
 
 <h1>Rok {$rok}</h1>
 
-<table>
+{var $oldLiga = ""}
+<table id="ligovaTabulka">
 	<tbody>
 		
 	<tr n:foreach="$tymy as $t">
-		<td>{$ligy[$t->liga]}</td>
-		<td><a n:href="detail $t->id">{$t->nazev_tymu}</a></td>
-		<td>{$t->pocet_zavodniku}</td>
+		{var $zmena = ($oldLiga != "") && ($ligy[$t->liga] != $oldLiga)}
+		<td n:class="$zmena ? borderTop : ''">{$ligy[$t->liga]}</td>
+		<td n:class="vlevo, $zmena ? borderTop : ''"><a n:href="detail $t->id">{$t->nazev_tymu}</a></td>
+		<td n:class="$zmena ? borderTop : ''">{$t->pocet_zavodniku}</td>
+		{?$oldLiga = $ligy[$t->liga]}
 	</tr>
 	</tbody>
 	<thead>
@@ -16,3 +20,5 @@
 	</thead>
 </table>
 
+{if !empty($backlink)}<p><a href="{$backlink}">zpět</a></p>{else}
+<p><a n:href="Homepage:default">zpět na žebříček</a></p>{/if}

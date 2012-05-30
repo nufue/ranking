@@ -1,3 +1,4 @@
+{block title}{$zavod->nazev}{if !empty($zavod->kategorie)} {$zavod->kategorie}{/if} - detail závodu{/block}
 {block content}
 
 <h1>{$zavod->nazev}{if !empty($zavod->kategorie)} {$zavod->kategorie}{/if}</h1>
@@ -10,16 +11,16 @@
 
 <h2>Účastníci závodu</h2>
 
-<p><a n:href="pridatVysledky $zavod->id">přidat výsledky</a></p>
+{if $isLoggedIn}<p><a n:href="pridatVysledky $zavod->id">přidat výsledky</a></p>{/if}
 {var $poradi = 1}
 <table id="detailZavodu">
     <tbody>
 		<tr n:class="$iterator->odd ? odd : even" n:foreach="$zavodnici as $z">
 			<td>{$poradi}{?$poradi++}</td>
 			<td>{$z->registrace}</td>
-			<td><a n:href="Zavodnik:default $z->id_zavodnika">{$z->cele_jmeno}</a></td>
+			<td class="vlevo"><a n:href="Zavodnik:default $z->id_zavodnika">{$z->cele_jmeno}</a></td>
 			<td>{$kategoriePrevod[$z['kategorie']]}</td>
-			<td>{$z->tym}</td>
+			<td class="vlevo">{$z->tym}</td>
 			<td>{$z->cips1}</td>
 			<td>{if $z->umisteni1 == (int)$z->umisteni1}{(int)$z->umisteni1}{else}{$z->umisteni1|number:1:',':' '}{/if}</td>
 			<td>{$z->umisteni1|umisteni:$zavod->typ}</td>
@@ -35,4 +36,4 @@
 
 </table>
 
-<p><a n:href="default">zpět</a></p>
+<p>{if !empty($backlink)}<a href="{$backlink}">zpět</a>{else}<a n:href="Homepage:default">zpět</a>{/if}</p>

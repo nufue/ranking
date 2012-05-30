@@ -1,8 +1,13 @@
 {block title}Žebříček LRU plavaná - {$typZebricku}{/block}
 {block content}
+{if $isLoggedIn}
+<div><a n:href="Tymy:default">Týmy</a> | <a n:href="Zavody:default">Závody</a> | <a n:href="Sign:out">odhlásit</a></div>
+{/if}
 
 <h1>Průběžný žebříček LRU plavaná - {$typZebricku}</h1>
 <h2>aktuální k {$datum_platnosti}</h2>
+
+<p><a n:href="Homepage:excelExport $typ, $zobrazitZavody">export</a></p>
 
 <p>{if $zobrazitZavody}<a n:href="Homepage:default $typ, false">nezobrazovat jednotlivé závody</a>{else}<a n:href="Homepage:default $typ, true">zobrazit i jednotlivé závody</a>{/if}</p>
 
@@ -41,3 +46,6 @@
 	</tr>
 
 </table>
+
+
+<p class="noprint"><a n:href="Sign:in">přihlásit</a></p>

@@ -32,7 +32,7 @@ a[href^="error:"] {
 }
 
 
-table#zebricek,
+/*table#zebricek,
 table#detailZebricku,
 table#detailZavodu,
 table#hlavickaZavodu,
@@ -40,12 +40,16 @@ table#hlavickaDetailuZebricku,
 table#seznamZavodu,
 table#potvrzeniPridaniZebricku,
 table#hlavickaTymu,
-table#slozeniTymu {
+table#slozeniTymu,
+table#ligovaTabulka,
+table#clenstviVTymech */
+
+table {
     border-collapse: collapse;
     border: 1px solid #aaa;
 }
 
-table#zebricek td, table#zebricek th,
+/*table#zebricek td, table#zebricek th,
 table#detailZebricku td, table#detailZebricku th,
 table#detailZavodu td, table#detailZavodu th,
 table#hlavickaZavodu td, table#hlavickaZavodu th,
@@ -53,35 +57,43 @@ table#hlavickaDetailuZebricku th, table#hlavickaDetailuZebricku td,
 table#seznamZavodu th, table#seznamZavodu td,
 table#potvrzeniPridaniZebricku th, table#potvrzeniPridaniZebricku td,
 table#hlavickaTymu th, table#hlavickaTymu td,
-table#slozeniTymu th, table#slozeniTymu td
+table#slozeniTymu th, table#slozeniTymu td,
+table#ligovaTabulka th, table#ligovaTabulka td,
+table#clenstviVTymech th, table#clenstviVTymech td*/
+table th, table td
 {
     border: 1px solid #aaa;
     text-align: center;
     padding: 0.1em 0.5em;
 }
-
-table#zebricek td.vlevo, table#detailZebricku .vlevo {
+/*
+table#zebricek td.vlevo, table#detailZebricku .vlevo, table#ligovaTabulka .vlevo, table#slozeniTymu .vlevo*/
+table .vlevo {
     text-align: left;
 }
 
-table#zebricek tr.even,
+/*table#zebricek tr.even,
 table#detailZebricku tr.even,
 table#detailZavodu tr.even,
 table#seznamZavodu tr.even,
-table#potvrzeniPridaniZebricku tr.even {
+table#potvrzeniPridaniZebricku tr.even*/
+table tr.even {
     background-color: #f1f1f1;
 }
 
-table#zebricek tr.odd,
+/*table#zebricek tr.odd,
 table#detailZebricku tr.odd,
 table#detailZavodu tr.odd,
 table#seznamZavodu tr.odd,
-table#potvrzeniPridaniZebricku tr.odd {
+table#potvrzeniPridaniZebricku tr.odd*/
+table tr.odd {
     background-color: #e7e7e7;
 }
 
+/*
 table#zebricek td.thickRight,
-table#zebricek th.thickRight {
+table#zebricek th.thickRight*/
+table td.thickRight, table tr.thickRight {
     border-right: 2px solid #000;
 }
 
@@ -95,4 +107,8 @@ table#potvrzeniPridaniZebricku tr.pridat {
 
 table#potvrzeniPridaniZebricku tr.nepujde {
 	background-color: #ED8383;
+}
+
+table#ligovaTabulka .borderTop {
+	border-top: 2px solid #666;
 }

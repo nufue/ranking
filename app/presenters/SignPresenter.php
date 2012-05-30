@@ -17,13 +17,13 @@ class SignPresenter extends BasePresenter {
 	 */
 	protected function createComponentSignInForm() {
 		$form = new UI\Form;
-		$form->addText('username', 'Username:')
-				->setRequired('Please provide a username.');
+		$form->addText('username', 'Uživatelské jméno:')
+				->setRequired('Zadejte prosím uživatelské jméno.');
 
-		$form->addPassword('password', 'Password:')
-				->setRequired('Please provide a password.');
+		$form->addPassword('password', 'Heslo:')
+				->setRequired('Zadejte prosím heslo.');
 
-		$form->addCheckbox('remember', 'Remember me on this computer');
+		$form->addCheckbox('remember', 'Zapamatovat');
 
 		$form->addSubmit('send', 'Sign in');
 

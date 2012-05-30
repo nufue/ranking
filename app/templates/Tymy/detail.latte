@@ -1,3 +1,4 @@
+{block title}Tým {$detail->nazev_tymu}{/block}
 {block content}
 
 <h1>{$detail->nazev_tymu}</h1>
@@ -15,7 +16,7 @@
 	<tbody>
 	<tr n:foreach="$zavodnici as $z">
 		<td>{$z->registrace}</td>
-		<td><a n:href="Zavodnik:default $z->id">{$z->cele_jmeno}</a></td>
+		<td class="vlevo"><a n:href="Zavodnik:default $z->id">{$z->cele_jmeno}</a></td>
 		<td>{$kategoriePrevod[$z->kategorie]}</td>
 	</tr>
 	</tbody>
@@ -25,6 +26,7 @@
 	
 </table>
 
+{if $isLoggedIn}
 <p><a href="#" id="addFormDivShow">editace závodníků</a></p>
 
 <div id="addFormDiv">
@@ -60,5 +62,6 @@
 	});
 </script>
 </div>
+{/if}
 
-<p><a n:href="default">zpět</a></p>
+<p>{if !empty($backlink)}<a href="{$backlink}">zpět</a>{else}<a n:href="default">zpět</a>{/if}</p>

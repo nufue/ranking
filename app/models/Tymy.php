@@ -48,5 +48,9 @@ class Tymy extends Base {
 	public function addZavodnik($idTymu, $idZavodnika) {
 		$this->database->query("INSERT INTO tymy_zavodnici VALUES (?, ?)", $idTymu, $idZavodnika);
 	}
+	
+	public function getClenstvi($idZavodnika, $rok) {
+		return $this->database->query("SELECT t.id, t.liga, t.nazev_tymu FROM tymy t JOIN tymy_zavodnici tz ON t.id = tz.id_tymu WHERE t.rok = ? AND tz.id_zavodnika = ?", $rok, $idZavodnika);
+	}
 
 }
