@@ -51,8 +51,9 @@ class Zebricek extends Base {
 	public function getZebricek($rok, $typ) {
 		$zavody = array();
 
-		$result = $this->context->database->query("SELECT DATE_FORMAT(MAX(`datum_do`), '%e. %c. %Y') `datum` FROM `zavody` WHERE `rok` = ? AND zobrazovat = 'ano' AND vysledky = 'ano'", $rok)->fetch();
+		$result = $this->context->database->query("SELECT DATE_FORMAT(MAX(`datum_do`), '%e. %c. %Y') `datum`, MAX(`datum_do`) `datum_platnosti` FROM `zavody` WHERE `rok` = ? AND zobrazovat = 'ano' AND vysledky = 'ano'", $rok)->fetch();
 		$datumPlatnosti = $result->datum;
+		$datumPlatnostiOrig = $result->datum_platnosti;
 
 		$result = $this->context->zavody->getZavody($rok);
 		foreach ($result as $row) {
@@ -150,7 +151,7 @@ class Zebricek extends Base {
 		}
 
 		uasort($zavodnici, array($this, 'bodySort'));
-		return array('zavody' => $zavody, 'zavodnici' => $zavodnici, 'datum_platnosti' => $datumPlatnosti);
+		return array('zavody' => $zavody, 'zavodnici' => $zavodnici, 'datum_platnosti' => $datumPlatnosti, 'datum_platnosti_orig' => $datumPlatnostiOrig);
 	}
 
 	private function getBody($typZavodu, $umisteni) {
