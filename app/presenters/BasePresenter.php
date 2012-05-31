@@ -11,6 +11,10 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
 	public function startup() {
 		parent::startup();
 		$this->template->isLoggedIn = $this->getUser()->isLoggedIn();
+		$userName = '';
+		if ($this->getUser()->getIdentity() !== null) $userName = $this->getUser()->getIdentity()->getId(); 
+		
+		$this->template->userName = $userName;
 
 		$bcStorage = $this->context->session->getSection('breadcrumb');
 		if ($bcStorage->breadcrumb === NULL) {

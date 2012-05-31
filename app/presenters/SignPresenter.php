@@ -25,7 +25,7 @@ class SignPresenter extends BasePresenter {
 
 		$form->addCheckbox('remember', 'Zapamatovat');
 
-		$form->addSubmit('send', 'Sign in');
+		$form->addSubmit('send', 'Přihlásit');
 
 		$form->onSuccess[] = callback($this, 'signInFormSubmitted');
 		return $form;
@@ -48,7 +48,7 @@ class SignPresenter extends BasePresenter {
 
 	public function actionOut() {
 		$this->getUser()->logout();
-		$this->flashMessage('You have been signed out.');
+		$this->flashMessage('Byl(a) jste odhlášen(a).');
 		$this->redirect('in');
 	}
 
