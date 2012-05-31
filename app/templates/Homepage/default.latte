@@ -7,8 +7,6 @@
 <h1>Průběžný žebříček LRU plavaná - {$typZebricku}</h1>
 <h2>aktuální k {$datum_platnosti}</h2>
 
-<p><a n:href="Homepage:excelExport">export</a></p>
-
 <p>{if $zobrazitZavody}<a n:href="Homepage:default $typ, false">nezobrazovat jednotlivé závody</a>{else}<a n:href="Homepage:default $typ, true">zobrazit i jednotlivé závody</a>{/if}</p>
 
 <p>{ifCurrent default 'celkem'}celkový žebříček{else}<a n:href="default 'celkem', $zobrazitZavody">celkový žebříček</a>{/ifCurrent} |
@@ -48,4 +46,4 @@
 </table>
 
 
-<p class="noprint"><a n:href="Sign:in">přihlásit</a></p>
+<p class="noprint"><a n:href="Sign:in">přihlásit</a> | <a n:href="Homepage:excelExport">export do XLS</a></p>

@@ -20,6 +20,7 @@
 {var $bodyCelkem = 0}
 {var $bodyZebricek = 0}
 {var $cipsCelkem = 0}
+{if $vysledky !== NULL}
 <table id="detailZebricku">
     <tbody>
     <tr n:class="$iterator->odd ? odd : even" n:foreach="$vysledky as $v">
@@ -48,6 +49,9 @@
 	</tfoot>
 </table>
 <p>Modře označené výsledky se započítávají do žebříčku.</p>
+{else}
+<p>U tohoto závodníka nejsou vedeny žádné výsledky.</p>
+{/if}
 
 <p>{if !empty($backlink)}<a href="{$backlink}">zpět</a>{else}<a n:href="Homepage:default">zpět</a>{/if}</p>
 

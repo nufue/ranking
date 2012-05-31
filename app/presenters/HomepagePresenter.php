@@ -14,8 +14,10 @@ class HomepagePresenter extends BasePresenter {
 		$zebricek = $this->context->zebricek->getZebricek($rok, '' /* zadny konkretni typ */);
 		$datumPlatnosti = $zebricek['datum_platnosti_orig'];
 		
-
 		$objExcel = new PHPExcel;
+		$objExcel->getProperties()->setCreator("Jiří Hrazdil");
+		$objExcel->getProperties()->setTitle('Průběžný žebříček LRU plavaná, aktuální k '.$datumPlatnosti->format('j. n. Y'));
+		$objExcel->getProperties()->setDescription('Aktuální žebříček LRU plavaná je k dispozici na http://www.plavana.info/');
 		$objExcel->setActiveSheetIndex(0);
 		$sheet = $objExcel->getActiveSheet();
 		$sheet->setTitle('Celkový');
@@ -121,6 +123,14 @@ class HomepagePresenter extends BasePresenter {
 		$sheet->getStyle('A' . $rowCnt)->getFont()->setSize(12);
 		$sheet->getStyle('A' . $rowCnt)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 		$sheet->mergeCells('A' . $rowCnt . ':I' . $rowCnt);
+
+		$rowCnt++;
+		$sheet->SetCellValue('A' . $rowCnt, 'Aktuální žebříček je dostupný na http://www.plavana.info/');
+		$sheet->getCell('A'.$rowCnt)->getHyperlink()->setUrl('http://www.plavana.info/'.(!empty($dataFilterArg) ? $dataFilterArg : '').'?utm_source=xls&utm_medium=link&utm_campaign=zebricek'.$datumPlatnosti->format('Ymd'));
+		$sheet->getStyle('A' . $rowCnt)->getFont()->setSize(12);
+		$sheet->getStyle('A' . $rowCnt)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+		$sheet->mergeCells('A' . $rowCnt . ':I' . $rowCnt);
+
 
 		$rowCnt++;
 		$sheet->SetCellValue('A' . $rowCnt, 'Poř.');

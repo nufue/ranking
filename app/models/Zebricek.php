@@ -184,55 +184,57 @@ class Zebricek extends Base {
 				$zavodnik['zavodu']++;
 		}
 
-		foreach ($zavodnik['vysledky'] as $k => $v) {
-			$typZavodu = $v['typ_zavodu'];
-
-			$body1 = $this->getBody($typZavodu, $v['umisteni1']);
-			$body2 = $this->getBody($typZavodu, $v['umisteni2']);
-
-			if ($v['umisteni1'] !== NULL) {
-				$zavodnik['vysledky'][$k]['body1'] = $body1;
-				$zavodnik['vysledky'][$k]['body1_zebricek'] = false;
-				$zavodnik['vysledky'][$k]['cips1'] = $v['cips1'];
-				$zavodnik['body_celkem'][] = $body1;
-				$zavodnik['cips_celkem'][] = $v['cips1'];
-			} else {
-				$zavodnik['vysledky'][$k]['body1'] = NULL;
-				$zavodnik['vysledky'][$k]['body1_zebricek'] = false;
-			}
-			if ($v['umisteni2'] !== NULL) {
-				$zavodnik['vysledky'][$k]['body2'] = $body2;
-				$zavodnik['vysledky'][$k]['cips2'] = $v['cips2'];
-				$zavodnik['vysledky'][$k]['body2_zebricek'] = false;
-				$zavodnik['body_celkem'][] = $body2;
-				$zavodnik['cips_celkem'][] = $v['cips2'];
-			} else {
-				$zavodnik['vysledky'][$k]['body2'] = NULL;
-				$zavodnik['vysledky'][$k]['body2_zebricek'] = false;
-			}
-		}
-		$zavodnik['body_zebricek'] = $zavodnik['body_celkem'];
-		if (count($zavodnik['body_zebricek']) > 12) {
-			rsort($zavodnik['body_zebricek']);
-			$zavodnik['body_zebricek'] = array_slice($zavodnik['body_zebricek'], 0, 12);
-		}
-
-		$bodyZebricekKopie = $zavodnik['body_zebricek'];
-		foreach ($zavodnik['vysledky'] as $k => $v) {
-			$body1 = $zavodnik['vysledky'][$k]['body1'];
-			if ($body1 !== NULL) {
-				$ind = array_search($body1, $bodyZebricekKopie);
-				if ($ind !== false) {
-					$zavodnik['vysledky'][$k]['body1_zebricek'] = true;
-					unset($bodyZebricekKopie[$ind]);
+		if (isset($zavodnik['vysledky'])) {
+			foreach ($zavodnik['vysledky'] as $k => $v) {
+				$typZavodu = $v['typ_zavodu'];
+	
+				$body1 = $this->getBody($typZavodu, $v['umisteni1']);
+				$body2 = $this->getBody($typZavodu, $v['umisteni2']);
+	
+				if ($v['umisteni1'] !== NULL) {
+					$zavodnik['vysledky'][$k]['body1'] = $body1;
+					$zavodnik['vysledky'][$k]['body1_zebricek'] = false;
+					$zavodnik['vysledky'][$k]['cips1'] = $v['cips1'];
+					$zavodnik['body_celkem'][] = $body1;
+					$zavodnik['cips_celkem'][] = $v['cips1'];
+				} else {
+					$zavodnik['vysledky'][$k]['body1'] = NULL;
+					$zavodnik['vysledky'][$k]['body1_zebricek'] = false;
+				}
+				if ($v['umisteni2'] !== NULL) {
+					$zavodnik['vysledky'][$k]['body2'] = $body2;
+					$zavodnik['vysledky'][$k]['cips2'] = $v['cips2'];
+					$zavodnik['vysledky'][$k]['body2_zebricek'] = false;
+					$zavodnik['body_celkem'][] = $body2;
+					$zavodnik['cips_celkem'][] = $v['cips2'];
+				} else {
+					$zavodnik['vysledky'][$k]['body2'] = NULL;
+					$zavodnik['vysledky'][$k]['body2_zebricek'] = false;
 				}
 			}
-			$body2 = $zavodnik['vysledky'][$k]['body2'];
-			if ($body2 !== NULL) {
-				$ind = array_search($body2, $bodyZebricekKopie);
-				if ($ind !== false) {
-					$zavodnik['vysledky'][$k]['body2_zebricek'] = true;
-					unset($bodyZebricekKopie[$ind]);
+			$zavodnik['body_zebricek'] = $zavodnik['body_celkem'];
+			if (count($zavodnik['body_zebricek']) > 12) {
+				rsort($zavodnik['body_zebricek']);
+				$zavodnik['body_zebricek'] = array_slice($zavodnik['body_zebricek'], 0, 12);
+			}
+	
+			$bodyZebricekKopie = $zavodnik['body_zebricek'];
+			foreach ($zavodnik['vysledky'] as $k => $v) {
+				$body1 = $zavodnik['vysledky'][$k]['body1'];
+				if ($body1 !== NULL) {
+					$ind = array_search($body1, $bodyZebricekKopie);
+					if ($ind !== false) {
+						$zavodnik['vysledky'][$k]['body1_zebricek'] = true;
+						unset($bodyZebricekKopie[$ind]);
+					}
+				}
+				$body2 = $zavodnik['vysledky'][$k]['body2'];
+				if ($body2 !== NULL) {
+					$ind = array_search($body2, $bodyZebricekKopie);
+					if ($ind !== false) {
+						$zavodnik['vysledky'][$k]['body2_zebricek'] = true;
+						unset($bodyZebricekKopie[$ind]);
+					}
 				}
 			}
 		}
@@ -243,7 +245,7 @@ class Zebricek extends Base {
 	public function getZavodnikRok($idZavodnika, $rok) {
 		$zavodnik = $this->context->zavodnici->getZavodnikById($idZavodnika, $rok);
 		$vysledky = $this->getVysledkyZavodu($idZavodnika, $rok);
-		return array('zavodnik' => $zavodnik, 'vysledky' => $vysledky['vysledky']);
+		return array('zavodnik' => $zavodnik, 'vysledky' => (isset($vysledky['vysledky']) ? $vysledky['vysledky'] : NULL));
 	}
 
 	private function bodySort($a, $b) {
