@@ -36,6 +36,11 @@ class HomepagePresenter extends BasePresenter {
 		$this->addVysledky($sheet, $zebricek['zavodnici'], 'Průběžný žebříček LRU plavaná - U14', $datumPlatnosti, 'filterVysledky', 'u14');
 
 		$sheet = $objExcel->createSheet();
+		$sheet->setTitle('U10');
+		$this->addVysledky($sheet, $zebricek['zavodnici'], 'Průběžný žebříček LRU plavaná - U10', $datumPlatnosti, 'filterVysledky', 'u10');
+		
+		
+		$sheet = $objExcel->createSheet();
 		$sheet->setTitle('Ženy');
 		$this->addVysledky($sheet, $zebricek['zavodnici'], 'Průběžný žebříček LRU plavaná - Ženy', $datumPlatnosti, 'filterVysledky', 'zeny');
 		
@@ -67,7 +72,8 @@ class HomepagePresenter extends BasePresenter {
 		if ($argument == 'u23' && ($radek['kategorie'] == 'U23' || $radek['kategorie'] == 'U23Ž')) return true;
 		if ($argument == 'u18' && ($radek['kategorie'] == 'U18' || $radek['kategorie'] == 'U18Ž')) return true;
 		if ($argument == 'u14' && ($radek['kategorie'] == 'U14' || $radek['kategorie'] == 'U14Ž')) return true;
-		if ($argument == 'zeny' && ($radek['kategorie'] == 'U14Ž' || $radek['kategorie'] == 'U18Ž' || $radek['kategorie'] == 'U23Ž' || $radek['kategorie'] == 'Ž')) return true;
+		if ($argument == 'u10' && ($radek['kategorie'] == 'U10' || $radek['kategorie'] == 'U10Ž')) return true;
+		if ($argument == 'zeny' && ($radek['kategorie'] == 'U14Ž' || $radek['kategorie'] == 'U18Ž' || $radek['kategorie'] == 'U23Ž' || $radek['kategorie'] == 'U10Ž' || $radek['kategorie'] == 'Ž')) return true;
 	}
 
 	public function renderDefault($typ = 'celkem', $show = false) {
@@ -81,6 +87,8 @@ class HomepagePresenter extends BasePresenter {
 			$typZebricku = 'junioři U18';
 		else if ($typ == 'u14')
 			$typZebricku = 'kadeti U14';
+		else if ($typ == 'u10') 
+			$typZebricku = 'kadeti U10';
 		else if ($typ == 'zeny')
 			$typZebricku = 'ženy';
 

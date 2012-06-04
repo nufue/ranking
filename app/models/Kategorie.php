@@ -11,7 +11,9 @@ class Kategorie extends Base {
         'u18_zena' => 'U18 ženy',
         'u23_zena' => 'U23 ženy',
         'hendikep' => 'hendikepovaní',
-        'zena' => 'ženy'
+        'zena' => 'ženy',
+		'u10' => 'U10',
+		'u10_zena' => 'U10 ženy'
     );
 
     public function getKategorie($rok = 2012) {
@@ -39,6 +41,11 @@ class Kategorie extends Base {
             $kategorie == 'u23_zena';
         else if ($kategorie == 'H')
             $kategorie = 'hendikep';
+		else if ($kategorie == 'U10') 
+			$kategorie = 'u10';
+		else if ($kategorie == 'U10Ž' || $kategorie == 'U10 Ž') 
+			$kategorie = 'u10_zena';
+		
         try {
             $this->database->table('zavodnici_kategorie')->insert(array('id_zavodnika' => $idZavodnika, 'kategorie' => $kategorie, 'rok' => $rok));
         } catch (PDOException $exc) {

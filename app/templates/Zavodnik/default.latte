@@ -7,14 +7,16 @@
 	<tr><th>Kategorie</th><td>{$zavodnik->kategorie}</td></tr>
 </table>
 
+{dump $clenstvi}
+{if count($clenstvi) > 0}
 <h2>Členství v týmech</h2>
 <table id="clenstviVTymech">
 	<tr n:foreach="$clenstvi as $c">
 		<td>{$ligy[$c->liga]}</td>
 		<td class="vlevo"><a n:href="Tymy:detail $c->id">{$c->nazev_tymu}</a></td>
 	</tr>
-
 </table>
+{/if}
 
 <h2>Výsledky závodů</h2>
 {var $bodyCelkem = 0}

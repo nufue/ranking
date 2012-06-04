@@ -15,7 +15,7 @@ class ZavodnikPresenter extends BasePresenter {
 		$this->template->zavodnik = $detail['zavodnik'];
 		$this->template->vysledky = $detail['vysledky'];
 		$this->template->ligy = Tymy::$ligy;
-		$this->template->clenstvi = $this->context->tymy->getClenstvi($id, $rok);
+		$this->template->clenstvi = $this->context->tymy->getClenstvi($id, $rok)->fetchAll();
 	}
 
 }

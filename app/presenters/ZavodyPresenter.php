@@ -86,6 +86,7 @@ class ZavodyPresenter extends BasePresenter {
 	public function createComponentZavodForm() {
 		$form = new Form;
 		$form->addText('nazev', 'Název závodu', 50);
+		$form->addText('kategorie', 'Věková kategorie závodu', 30);
 		$form->addSelect('typ', 'Typ závodu', Zebricek::$typyZavodu);
 		$form->addText('datum_od', 'Datum od', 10);
 		$form->addText('datum_do', 'Datum do', 10);

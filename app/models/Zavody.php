@@ -21,7 +21,7 @@ class Zavody extends Base {
 	}
 
 	public function addZavod($values) {
-		$this->database->query("INSERT INTO zavody(nazev, typ, rok, datum_od, datum_do, zobrazovat, vysledky) VALUES (?, ?, 2012, ?, ?, ?, ?)", $values['nazev'], $values['typ'], $values['datum_od'], $values['datum_do'], $values['zobrazovat'], $values['vysledky']);
+		$this->database->query("INSERT INTO zavody(nazev, kategorie, typ, rok, datum_od, datum_do, zobrazovat, vysledky) VALUES (?, ?, ?, 2012, ?, ?, ?, ?)", $values['nazev'], $values['kategorie'], $values['typ'], $values['datum_od'], $values['datum_do'], $values['zobrazovat'], $values['vysledky']);
 	}
 
 	public function addVysledek($idZavodu, $idZavodnika, $tym, $cips1, $umisteni1, $cips2, $umisteni2) {

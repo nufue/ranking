@@ -27,6 +27,8 @@ class Zebricek extends Base {
 		'prebor_u14' => 'Územní přebor U14',
 		'prebor_u18' => 'Územní přebor U18',
 		'prebor_u22' => 'Územní přebor U22',
+		'prebor_u10' => 'Územní přebor U10',
+		'zavod_u10' => 'Závod U10'
 	);
 	public static $bodovani_zavodu = array(
 		'memicr' => 1,
@@ -42,10 +44,12 @@ class Zebricek extends Base {
 		'zavod_u14' => 4,
 		'zavod_u18' => 4,
 		'zavod_u22' => 4,
+		'zavod_u10' => 4,
 		'divize' => 5,
 		'prebor_u14' => 5,
 		'prebor_u18' => 5,
 		'prebor_u22' => 5,
+		'prebor_u10' => 5,
 	);
 
 	public function getZebricek($rok, $typ) {
@@ -68,8 +72,10 @@ class Zebricek extends Base {
 			$query .= " AND `zk`.`kategorie` IN ('u18', 'u18_zena')";
 		else if ($typ == 'u14')
 			$query .= " AND `zk`.`kategorie` IN ('u14', 'u14_zena')";
+		else if ($typ == 'u10')
+			$query .= " AND `zk`.`kategorie` IN ('u10', 'u10_zena')";
 		else if ($typ == 'zeny')
-			$query .= " AND `zk`.`kategorie` IN ('u14_zena', 'u18_zena', 'u23_zena', 'zena')";
+			$query .= " AND `zk`.`kategorie` IN ('u10_zena', 'u14_zena', 'u18_zena', 'u23_zena', 'zena')";
 
 		$result = $this->context->database->query($query . " ORDER BY `zav`.`datum_od`");
 		foreach ($result as $row) {
@@ -83,6 +89,11 @@ class Zebricek extends Base {
 				$zavodnici[$id]['zavodu']++;
 			if ($row->umisteni2 !== NULL)
 				$zavodnici[$id]['zavodu']++;
+		}
+
+		$result = $this->context->database->query("SELECT tz.id_zavodnika, t.nazev_tymu FROM tymy_zavodnici tz JOIN tymy t ON tz.id_tymu = t.id WHERE id_zavodnika IN (?)", array_keys($zavodnici));
+		foreach ($result as $row) {
+			$zavodnici[$row->id_zavodnika]['tym'] = $row->nazev_tymu;
 		}
 
 		foreach ($zavodnici as $id => $z) {
@@ -187,10 +198,10 @@ class Zebricek extends Base {
 		if (isset($zavodnik['vysledky'])) {
 			foreach ($zavodnik['vysledky'] as $k => $v) {
 				$typZavodu = $v['typ_zavodu'];
-	
+
 				$body1 = $this->getBody($typZavodu, $v['umisteni1']);
 				$body2 = $this->getBody($typZavodu, $v['umisteni2']);
-	
+
 				if ($v['umisteni1'] !== NULL) {
 					$zavodnik['vysledky'][$k]['body1'] = $body1;
 					$zavodnik['vysledky'][$k]['body1_zebricek'] = false;
@@ -217,7 +228,7 @@ class Zebricek extends Base {
 				rsort($zavodnik['body_zebricek']);
 				$zavodnik['body_zebricek'] = array_slice($zavodnik['body_zebricek'], 0, 12);
 			}
-	
+
 			$bodyZebricekKopie = $zavodnik['body_zebricek'];
 			foreach ($zavodnik['vysledky'] as $k => $v) {
 				$body1 = $zavodnik['vysledky'][$k]['body1'];
