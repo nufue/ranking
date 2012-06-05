@@ -7,9 +7,9 @@
 <h1>Průběžný žebříček LRU plavaná - {$typZebricku}</h1>
 <h2>aktuální k {$datum_platnosti}</h2>
 
-<p>{if $zobrazitZavody}<a n:href="Homepage:default $typ, false">nezobrazovat jednotlivé závody</a>{else}<a n:href="Homepage:default $typ, true">zobrazit i jednotlivé závody</a>{/if}</p>
+<p class='noprint'>{if $zobrazitZavody}<a n:href="Homepage:default $typ, false">nezobrazovat jednotlivé závody</a>{else}<a n:href="Homepage:default $typ, true">zobrazit i jednotlivé závody</a>{/if}</p>
 
-<p>{ifCurrent default 'celkem'}celkový žebříček{else}<a n:href="default 'celkem', $zobrazitZavody">celkový žebříček</a>{/ifCurrent} |
+<p class='noprint'>{ifCurrent default 'celkem'}celkový žebříček{else}<a n:href="default 'celkem', $zobrazitZavody">celkový žebříček</a>{/ifCurrent} |
 	{ifCurrent default 'u23'}žebříček U23{else}<a n:href="default 'u23', $zobrazitZavody">žebříček U23</a>{/ifCurrent} |
 	{ifCurrent default 'u18'}žebříček U18{else}<a n:href="default 'u18', $zobrazitZavody">žebříček U18</a>{/ifCurrent} |
 	{ifCurrent default 'u14'}žebříček U14{else}<a n:href="default 'u14', $zobrazitZavody">žebříček U14</a>{/ifCurrent} |
@@ -18,10 +18,9 @@
 </p>
 
 <table id="zebricek">
-	<tr><th>Pořadí</th><th>REG</th><th>Jméno</th><th>KAT</th><th>Organizace</th><th>Celkem závodů</th><th>Celkem bodů</th><th>Celkem bodů do žebříčku</th><th n:class="$zobrazitZavody ? thickRight : ''">Min. body do žeb.</th>
-		<th n:if="$zobrazitZavody" n:foreach="$zavody as $idZavodu => $z"><a n:href="Zavody:detail $idZavodu">{$z['nazev']}{if !empty($z['kategorie'])} {$z['kategorie']}{/if}</a></th></tr>
 
 {var $poradi = 1}
+<tbody>
 	<tr n:class="$iterator->odd ? odd : even" n:foreach="$zavodnici as $id => $z">
 		<td>{=$poradi++}</td>
 		<td>{$z['registrace']}</td>
@@ -43,7 +42,11 @@
 	{/foreach}
 	{/if}
 	</tr>
-
+</tbody>
+<thead>
+	<tr><th>Pořadí</th><th>REG</th><th>Jméno</th><th>KAT</th><th>Organizace</th><th>Celkem závodů</th><th>Celkem bodů</th><th>Celkem bodů do žebříčku</th><th n:class="$zobrazitZavody ? thickRight : ''">Min. body do žeb.</th>
+		<th n:if="$zobrazitZavody" n:foreach="$zavody as $idZavodu => $z"><a n:href="Zavody:detail $idZavodu">{$z['nazev']}{if !empty($z['kategorie'])} {$z['kategorie']}{/if}</a></th></tr>
+</thead>
 </table>
 
 
