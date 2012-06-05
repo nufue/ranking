@@ -7,7 +7,6 @@
 	<tr><th>Kategorie</th><td>{$zavodnik->kategorie}</td></tr>
 </table>
 
-{dump $clenstvi}
 {if count($clenstvi) > 0}
 <h2>Členství v týmech</h2>
 <table id="clenstviVTymech">
@@ -31,8 +30,8 @@
 		<td>{$v['cips1']}</td>
         <td>{if $v['umisteni1'] == (int)$v['umisteni1']}{(int)$v['umisteni1']}{else}{$v['umisteni1']|number:1:',':' '}{/if}</td>
         <td>{if $v['body1_zebricek']}<span class="zebricek">{/if}{$v['body1']}{if $v['body1_zebricek']}</span>{/if}</td>
-		<td>{$v['cips2']}</td>
-        <td>{if $v['umisteni2'] == (int)$v['umisteni2']}{(int)$v['umisteni2']}{else}{$v['umisteni2']|number:1:',':' '}{/if}</td>
+		<td>{if $v['umisteni2'] !== NULL}{$v['cips2']}{/if}</td>
+        <td>{if $v['umisteni2'] !== NULL}{if $v['umisteni2'] == (int)$v['umisteni2']}{(int)$v['umisteni2']}{else}{$v['umisteni2']|number:1:',':' '}{/if}{/if}</td>
         <td>{if $v['body2_zebricek']}<span class="zebricek">{/if}{$v['body2']}{if $v['body2_zebricek']}</span>{/if}</td>
 		{?$bodyCelkem += $v['body1'] + $v['body2']}
 		{?$bodyZebricek += ($v['body1_zebricek'] ? $v['body1'] : 0) + ($v['body2_zebricek'] ? $v['body2'] : 0)}

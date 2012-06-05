@@ -33,7 +33,7 @@ $container->router[] = new Route('index.php', 'Homepage:default', Route::ONE_WAY
 $container->router[] = new Route('zavodnik/<id>', 'Zavodnik:default');
 $container->router[] = new Route('zavody/add', 'Zavody:add');
 $container->router[] = new Route('zavody/<id>', 'Zavody:detail');
-$container->router[] = new Route('<typ u23|u18|u14|zeny>[/<show>]', array('presenter' => 'Homepage', 'action' => 'default'));
+$container->router[] = new Route('<typ u23|u18|u14|zeny|u10>[/<show>]', array('presenter' => 'Homepage', 'action' => 'default'));
 $container->router[] = new Route('<presenter>/<action>[/<id>]', 'Homepage:default');
 
 

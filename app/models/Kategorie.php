@@ -13,7 +13,7 @@ class Kategorie extends Base {
         'hendikep' => 'hendikepovaní',
         'zena' => 'ženy',
 		'u10' => 'U10',
-		'u10_zena' => 'U10 ženy'
+		'u10_zena' => 'U10 dívky'
     );
 
     public function getKategorie($rok = 2012) {
