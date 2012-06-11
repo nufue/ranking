@@ -37,4 +37,9 @@ class Zavody extends Base {
 		$this->database->query('UPDATE zavody SET vysledky = ? WHERE id = ?', 'ano', $idZavodu);
 	}
 
+	public function getChybejiciVysledky($datum = NULL) {
+		$dbResult = $this->database->query('SELECT * FROM zavody WHERE `zobrazovat` = ? AND `vysledky` = ? AND `datum_do` < DATE_SUB(CURDATE(), INTERVAL 1 DAY) ORDER BY `datum_od`', 'ano', 'ne');
+		return $dbResult->fetchAll();
+	}
+
 }

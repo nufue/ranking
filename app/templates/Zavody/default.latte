@@ -6,7 +6,7 @@
 <table id="seznamZavodu">
     <tr><th>Název závodu</th><th>Typ závodu</th><th>Datum konání</th><th>Zobr.</th><th>Výsl.</th><th>Editovat</th></tr>
 	<tr n:class="$iterator->odd ? odd : even" n:foreach="$zavody as $z">
-		<td><a n:href="Zavody:detail $z->id">{$z->nazev}</a></td>
+		<td><a n:href="Zavody:detail $z->id">{$z->nazev}{if !empty($z->kategorie)} {$z->kategorie}{/if}</a></td>
 		<td>{$typyZavodu[$z->typ]}</td>
 		<td>{if $z->datum_od == $z->datum_do}{$z->datum_od|date:'j. n. Y'}
 {elseif $z->datum_od->format('n') == $z->datum_do->format('n')}{$z->datum_od|date:'j.'} - {$z->datum_do|date:'j. n. Y'}

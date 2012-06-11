@@ -4,8 +4,18 @@
 <div>Přihlášen: {$userName} | <a n:href="Tymy:default">Týmy</a> | <a n:href="Zavody:default">Závody</a> | <a n:href="Sign:out">odhlásit</a></div>
 {/if}
 
+{dump $chybejiciVysledky}
+
 <h1>Průběžný žebříček LRU plavaná - {$typZebricku}</h1>
-<h2>aktuální k {$datum_platnosti}</h2>
+<h2>{if count($chybejiciVysledky)}neúplný{else}aktuální{/if} k {$datum_platnosti}</h2>
+
+<div class='noprint' n:if="count($chybejiciVysledky) > 0">
+	<p>V žebříčku nejsou zahrnuty výsledky z těchto závodů:</p>
+	<ul n:inner-foreach="$chybejiciVysledky as $v">
+		<li>{$v->nazev} 
+			(datum konání {if $v->datum_od == $v->datum_do}{$v->datum_od|date:'j. n. Y'}{elseif $v->datum_od->format('n') == $v->datum_do->format('n')}{$v->datum_od|date:'j.'} - {$v->datum_do|date:'j. n. Y'}{else}{$v->datum_od|date:'j. n. Y'} - {$v->datum_do|date:'j. n. Y'}{/if})</li>
+	</ul>
+</div>
 
 <p class='noprint'>{if $zobrazitZavody}<a n:href="Homepage:default $typ, false">nezobrazovat jednotlivé závody</a>{else}<a n:href="Homepage:default $typ, true">zobrazit i jednotlivé závody</a>{/if}</p>
 

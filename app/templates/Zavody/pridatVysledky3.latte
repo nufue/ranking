@@ -7,7 +7,11 @@
 <table id="potvrzeniPridaniZebricku">
 	<tbody>
 	<tr n:class="$v['poznamka'] == 'n' ? 'nepujde' : ($v['poznamka'] == 'p' ? 'pridat' : ($iterator->isEven() ? even : odd))" n:foreach="$vysledky as $v">
-		<td>{$v['registrace']}</td><td>{$v['prijmeni']}</td><td>{$v['kategorie']}</td><td>{$v['tym']}</td><td>{$v['cips1']}</td><td>{$v['umisteni1']}</td><td>{$v['cips2']}</td><td>{$v['umisteni2']}</td><td>{if $v['poznamka'] == 'p'}přidat do žebříčku{elseif $v['poznamka'] == 'n'}nebude přidán do žebříčku{/if}</td></tr>
+		<td>{$v['registrace']}</td><td>{$v['prijmeni']}</td><td>{$v['kategorie']}</td><td>{$v['tym']}</td><td>{$v['cips1']}</td><td>{$v['umisteni1']}</td><td>{$v['cips2']}</td><td>{$v['umisteni2']}</td><td>
+{if $v['poznamka'] == 'p'}přidat do žebříčku
+{elseif $v['poznamka'] == 'n'}přidat, ale ne do žebříčku
+{elseif $v['poznamka'] == 's'}nepřidávat, už existuje
+{/if}</td></tr>
 	</tr>
 	</tbody>
 	<thead>

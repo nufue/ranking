@@ -297,9 +297,12 @@ class ZavodyPresenter extends BasePresenter {
 				continue;
 
 			$poznamka = '';
-			if (!preg_match('~^N?\d+$~', $registrace))
+			if (!preg_match('~^\d+$~', $registrace)) {
 				$poznamka = 'n';
-			else {
+				$zavodnik = $this->context->zavodnici->checkNeregistrovanyZavodnik($prijmeni);
+				if ($zavodnik === NULL) $poznamka = 'n';
+				else $poznamka = 's';
+			} else {
 				$zavodnik = $this->context->zavodnici->getZavodnik($registrace);
 				if ($zavodnik === NULL) {
 					$poznamka = 'p';
@@ -359,8 +362,9 @@ class ZavodyPresenter extends BasePresenter {
 
 		$countSuccess = 0;
 		foreach ($vysledky as $v) {
-			if (!preg_match('~^N?\d+$~', $v['registrace'])) {
-				// nepujde do zebricku
+			if (!preg_match('~^\d+$~', $v['registrace'])) {
+				// nepujde do zebricku, zaregistrujeme pod fiktivnim cislem
+				$idZavodnika = $this->context->zavodnici->addNeregistrovanyZavodnik($v['prijmeni'], $v['kategorie']);
 			} else {
 				$zavodnik = $this->context->zavodnici->getZavodnik($v['registrace']);
 				if ($zavodnik === NULL) {
@@ -372,11 +376,11 @@ class ZavodyPresenter extends BasePresenter {
 						// TODO rok
 					}
 				}
-				if (!empty($idZavodnika)) {
-					$idZavodu = (int) $this->id;
-					$this->context->zavody->addVysledek($idZavodu, $idZavodnika, $v['tym'], $v['cips1'], $v['umisteni1'], $v['cips2'], $v['umisteni2']);
-					$countSuccess++;
-				}
+			}
+			if (!empty($idZavodnika)) {
+				$idZavodu = (int) $this->id;
+				$this->context->zavody->addVysledek($idZavodu, $idZavodnika, $v['tym'], $v['cips1'], $v['umisteni1'], $v['cips2'], $v['umisteni2']);
+				$countSuccess++;
 			}
 		}
 		if ($countSuccess > 0) {

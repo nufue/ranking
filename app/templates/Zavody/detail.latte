@@ -17,16 +17,16 @@
     <tbody>
 		<tr n:class="$iterator->odd ? odd : even" n:foreach="$zavodnici as $z">
 			<td>{$poradi}{?$poradi++}</td>
-			<td>{$z->registrace}</td>
-			<td class="vlevo"><a n:href="Zavodnik:default $z->id_zavodnika">{$z->cele_jmeno}</a></td>
+			<td>{if $z->registrovany == 'A'}{$z->registrace}{else}&ndash;{/if}</td>
+			<td class="vlevo">{if $z->registrovany == 'A'}<a n:href="Zavodnik:default $z->id_zavodnika">{/if}{$z->cele_jmeno}{if $z->registrovany == 'A'}</a>{/if}</td>
 			<td>{$kategoriePrevod[$z['kategorie']]}</td>
 			<td class="vlevo">{$z->tym}</td>
 			<td>{$z->cips1}</td>
-			<td>{if $z->umisteni1 == (int)$z->umisteni1}{(int)$z->umisteni1}{else}{$z->umisteni1|number:1:',':' '}{/if}</td>
-			<td>{$z->umisteni1|umisteni:$zavod->typ}</td>
+			<td>{if $z->umisteni1 !== NULL}{if $z->umisteni1 == (int)$z->umisteni1}{(int)$z->umisteni1}{else}{$z->umisteni1|number:1:',':' '}{/if}{else}&ndash;{/if}</td>
+			<td>{if $z->umisteni2 !== NULL}{$z->umisteni1|umisteni:$zavod->typ}{/if}</td>
 			<td>{$z->cips2}</td>
-			<td>{if $z->umisteni2 == (int)$z->umisteni2}{(int)$z->umisteni2}{else}{$z->umisteni2|number:1:',':' '}{/if}</td>
-			<td>{$z->umisteni2|umisteni:$zavod->typ}</td>
+			<td>{if $z->umisteni2 !== NULL}{if $z->umisteni2 == (int)$z->umisteni2}{(int)$z->umisteni2}{else}{$z->umisteni2|number:1:',':' '}{/if}{else}&ndash;{/if}</td>
+			<td>{if $z->umisteni2 !== NULL}{$z->umisteni2|umisteni:$zavod->typ}{/if}</td>
 		</tr>
     </tbody>
     <thead>

@@ -3,7 +3,7 @@
 class Zavodnici extends Base {
 
 	public function getZavodnici($idZavodu) {
-		$dbResult = $this->database->query("SELECT z.id `id_zavodnika`, z.registrace, z.cele_jmeno, zz.tym, zk.kategorie, zz.cips1, zz.umisteni1, zz.cips2, zz.umisteni2 FROM zavodnici z JOIN zavodnici_zavody zz ON z.id = zz.id_zavodnika JOIN zavodnici_kategorie zk ON z.id = zk.id_zavodnika WHERE zz.id_zavodu = ? ORDER BY (IF(zz.umisteni1 IS NULL, 0, 1) + IF(zz.umisteni2 IS NULL, 0, 1)) DESC, (zz.umisteni1 + zz.umisteni2), (zz.cips1 + zz.cips2) DESC", $idZavodu);
+		$dbResult = $this->database->query("SELECT z.id `id_zavodnika`, z.registrace, z.cele_jmeno, z.registrovany, zz.tym, zk.kategorie, zz.cips1, zz.umisteni1, zz.cips2, zz.umisteni2 FROM zavodnici z JOIN zavodnici_zavody zz ON z.id = zz.id_zavodnika JOIN zavodnici_kategorie zk ON z.id = zk.id_zavodnika WHERE zz.id_zavodu = ? ORDER BY (IF(zz.umisteni1 IS NULL, 0, 1) + IF(zz.umisteni2 IS NULL, 0, 1)) DESC, (zz.umisteni1 + zz.umisteni2), (zz.cips1 + zz.cips2) DESC", $idZavodu);
 		return $dbResult;
 	}
 
@@ -22,7 +22,7 @@ class Zavodnici extends Base {
 		} else
 			return NULL;
 	}
-	
+
 	public function getZavodnikByRegistrace($registrace) {
 		$dbResult = $this->database->query("SELECT id, cele_jmeno FROM zavodnici WHERE registrace = ?", $registrace);
 		if ($result = $dbResult->fetch()) {
@@ -47,6 +47,35 @@ class Zavodnici extends Base {
 		// TODO rok
 
 		return $rowId;
+	}
+
+	public function checkNeregistrovanyZavodnik($cele_jmeno) {
+		$dbResult = $this->database->query("SELECT * FROM `zavodnici` WHERE `registrovany` = 'N' AND `cele_jmeno` = ?", $cele_jmeno);
+		if ($result = $dbResult->fetch()) { /* intentionally = */
+			return $result->id;
+		} else {
+			return NULL;
+		}
+	}
+
+	public function addNeregistrovanyZavodnik($cele_jmeno, $kategorie) {
+		$result = $this->checkNeregistrovanyZavodnik($cele_jmeno);
+		if ($result !== NULL) {
+			return $result;
+		} else {
+			$dbResult = $this->database->query("SELECT (MAX(CAST(REPLACE(`registrace`, 'X', '') AS SIGNED) + 1)) `maximum` FROM `zavodnici` WHERE `registrovany` = 'N'");
+
+			if ($result = $dbResult->fetch()) { /* intentionally = */
+				$reg = 'X' . (int) $result->maximum;
+			} else {
+				$reg = 'X1';
+			}
+
+			$row = $this->database->table('zavodnici')->insert(array('registrace' => $reg, 'cele_jmeno' => $cele_jmeno, 'registrovany' => 'N'));
+			$rowId = $row->id;
+			$this->context->kategorie->addZavodnikKategorie($rowId, $kategorie, 2012);
+			return $rowId;
+		}
 	}
 
 }

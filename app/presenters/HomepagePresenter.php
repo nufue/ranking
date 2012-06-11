@@ -102,6 +102,8 @@ class HomepagePresenter extends BasePresenter {
 		$this->template->datum_platnosti = $zebricek['datum_platnosti'];
 		$this->template->zavody = $zebricek['zavody'];
 		$this->template->zavodnici = $zebricek['zavodnici'];
+		
+		$this->template->chybejiciVysledky = $this->context->zavody->getChybejiciVysledky();
 	}
 
 	private function addVysledky(&$sheet, $data, $nadpis, $datumPlatnosti, $dataFilterFunction, $dataFilterArg) {
