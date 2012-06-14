@@ -3,7 +3,7 @@
 class Zavodnici extends Base {
 
 	public function getZavodnici($idZavodu) {
-		$dbResult = $this->database->query("SELECT z.id `id_zavodnika`, z.registrace, z.cele_jmeno, z.registrovany, zz.tym, zk.kategorie, zz.cips1, zz.umisteni1, zz.cips2, zz.umisteni2 FROM zavodnici z JOIN zavodnici_zavody zz ON z.id = zz.id_zavodnika JOIN zavodnici_kategorie zk ON z.id = zk.id_zavodnika WHERE zz.id_zavodu = ? ORDER BY (IF(zz.umisteni1 IS NULL, 0, 1) + IF(zz.umisteni2 IS NULL, 0, 1)) DESC, (zz.umisteni1 + zz.umisteni2), (zz.cips1 + zz.cips2) DESC", $idZavodu);
+		$dbResult = $this->database->query("SELECT z.id `id_zavodnika`, z.registrace, z.cele_jmeno, z.registrovany, zz.tym, zk.kategorie, zz.cips1, zz.umisteni1, zz.cips2, zz.umisteni2 FROM zavodnici z JOIN zavodnici_zavody zz ON z.id = zz.id_zavodnika JOIN zavodnici_kategorie zk ON z.id = zk.id_zavodnika WHERE zz.id_zavodu = ? ORDER BY (IF(zz.umisteni1 IS NULL, 0, 1) + IF(zz.umisteni2 IS NULL, 0, 1)) DESC, (IFNULL(zz.umisteni1, 0) + IFNULL(zz.umisteni2, 0)), (IFNULL(zz.cips1, 0) + IFNULL(zz.cips2, 0)) DESC", $idZavodu);
 		return $dbResult;
 	}
 

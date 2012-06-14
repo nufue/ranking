@@ -184,6 +184,8 @@ class HomepagePresenter extends BasePresenter {
 				$k = 'U18Ž';
 			else if ($row['kategorie'] == 'U23 ženy')
 				$k = 'U23Ž';
+			else if ($row['kategorie'] == 'U10 dívky') 
+				$k = 'U10Ž';
 			else
 				$k = $row['kategorie'];
 			$row['kategorie'] = $k;

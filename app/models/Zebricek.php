@@ -77,7 +77,7 @@ class Zebricek extends Base {
 		else if ($typ == 'zeny')
 			$query .= " AND `zk`.`kategorie` IN ('u10_zena', 'u14_zena', 'u18_zena', 'u23_zena', 'zena')";
 
-		$result = $this->context->database->query($query . " ORDER BY `zav`.`datum_od`");
+		$result = $this->context->database->query($query . " ORDER BY `zav`.`datum_od`, `zav`.`nazev`");
 		foreach ($result as $row) {
 			$id = $row->id_zavodnika;
 			if (!isset($zavodnici[$id]))
@@ -181,7 +181,7 @@ class Zebricek extends Base {
 
 		$zavodnik = array();
 		$headerSet = false;
-		$result = $this->context->database->query("SELECT `zav`.`id` `id_zavodu`, `zav`.`nazev` `nazev_zavodu`, `zav`.`typ` `typ`, `zav`.`kategorie` `kategorie_zavodu`, `zz`.`tym`, `zk`.`kategorie`, `cips1`, `umisteni1`, `cips2`, `umisteni2`, `z`.`registrovany` FROM `zavodnici_zavody` `zz` JOIN `zavodnici` `z` ON `zz`.`id_zavodnika` = `z`.`id` JOIN `zavody` `zav` ON `zz`.`id_zavodu` = `zav`.`id` JOIN `zavodnici_kategorie` `zk` ON `zz`.`id_zavodnika` = `zk`.`id_zavodnika` WHERE (`cips1` IS NOT NULL OR `cips2` IS NOT NULL) AND (`zav`.`zobrazovat` = 'ano') AND (`zav`.`vysledky` = 'ano') AND `z`.`id` = ? ORDER BY `zav`.`datum_od`", $idZavodnika);
+		$result = $this->context->database->query("SELECT `zav`.`id` `id_zavodu`, `zav`.`nazev` `nazev_zavodu`, `zav`.`typ` `typ`, `zav`.`kategorie` `kategorie_zavodu`, `zz`.`tym`, `zk`.`kategorie`, `cips1`, `umisteni1`, `cips2`, `umisteni2`, `z`.`registrovany` FROM `zavodnici_zavody` `zz` JOIN `zavodnici` `z` ON `zz`.`id_zavodnika` = `z`.`id` JOIN `zavody` `zav` ON `zz`.`id_zavodu` = `zav`.`id` JOIN `zavodnici_kategorie` `zk` ON `zz`.`id_zavodnika` = `zk`.`id_zavodnika` WHERE (`cips1` IS NOT NULL OR `cips2` IS NOT NULL) AND (`zav`.`zobrazovat` = 'ano') AND (`zav`.`vysledky` = 'ano') AND `z`.`id` = ? ORDER BY `zav`.`datum_od`, `zav`.`nazev`", $idZavodnika);
 		foreach ($result as $row) {
 			if (!$headerSet) {
 				$zavodnik = array('zavodu' => 0, 'registrovany' => ($row->registrovany == 'A'), 'body_celkem' => array(), 'vysledky' => array($row->id_zavodu => array('nazev_zavodu' => $row->nazev_zavodu, 'tym' => $row['tym'], 'typ_zavodu' => $row->typ, 'kategorie_zavodu' => $row->kategorie_zavodu, 'id_zavodu' => $row->id_zavodu, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2, 'cips1' => $row->cips1, 'cips2' => $row->cips2)));
