@@ -8,6 +8,8 @@
  */
 abstract class BasePresenter extends Nette\Application\UI\Presenter {
 
+	protected static $defaultYear = 2013;
+
 	public function startup() {
 		parent::startup();
 		$this->template->isLoggedIn = $this->getUser()->isLoggedIn();

@@ -8,20 +8,28 @@
  */
 class HomepagePresenter extends BasePresenter {
 
-	public function actionExcelExport() {
-		$rok = 2012;
+	public function actionExcelExport($rok = NULL) {
+		if ($rok === NULL) $rok = self::$defaultYear;
 
-		$zebricek = $this->context->zebricek->getZebricek($rok, '' /* zadny konkretni typ */);
-		$datumPlatnosti = $zebricek['datum_platnosti_orig'];
+		$zebricekCelkovy = $this->context->zebricek->getZebricek($rok, '' /* zadny konkretni typ */);
+		$zebricek = $this->context->zebricek->getZebricek($rok, 'excel');
+		$datumPlatnosti = $zebricekCelkovy['datum_platnosti_orig'];
+
 		
 		$objExcel = new PHPExcel;
 		$objExcel->getProperties()->setCreator("Jiří Hrazdil");
-		$objExcel->getProperties()->setTitle('Průběžný žebříček LRU plavaná, aktuální k '.$datumPlatnosti->format('j. n. Y'));
+		if ($datumPlatnosti !== NULL) {
+			$objExcel->getProperties()->setTitle('Průběžný žebříček LRU plavaná, aktuální k '.$datumPlatnosti->format('j. n. Y'));
+		} else {
+			$objExcel->getProperties()->setTitle('Průběžný žebříček LRU plavaná, rok '.$rok);
+		}
+		if ($datumPlatnosti === NULL) $datumPlatnosti = new DateTime('1.1.'.$rok);
 		$objExcel->getProperties()->setDescription('Aktuální žebříček LRU plavaná je k dispozici na http://www.plavana.info/');
 		$objExcel->setActiveSheetIndex(0);
 		$sheet = $objExcel->getActiveSheet();
 		$sheet->setTitle('Celkový');
-		$this->addVysledky($sheet, $zebricek['zavodnici'], 'Průběžný žebříček LRU plavaná - celkem', $datumPlatnosti, 'filterVysledky', '');
+		$this->addVysledky($sheet, $zebricekCelkovy['zavodnici'], 'Průběžný žebříček LRU plavaná - celkem', $datumPlatnosti, 'filterVysledky', '');
+
 
 		$sheet = $objExcel->createSheet();
 		$sheet->setTitle('U23');
@@ -35,14 +43,22 @@ class HomepagePresenter extends BasePresenter {
 		$sheet->setTitle('U14');
 		$this->addVysledky($sheet, $zebricek['zavodnici'], 'Průběžný žebříček LRU plavaná - U14', $datumPlatnosti, 'filterVysledky', 'u14');
 
-		$sheet = $objExcel->createSheet();
-		$sheet->setTitle('U10');
-		$this->addVysledky($sheet, $zebricek['zavodnici'], 'Průběžný žebříček LRU plavaná - U10', $datumPlatnosti, 'filterVysledky', 'u10');
+		if ($rok >= 2013) {
+			$sheet = $objExcel->createSheet();
+			$sheet->setTitle('U12');
+			$this->addVysledky($sheet, $zebricek['zavodnici'], 'Průběžný žebříček LRU plavaná - U12', $datumPlatnosti, 'filterVysledky', 'u12');
+		}
 		
+		if ($rok <= 2012) {
+			$sheet = $objExcel->createSheet();
+			$sheet->setTitle('U10');
+			$this->addVysledky($sheet, $zebricek['zavodnici'], 'Průběžný žebříček LRU plavaná - U10', $datumPlatnosti, 'filterVysledky', 'u10');
+		}	
+
 		
 		$sheet = $objExcel->createSheet();
 		$sheet->setTitle('Ženy');
-		$this->addVysledky($sheet, $zebricek['zavodnici'], 'Průběžný žebříček LRU plavaná - Ženy', $datumPlatnosti, 'filterVysledky', 'zeny');
+		$this->addVysledky($sheet, $zebricekCelkovy['zavodnici'], 'Průběžný žebříček LRU plavaná - Ženy', $datumPlatnosti, 'filterVysledky', 'zeny');
 		
 		$objExcel->setActiveSheetIndex(0);
 		
@@ -57,7 +73,11 @@ class HomepagePresenter extends BasePresenter {
 		$response->setHeader('Content-Transfer-Encoding', "binary");
 		$response->setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 		$response->setHeader('Content-Description', "File Transfer");
-		$response->setHeader('Content-Disposition', 'attachment; filename="zebricek-'.$datumPlatnosti->format('Ymd').'.xlsx"');
+		if ($datumPlatnosti !== NULL) {
+			$response->setHeader('Content-Disposition', 'attachment; filename="zebricek-'.$datumPlatnosti->format('Ymd').'.xlsx"');
+		} else {
+			$response->setHeader('Content-Disposition', 'attachment; filename="zebricek-'.$rok.'.xlsx"');
+		}
 		$response->setHeader('Expires', '0');
 		$response->setHeader('Cache-Control', 'must-revalidate');
 		$response->setHeader('Pragma', 'public');
@@ -73,11 +93,18 @@ class HomepagePresenter extends BasePresenter {
 		if ($argument == 'u18' && ($radek['kategorie'] == 'U18' || $radek['kategorie'] == 'U18Ž')) return true;
 		if ($argument == 'u14' && ($radek['kategorie'] == 'U14' || $radek['kategorie'] == 'U14Ž')) return true;
 		if ($argument == 'u10' && ($radek['kategorie'] == 'U10' || $radek['kategorie'] == 'U10Ž')) return true;
-		if ($argument == 'zeny' && ($radek['kategorie'] == 'U14Ž' || $radek['kategorie'] == 'U18Ž' || $radek['kategorie'] == 'U23Ž' || $radek['kategorie'] == 'U10Ž' || $radek['kategorie'] == 'Ž')) return true;
+		if ($argument == 'u12' && ($radek['kategorie'] == 'U12' || $radek['kategorie'] == 'U12Ž')) return true;
+		if ($argument == 'zeny' && ($radek['kategorie'] == 'U14Ž' || $radek['kategorie'] == 'U18Ž' || $radek['kategorie'] == 'U23Ž' || $radek['kategorie'] == 'U10Ž' || $radek['kategorie'] == 'Ž' || $radek['kategorie'] == 'U12Ž')) return true;
 	}
 
-	public function renderDefault($typ = 'celkem', $show = false) {
-		$rok = 2012;
+	public function actionDefault($rok = NULL, $typ = 'celkem', $show = false) {
+		if ($rok === NULL) {
+			$this->redirect('Homepage:default', array('rok' => self::$defaultYear, 'typ' => $typ, 'show' => $show));
+		}
+	}
+
+	public function renderDefault($rok, $typ = 'celkem', $show = false) {
+		$this->template->aktualniRok = Date("Y");
 		
 		if ($typ == 'celkem')
 			$typZebricku = 'celkem';
@@ -89,6 +116,8 @@ class HomepagePresenter extends BasePresenter {
 			$typZebricku = 'kadeti U14';
 		else if ($typ == 'u10') 
 			$typZebricku = 'kadeti U10';
+		else if ($typ == 'u12') 
+			$typZebricku = 'kadeti U12';
 		else if ($typ == 'zeny')
 			$typZebricku = 'ženy';
 
@@ -99,6 +128,7 @@ class HomepagePresenter extends BasePresenter {
 		$this->template->zobrazitZavody = $show;
 
 		$zebricek = $this->context->zebricek->getZebricek($rok, $typ);
+		$this->template->rok = $rok;
 		$this->template->datum_platnosti = $zebricek['datum_platnosti'];
 		$this->template->zavody = $zebricek['zavody'];
 		$this->template->zavodnici = $zebricek['zavodnici'];
@@ -129,7 +159,9 @@ class HomepagePresenter extends BasePresenter {
 		$sheet->mergeCells('A' . $rowCnt . ':I' . $rowCnt);
 		
 		$rowCnt++;
-		$sheet->SetCellValue('A' . $rowCnt, 'platný k '.$datumPlatnosti->format('j. n. Y'));
+		if ($datumPlatnosti !== NULL) {
+			$sheet->SetCellValue('A' . $rowCnt, 'platný k '.$datumPlatnosti->format('j. n. Y'));
+		} 
 		$sheet->getStyle('A' . $rowCnt)->getFont()->setSize(12);
 		$sheet->getStyle('A' . $rowCnt)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 		$sheet->mergeCells('A' . $rowCnt . ':I' . $rowCnt);
@@ -171,6 +203,9 @@ class HomepagePresenter extends BasePresenter {
 
 		$sheet->getRowDimension($rowCnt)->setRowHeight(45);
 		$firstDataRow = $rowCnt + 1;
+		if (count($data) == 0) {
+			$sheet->SetCellValue('A'. ($rowCnt + 1), 'V tomto roce nebyly zatím přidány žádné závody, takže žebříček není možné sestavit.');
+		}
 		foreach ($data as $row) {
 			if ($row['kategorie'] == 'muži')
 				$k = 'M';
@@ -186,6 +221,8 @@ class HomepagePresenter extends BasePresenter {
 				$k = 'U23Ž';
 			else if ($row['kategorie'] == 'U10 dívky') 
 				$k = 'U10Ž';
+			else if ($row['kategorie'] == 'U12 dívky')
+				$k = 'U12Ž';
 			else
 				$k = $row['kategorie'];
 			$row['kategorie'] = $k;

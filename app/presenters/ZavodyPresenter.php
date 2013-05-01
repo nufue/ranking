@@ -53,7 +53,12 @@ class ZavodyPresenter extends BasePresenter {
 		}
 	}
 
-	public function renderDefault($rok = 2012) {
+	public function renderAdd($rok = NULL) {
+		$this->template->rok = $rok;
+	}
+
+	public function renderDefault($rok = NULL) {
+		if ($rok === NULL) $rok = self::$defaultYear;
 		$this->template->zavody = $this->context->zavody->getZavody($rok, TRUE);
 		$this->template->rok = $rok;
 		$this->template->typyZavodu = Zebricek::$typyZavodu;
@@ -76,8 +81,10 @@ class ZavodyPresenter extends BasePresenter {
 		$this['zavodForm']->setDefaults($this->record);
 	}
 
-	public function renderDetail($id) {
+	public function renderDetail($id, $rok = NULL) {
 		$this->template->zavod = $this->context->zavody->getZavod($id);
+		if ($rok === NULL) $rok = $this->template->zavod->rok;
+		$this->template->rok = $rok;
 		$this->template->zavodnici = $this->context->zavodnici->getZavodnici($id);
 		$this->template->typyZavodu = Zebricek::$typyZavodu;
 		$this->template->kategoriePrevod = Kategorie::$kategorie;
@@ -119,7 +126,7 @@ class ZavodyPresenter extends BasePresenter {
 		} else {
 			$this->context->zavody->addZavod($values);
 			$this->flashMessage("Závod byl přidán.", "success");
-			$this->redirect("default");
+			$this->redirect("default", array('rok' => $values['datum_od']->format('Y')));
 		}
 	}
 
@@ -282,6 +289,7 @@ class ZavodyPresenter extends BasePresenter {
 					$sloupce[$v] = $cisloSloupce;
 			}
 		}
+		$rok = $this->context->zavody->getRokZavodu($this->id);
 		$prvniRadek = $values['prvni_radek'];
 		$radku = 0;
 		$vysledky = array();
@@ -303,7 +311,7 @@ class ZavodyPresenter extends BasePresenter {
 				if ($zavodnik === NULL) $poznamka = 'n';
 				else $poznamka = 's';
 			} else {
-				$zavodnik = $this->context->zavodnici->getZavodnik($registrace);
+				$zavodnik = $this->context->zavodnici->getZavodnik($registrace, $rok);
 				if ($zavodnik === NULL) {
 					$poznamka = 'p';
 				}
@@ -359,20 +367,21 @@ class ZavodyPresenter extends BasePresenter {
 		if ($this->id !== NULL) {
 			$this->context->zavody->deleteVysledky($this->id);
 		}
+		$rok = $this->context->zavody->getRokZavodu($this->id);
 
 		$countSuccess = 0;
 		foreach ($vysledky as $v) {
 			if (!preg_match('~^\d+$~', $v['registrace'])) {
 				// nepujde do zebricku, zaregistrujeme pod fiktivnim cislem
-				$idZavodnika = $this->context->zavodnici->addNeregistrovanyZavodnik($v['prijmeni'], $v['kategorie']);
+				$idZavodnika = $this->context->zavodnici->addNeregistrovanyZavodnik($v['prijmeni'], $v['kategorie'], $rok);
 			} else {
-				$zavodnik = $this->context->zavodnici->getZavodnik($v['registrace']);
+				$zavodnik = $this->context->zavodnici->getZavodnik($v['registrace'], $rok);
 				if ($zavodnik === NULL) {
-					$idZavodnika = $this->context->zavodnici->addZavodnik($v['registrace'], $v['prijmeni'], $v['kategorie']);
+					$idZavodnika = $this->context->zavodnici->addZavodnik($v['registrace'], $v['prijmeni'], $v['kategorie'], $rok);
 				} else {
 					$idZavodnika = $zavodnik->id;
 					if (empty($zavodnik->kategorie)) {
-						$this->context->kategorie->addZavodnikKategorie($idZavodnika, $v['kategorie'], 2012);
+						$this->context->kategorie->addZavodnikKategorie($idZavodnika, $v['kategorie'], $rok);
 						// TODO rok
 					}
 				}

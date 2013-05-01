@@ -2,15 +2,6 @@
 	Header("Content-type: text/html; charset=utf-8");
 	mb_internal_encoding('utf-8');
 	
-	function showHeader() {
-	?><!doctype html>
-	<html>
-	<head>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
- 	</head>
-	<body><?php
-	}
-	
 	$typyZavodu = array(
             'memicr' => 'MeMi ČR seniorů',
             '1_liga' => '1. liga',
@@ -61,51 +52,11 @@
 	
 	
 	if (!isset($_GET['akce'])) {
-	
-	mysql_connect("localhost", "root", '***REMOVED***');
-	mysql_select_db("plavana");
-	mysql_query("SET NAMES 'utf8'");
-	$result = mysql_query("SELECT * FROM zavody WHERE vysledky = 'ne'");
-	
-	showHeader();
-	
 ?>
 <form action="?akce=analyza" method="post">
-<?php
-	while ($row = mysql_fetch_array($result)) {
-		echo "<input type='radio' name='zavod' id='zavod$row[id]' value='$row[id]'> $row[nazev]";
-		if (!empty($row['kategorie'])) echo " - ".$row['kategorie'];
-		echo "<br>";
-	}
-	echo "<input type='radio' name='zavod' id='zavod_jiny' value='jiny'> jiný<br>";
-	echo "<table id='jinyZavod'>";
-	echo "<tr><th><label for='typ'>Typ závodu</label></th><td>";
-	echo "<select id='typ' name='typ'>";
-	foreach ($typyZavodu as $k => $v) echo "<option value='$k'>$v</option>";
-	echo "</select>";
-	echo "</td></tr>";
-	echo "<tr><th><label for='nazev'>Název závodu</label></th><td>";
-	echo "<input type='text' name='nazev' id='nazev' size='60'>";
-	echo "</td></tr>";
-	echo "<tr><th><label for='datum_od'>Datum od</label></th><td>";
-	echo "<input type='text' name='datum_od' id='datum_od' size='15'>";
-	echo "</td></tr>";
-	echo "<tr><th><label for='datum_do'>Datum do</label></th><td>";
-	echo "<input type='text' name='datum_do' id='datum_do' size='15'>";
-	echo "</td></tr>";
-	echo "</table>";
-?>
 <textarea name='data' cols=80 rows=5></textarea>
 <br><input type=submit value='Analýza výsledků'>
 </form>
-<script type='text/javascript'>
-	$(document).ready(function() {
-		$('#jinyZavod').hide();
-		$('#zavod_jiny').click(function() {
-			$('#jinyZavod').show();
-		});
-	});
-</script>
 <?php
 	}
 
@@ -128,7 +79,22 @@ if (isset($_POST['data']) && isset($_GET['akce']) && $_GET['akce'] == 'analyza')
 	$lines = explode("\n", $_POST['data']);
 	
 	echo "<form action='?akce=ulozit' method='post'>";
-	
+	echo "<table>";
+	echo "<tr><th><label for='typ'>Typ závodu</label></th><td>";
+	echo "<select id='typ' name='typ'>";
+	foreach ($typyZavodu as $k => $v) echo "<option value='$k'>$v</option>";
+	echo "</select>";
+	echo "</td></tr>";
+	echo "<tr><th><label for='nazev'>Název závodu</label></th><td>";
+	echo "<input type='text' name='nazev' id='nazev' size='60'>";
+	echo "</td></tr>";
+	echo "<tr><th><label for='datum_od'>Datum od</label></th><td>";
+	echo "<input type='text' name='datum_od' id='datum_od' size='15'>";
+	echo "</td></tr>";
+	echo "<tr><th><label for='datum_do'>Datum do</label></th><td>";
+	echo "<input type='text' name='datum_do' id='datum_do' size='15'>";
+	echo "</td></tr>";
+	echo "</table>";
 	echo "<p><input type='submit' value='Uložit výsledky'></p>";
 	echo "<table border=1>";
 	echo "<tbody>";
@@ -232,8 +198,7 @@ if (isset($_POST['data']) && isset($_GET['akce']) && $_GET['akce'] == 'analyza')
 	$e = explode(".", $datumDo);
 	$datumDo = Date("Y-m-d", strtotime($e[2]."-".$e[1]."-".$e[0]));
 	
-	//mysql_connect("vps.nufu.eu", "plavana", 'G44^=89<K+r4E]P');
-	mysql_connect("localhost", "root", '***REMOVED***');
+	mysql_connect("vps.nufu.eu", "plavana", 'G44^=89<K+r4E]P');
 	mysql_select_db("plavana");
 	mysql_query("SET NAMES 'utf8'");
 	

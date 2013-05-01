@@ -10,15 +10,14 @@ use \Nette\Application\UI\Form;
  */
 class TymyPresenter extends BasePresenter {
 
-	private $rok = 2012;
-
-	public function renderDefault() {
+	public function renderDefault($rok = NULL) {
+		if ($rok === NULL) $rok = self::$defaultYear;
 		$this->template->ligy = Tymy::$ligy;
-		$this->template->rok = $this->rok;
-		$this->template->tymy = $this->context->tymy->getTymyRok($this->rok);
+		$this->template->rok = $rok;
+		$this->template->tymy = $this->context->tymy->getTymyRok($rok);
 	}
 
-	public function renderDetail($id) {
+	public function renderDetail($id, $rok) {
 		$this->template->ligy = Tymy::$ligy;
 		$detail = $this->context->tymy->getTym($id);
 		$this->template->kategoriePrevod = Kategorie::$kategorie;

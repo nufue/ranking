@@ -15,6 +15,7 @@ $configurator = new Nette\Config\Configurator;
 
 // Enable Nette Debugger for error visualisation & logging
 //$configurator->setDebugMode($configurator::AUTO);
+$configurator->setDebugMode(array('212.4.129.229'));
 $configurator->enableDebugger(__DIR__ . '/../log');
 
 // Enable RobotLoader - this will load all classes automatically
@@ -30,6 +31,13 @@ $container = $configurator->createContainer();
 
 // Setup router
 $container->router[] = new Route('index.php', 'Homepage:default', Route::ONE_WAY);
+$container->router[] = new Route('<rok [0-9]{4}>/zavodnik/<id>', 'Zavodnik:default');
+$container->router[] = new Route('<rok [0-9]{4}>/zavody/add', 'Zavody:add');
+$container->router[] = new Route('<rok [0-9]{4}>/zavody/<id>', 'Zavody:detail');
+$container->router[] = new Route('<rok [0-9]{4}>/<typ u23|u18|u14|zeny|u10>[/<show>]', array('presenter' => 'Homepage', 'action' => 'default'));
+$container->router[] = new Route('<rok [0-9]{4}>/<presenter>/<action>[/<id>]', 'Homepage:default');
+$container->router[] = new Route('<rok [0-9]{4}>/excel-export', 'Homepage:excelExport');
+
 $container->router[] = new Route('zavodnik/<id>', 'Zavodnik:default');
 $container->router[] = new Route('zavody/add', 'Zavody:add');
 $container->router[] = new Route('zavody/<id>', 'Zavody:detail');

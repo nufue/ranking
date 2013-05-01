@@ -13,16 +13,16 @@
 <p n:if="count($zavodnici) == 0">K tomuto týmu nejsou přiřazeni žádní závodníci.</p>
 
 <table n:if="count($zavodnici) > 0" id="slozeniTymu">
-	<tbody>
-	<tr n:foreach="$zavodnici as $z">
-		<td>{$z->registrace}</td>
-		<td class="vlevo"><a n:href="Zavodnik:default $z->id">{$z->cele_jmeno}</a></td>
-		<td>{$kategoriePrevod[$z->kategorie]}</td>
-	</tr>
-	</tbody>
 	<thead>
 		<tr><th>REG</th><th>Jméno</th><th>Kategorie</th></tr>
 	</thead>
+	<tbody>
+	<tr n:class="$iterator->odd ? odd : even" n:foreach="$zavodnici as $z">
+		<td>{$z->registrace}</td>
+		<td class="vlevo"><a n:href="Zavodnik:default $z->id, $detail->rok">{$z->cele_jmeno}</a></td>
+		<td>{$kategoriePrevod[$z->kategorie]}</td>
+	</tr>
+	</tbody>
 	
 </table>
 

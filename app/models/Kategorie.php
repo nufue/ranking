@@ -7,44 +7,62 @@ class Kategorie extends Base {
         'u14' => 'U14',
         'u18' => 'U18',
         'u23' => 'U23',
+        'u12' => 'U12',
+        'u12_zena' => 'U12 ženy',
         'u14_zena' => 'U14 ženy',
         'u18_zena' => 'U18 ženy',
         'u23_zena' => 'U23 ženy',
         'hendikep' => 'hendikepovaní',
         'zena' => 'ženy',
 		'u10' => 'U10',
-		'u10_zena' => 'U10 dívky'
+		'u10_zena' => 'U10 dívky',
+        'u12' => 'U12',
+        'u12_zena' => 'U12 dívky',
+
     );
 
-    public function getKategorie($rok = 2012) {
+    public function getKategorie($rok = NULL) {
+        if ($rok === NULL) $rok = self::$defaultYear;
         $query = "SELECT `id_zavodnika`, `z`.`cele_jmeno`, `kategorie` FROM `zavodnici_kategorie` `zk` JOIN `zavodnici` `z` ON `zk`.`id_zavodnika` = `z`.`id` WHERE `zk`.`rok` = ? ORDER BY `id_zavodnika`";
         $dbResult = $this->database->query($query, $rok)->fetchAll();
         return $dbResult;
     }
 
-    public function addZavodnikKategorie($idZavodnika, $kategorie, $rok = 2012) {
+    public function getKategorieFromString($kategorie) {
         if ($kategorie == 'M')
-            $kategorie = 'muz';
+            $result = 'muz';
         else if ($kategorie == 'Ž' || $kategorie == 'Z')
-            $kategorie = 'zena';
-        else if ($kategorie == 'U14')
-            $kategorie = 'u14';
-        else if ($kategorie == 'U18')
-            $kategorie = 'u18';
-        else if ($kategorie == 'U23')
-            $kategorie = 'u23';
+            $result = 'zena';
+        else if ($kategorie == 'U14' || $kategorie == 'U 14')
+            $result = 'u14';
+        else if ($kategorie == 'U18' || $kategorie == 'U 18')
+            $result = 'u18';
+        else if ($kategorie == 'U23' || $kategorie == 'U 23')
+            $result = 'u23';
         else if ($kategorie == 'U14Ž' || $kategorie == 'U14 Ž')
-            $kategorie == 'u14_zena';
+            $result = 'u14_zena';
         else if ($kategorie == 'U18Ž' || $kategorie == 'U18 Ž')
-            $kategorie == 'u18_zena';
+            $result = 'u18_zena';
         else if ($kategorie == 'U23Ž' || $kategorie == 'U23 Ž')
-            $kategorie == 'u23_zena';
+            $result = 'u23_zena';
         else if ($kategorie == 'H')
-            $kategorie = 'hendikep';
-		else if ($kategorie == 'U10') 
-			$kategorie = 'u10';
-		else if ($kategorie == 'U10Ž' || $kategorie == 'U10 Ž') 
-			$kategorie = 'u10_zena';
+            $result = 'hendikep';
+        else if ($kategorie == 'U10' || $kategorie == 'U 10') 
+            $result = 'u10';
+        else if ($kategorie == 'U10Ž' || $kategorie == 'U10 Ž') 
+            $result = 'u10_zena';
+        else if ($kategorie == 'U12') 
+            $result = 'u12';
+        else if ($kategorie == 'U12Ž' || $kategorie == 'U12 Ž') 
+            $result = 'u12_zena';
+        else $result = 'fail';
+
+        return $result;
+    }
+
+    public function addZavodnikKategorie($idZavodnika, $kategorie, $rok = NULL) {
+        if ($rok === NULL) $rok = self::$defaultYear;
+        $kategorie = $this->getKategorieFromString($kategorie);
 		
         try {
             $this->database->table('zavodnici_kategorie')->insert(array('id_zavodnika' => $idZavodnika, 'kategorie' => $kategorie, 'rok' => $rok));

@@ -1,13 +1,13 @@
-{block title}Žebříček LRU plavaná - {$typZebricku}{/block}
+{block title}Žebříček LRU plavaná - {$typZebricku} - rok {$rok}{/block}
 {block content}
 {if $isLoggedIn}
-<div>Přihlášen: {$userName} | <a n:href="Tymy:default">Týmy</a> | <a n:href="Zavody:default">Závody</a> | <a n:href="Sign:out">odhlásit</a></div>
+<div>Přihlášen: {$userName} | <a n:href="Tymy:default $rok">Týmy</a> | <a n:href="Zavody:default $rok">Závody</a> | <a n:href="Sign:out">odhlásit</a></div>
 {/if}
 
-{dump $chybejiciVysledky}
-
-<h1>Průběžný žebříček LRU plavaná - {$typZebricku}</h1>
+<h1>Průběžný žebříček LRU plavaná - {$typZebricku} - rok {$rok}</h1>
+{if $datum_platnosti !== NULL}
 <h2>{if count($chybejiciVysledky)}neúplný{else}aktuální{/if} k {$datum_platnosti}</h2>
+{/if}
 
 <div class='noprint' n:if="count($chybejiciVysledky) > 0">
 	<p>V žebříčku nejsou zahrnuty výsledky z těchto závodů:</p>
@@ -17,24 +17,30 @@
 	</ul>
 </div>
 
-<p class='noprint'>{if $zobrazitZavody}<a n:href="Homepage:default $typ, false">nezobrazovat jednotlivé závody</a>{else}<a n:href="Homepage:default $typ, true">zobrazit i jednotlivé závody</a>{/if}</p>
+<p class='noprint'>{if $zobrazitZavody}<a n:href="Homepage:default $rok, $typ, false">nezobrazovat jednotlivé závody</a>{else}<a n:href="Homepage:default $rok, $typ, true">zobrazit i jednotlivé závody</a>{/if}</p>
 
-<p class='noprint'>{ifCurrent default 'celkem'}celkový žebříček{else}<a n:href="default 'celkem', $zobrazitZavody">celkový žebříček</a>{/ifCurrent} |
-	{ifCurrent default 'u23'}žebříček U23{else}<a n:href="default 'u23', $zobrazitZavody">žebříček U23</a>{/ifCurrent} |
-	{ifCurrent default 'u18'}žebříček U18{else}<a n:href="default 'u18', $zobrazitZavody">žebříček U18</a>{/ifCurrent} |
-	{ifCurrent default 'u14'}žebříček U14{else}<a n:href="default 'u14', $zobrazitZavody">žebříček U14</a>{/ifCurrent} |
-	{ifCurrent default 'u10'}žebříček U10{else}<a n:href="default 'u10', $zobrazitZavody">žebříček U10</a>{/ifCurrent} |
-	{ifCurrent default 'zeny'}žebříček žen{else}<a n:href="default 'zeny', $zobrazitZavody">žebříček žen</a>{/ifCurrent}
+<p class='noprint'>{ifCurrent default $rok, 'celkem'}celkový žebříček{else}<a n:href="default $rok, 'celkem', $zobrazitZavody">celkový žebříček</a>{/ifCurrent} |
+	{ifCurrent default $rok, 'u23'}žebříček U23{else}<a n:href="default $rok, 'u23', $zobrazitZavody">žebříček U23</a>{/ifCurrent} |
+	{ifCurrent default $rok, 'u18'}žebříček U18{else}<a n:href="default $rok, 'u18', $zobrazitZavody">žebříček U18</a>{/ifCurrent} |
+	{ifCurrent default $rok, 'u14'}žebříček U14{else}<a n:href="default $rok, 'u14', $zobrazitZavody">žebříček U14</a>{/ifCurrent} |
+	{if $rok <= 2012}{ifCurrent default $rok, 'u10'}žebříček U10{else}<a n:href="default $rok, 'u10', $zobrazitZavody">žebříček U10</a>{/ifCurrent} |{else}{ifCurrent default $rok, 'u12'}žebříček U12{else}<a n:href="default $rok, 'u12', $zobrazitZavody">žebříček U12</a>{/ifCurrent} |{/if}
+	{ifCurrent default $rok, 'zeny'}žebříček žen{else}<a n:href="default $rok, 'zeny', $zobrazitZavody">žebříček žen</a>{/ifCurrent}
 </p>
 
 <table id="zebricek">
 
 {var $poradi = 1}
+<thead>
+	<tr><th>Pořadí</th><th>REG</th><th>Jméno</th><th>KAT</th><th>Organizace</th><th>Celkem závodů</th><th>Celkem bodů</th><th>Celkem bodů do žebříčku</th><th n:class="$zobrazitZavody ? thickRight : ''">Min. body do žeb.</th>
+		<th n:if="$zobrazitZavody" n:foreach="$zavody as $idZavodu => $z"><a n:href="Zavody:detail $idZavodu, $rok">{$z['nazev']}{if !empty($z['kategorie'])} {$z['kategorie']}{/if}</a></th></tr>
+</thead>
+
 <tbody>
-	<tr n:class="$iterator->odd ? odd : even" n:foreach="$zavodnici as $id => $z">
+	<tr n:if="count($zavody) == 0"><td colspan='9'>V tomto roce nebyly zatím přidány žádné závody, takže žebříček není možné sestavit.</td></tr>
+	<tr n:if="count($zavody) > 0" n:class="$iterator->odd ? odd : even" n:foreach="$zavodnici as $id => $z">
 		<td>{=$poradi++}</td>
 		<td>{$z['registrace']}</td>
-		<td class="vlevo"><a n:href="Zavodnik:default $id">{$z['jmeno']}</a></td>
+		<td class="vlevo"><a n:href="Zavodnik:default $id, $rok">{$z['jmeno']}</a></td>
 		<td>{$z['kategorie']}</td>
 		<td>{$z['tym']}</td>
 		<td>{$z['zavodu']}</td>
@@ -53,11 +59,7 @@
 	{/if}
 	</tr>
 </tbody>
-<thead>
-	<tr><th>Pořadí</th><th>REG</th><th>Jméno</th><th>KAT</th><th>Organizace</th><th>Celkem závodů</th><th>Celkem bodů</th><th>Celkem bodů do žebříčku</th><th n:class="$zobrazitZavody ? thickRight : ''">Min. body do žeb.</th>
-		<th n:if="$zobrazitZavody" n:foreach="$zavody as $idZavodu => $z"><a n:href="Zavody:detail $idZavodu">{$z['nazev']}{if !empty($z['kategorie'])} {$z['kategorie']}{/if}</a></th></tr>
-</thead>
 </table>
 
 
-<p class="noprint"><a n:href="Sign:in">přihlásit</a> | <a n:href="Homepage:excelExport">export do XLS</a></p>
+<p class="noprint"><a n:href="Sign:in">přihlásit</a> | <a n:href="Homepage:excelExport $rok">export do XLS</a></p>

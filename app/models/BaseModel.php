@@ -7,6 +7,8 @@
  */
 abstract class Base extends \Nette\Object {
 
+	public static $defaultYear = 2013;
+
 	/** @var \Nette\DI\Container */
 	private $context;
 

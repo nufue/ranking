@@ -12,7 +12,7 @@
 <table id="clenstviVTymech">
 	<tr n:foreach="$clenstvi as $c">
 		<td>{$ligy[$c->liga]}</td>
-		<td class="vlevo"><a n:href="Tymy:detail $c->id">{$c->nazev_tymu}</a></td>
+		<td class="vlevo"><a n:href="Tymy:detail $c->id, $rok">{$c->nazev_tymu}</a></td>
 	</tr>
 </table>
 {/if}
@@ -25,7 +25,7 @@
 <table id="detailZebricku">
     <tbody>
     <tr n:class="$iterator->odd ? odd : even" n:foreach="$vysledky as $v">
-        <td class="vlevo"><a n:href="Zavody:detail $v['id_zavodu']">{$v['nazev_zavodu']}{if !empty($v['kategorie_zavodu'])} {$v['kategorie_zavodu']}{/if}</a></td>
+        <td class="vlevo"><a n:href="Zavody:detail $v['id_zavodu'], $rok">{$v['nazev_zavodu']}{if !empty($v['kategorie_zavodu'])} {$v['kategorie_zavodu']}{/if}</a></td>
 		<td class="vlevo">{$v['tym']}</td>
 		<td>{$v['cips1']}</td>
         <td>{if $v['umisteni1'] == (int)$v['umisteni1']}{(int)$v['umisteni1']}{else}{$v['umisteni1']|number:1:',':' '}{/if}</td>

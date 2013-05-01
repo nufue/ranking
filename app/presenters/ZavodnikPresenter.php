@@ -8,8 +8,7 @@
  */
 class ZavodnikPresenter extends BasePresenter {
 
-	public function renderDefault($id) {
-		$rok = 2012;
+	public function renderDefault($id, $rok) {
 		$this->template->rok = $rok;
 		$detail = $this->context->zebricek->getZavodnikRok($id, $rok);
 		$this->template->zavodnik = $detail['zavodnik'];
