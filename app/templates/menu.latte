@@ -1,0 +1,9 @@
+{block menu}
+{if $isLoggedIn}
+<div>Přihlášen: {$userName} |
+{ifCurrent Tymy:default}Týmy{else}<a n:href="Tymy:default $rok">Týmy</a>{/ifCurrent} |
+{ifCurrent Soupisky:default}Soupisky{else}<a n:href="Soupisky:default $rok">Soupisky</a>{/ifCurrent} |
+{ifCurrent Zavody:default}Závody{else}<a n:href="Zavody:default $rok">Závody</a>{/ifCurrent} |
+<a n:href="Sign:out">odhlásit</a></div>
+{/if}
+{/block}

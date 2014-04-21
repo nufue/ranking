@@ -1,9 +1,6 @@
 {block title}Žebříček LRU plavaná - {$typZebricku} - rok {$rok}{/block}
 {block content}
-{if $isLoggedIn}
-<div>Přihlášen: {$userName} | <a n:href="Tymy:default $rok">Týmy</a> | <a n:href="Soupisky:default $rok">Soupisky</a> | <a n:href="Zavody:default $rok">Závody</a> | <a n:href="Sign:out">odhlásit</a></div>
-{/if}
-
+{include '../menu.latte'}
 <h1>Průběžný žebříček LRU plavaná - {$typZebricku} - rok {$rok}</h1>
 {if $datum_platnosti !== NULL}
 <h2>{if count($chybejiciVysledky)}neúplný{else}aktuální{/if} k {$datum_platnosti}</h2>

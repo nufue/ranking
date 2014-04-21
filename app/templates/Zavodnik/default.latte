@@ -1,5 +1,6 @@
 {block title}{if $zavodnik !== NULL}{$zavodnik->cele_jmeno}{else}Závodník nenalezen{/if} - Žebříček LRU plavaná{/block}
 {block content}
+{include '../menu.latte'}
 {if $zavodnik !== NULL}
 <h1>{$zavodnik->cele_jmeno}</h1>
 <table id="hlavickaDetailuZebricku">
