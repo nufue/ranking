@@ -2,11 +2,7 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Templating;
@@ -17,13 +13,12 @@ use Nette,
 	Nette\Utils\Html;
 
 
-
 /**
  * Template helpers.
  *
  * @author     David Grudl
  */
-final class Helpers
+class Helpers
 {
 	private static $helpers = array(
 		'normalize' => 'Nette\Utils\Strings::normalize',
@@ -41,7 +36,6 @@ final class Helpers
 		'replacere' => 'Nette\Utils\Strings::replace',
 		'url' => 'rawurlencode',
 		'striptags' => 'strip_tags',
-		'nl2br' => 'nl2br',
 		'substr' => 'Nette\Utils\Strings::substring',
 		'repeat' => 'str_repeat',
 		'implode' => 'implode',
@@ -52,7 +46,6 @@ final class Helpers
 	public static $dateFormat = '%x';
 
 
-
 	/**
 	 * Try to load the requested helper.
 	 * @param  string  helper name
@@ -61,12 +54,11 @@ final class Helpers
 	public static function loader($helper)
 	{
 		if (method_exists(__CLASS__, $helper)) {
-			return callback(__CLASS__, $helper);
+			return new Nette\Callback(__CLASS__, $helper);
 		} elseif (isset(self::$helpers[$helper])) {
 			return self::$helpers[$helper];
 		}
 	}
-
 
 
 	/**
@@ -84,7 +76,6 @@ final class Helpers
 	}
 
 
-
 	/**
 	 * Escapes string for use inside HTML comments.
 	 * @param  string  UTF-8 encoding
@@ -92,10 +83,8 @@ final class Helpers
 	 */
 	public static function escapeHtmlComment($s)
 	{
-		// -- has special meaning in different browsers
-		return str_replace('--', '--><!-- ', $s); // HTML tags have no meaning inside comments
+		return ' ' . str_replace('-', '- ', $s); // dash is very problematic character in comments
 	}
-
 
 
 	/**
@@ -112,7 +101,6 @@ final class Helpers
 	}
 
 
-
 	/**
 	 * Escapes string for use inside CSS template.
 	 * @param  string UTF-8 encoding
@@ -125,9 +113,8 @@ final class Helpers
 	}
 
 
-
 	/**
-	 * Escapes string for use inside JavaScript template.
+	 * Escapes variables for use inside <script>.
 	 * @param  mixed  UTF-8 encoding
 	 * @return string
 	 */
@@ -136,9 +123,8 @@ final class Helpers
 		if (is_object($s) && ($s instanceof ITemplate || $s instanceof Html || $s instanceof Form)) {
 			$s = $s->__toString(TRUE);
 		}
-		return str_replace(']]>', ']]\x3E', Nette\Utils\Json::encode($s));
+		return str_replace(array(']]>', '<!'), array(']]\x3E', '\x3C!'), Nette\Utils\Json::encode($s));
 	}
-
 
 
 	/**
@@ -153,6 +139,16 @@ final class Helpers
 	}
 
 
+	/**
+	 * Sanitizes string for use inside href attribute.
+	 * @param  string
+	 * @return string
+	 */
+	public static function safeUrl($s)
+	{
+		return preg_match('#^(https?://.+|ftp://.+|mailto:.+|[^:]+)\z#i', $s) ? $s : '';
+	}
+
 
 	/**
 	 * Replaces all repeated white spaces with a single space.
@@ -163,12 +159,11 @@ final class Helpers
 	{
 		return Strings::replace(
 			$s,
-			'#(</textarea|</pre|</script|^).*?(?=<textarea|<pre|<script|$)#si',
+			'#(</textarea|</pre|</script|^).*?(?=<textarea|<pre|<script|\z)#si',
 			function($m) {
-				return trim(preg_replace("#[ \t\r\n]+#", " ", $m[0]));
+				return trim(preg_replace('#[ \t\r\n]+#', " ", $m[0]));
 			});
 	}
-
 
 
 	/**
@@ -189,7 +184,6 @@ final class Helpers
 		}
 		return $s;
 	}
-
 
 
 	/**
@@ -215,7 +209,6 @@ final class Helpers
 	}
 
 
-
 	/**
 	 * Converts to human readable file size.
 	 * @param  int
@@ -236,7 +229,6 @@ final class Helpers
 	}
 
 
-
 	/**
 	 * Returns array of string length.
 	 * @param  mixed
@@ -246,7 +238,6 @@ final class Helpers
 	{
 		return is_string($var) ? Strings::length($var) : count($var);
 	}
-
 
 
 	/**
@@ -262,7 +253,6 @@ final class Helpers
 	}
 
 
-
 	/**
 	 * The data: URI generator.
 	 * @param  string
@@ -272,11 +262,10 @@ final class Helpers
 	public static function dataStream($data, $type = NULL)
 	{
 		if ($type === NULL) {
-			$type = Nette\Utils\MimeTypeDetector::fromString($data, NULL);
+			$type = Nette\Utils\MimeTypeDetector::fromString($data);
 		}
 		return 'data:' . ($type ? "$type;" : '') . 'base64,' . base64_encode($data);
 	}
-
 
 
 	/**
@@ -284,15 +273,23 @@ final class Helpers
 	 * @param  mixed
 	 * @return string
 	 */
-	public static function null($value)
+	public static function null()
 	{
 		return '';
 	}
 
 
+	/**
+	 * @param  string
+	 * @return string
+	 */
+	public static function nl2br($value)
+	{
+		return nl2br($value, Html::$xhtml);
+	}
+
 
 	/********************* Template tools ****************d*g**/
-
 
 
 	/**
@@ -313,7 +310,7 @@ final class Helpers
 
 				} elseif ($token[0] === T_CLOSE_TAG) {
 					$next = isset($tokens[$key + 1]) ? $tokens[$key + 1] : NULL;
-					if (substr($res, -1) !== '<' && preg_match('#^<\?php\s*$#', $php)) {
+					if (substr($res, -1) !== '<' && preg_match('#^<\?php\s*\z#', $php)) {
 						$php = ''; // removes empty (?php ?), but retains ((?php ?)?php
 
 					} elseif (is_array($next) && $next[0] === T_OPEN_TAG) { // remove ?)(?php
@@ -326,7 +323,7 @@ final class Helpers
 						$tokens->next();
 
 					} elseif ($next) {
-						$res .= preg_replace('#;?(\s)*$#', '$1', $php) . $token[1]; // remove last semicolon before ?)
+						$res .= preg_replace('#;?(\s)*\z#', '$1', $php) . $token[1]; // remove last semicolon before ?)
 						if (strlen($res) - strrpos($res, "\n") > $lineLength
 							&& (!is_array($next) || strpos($next[1], "\n") === FALSE)
 						) {

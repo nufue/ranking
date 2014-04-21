@@ -2,11 +2,7 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Config\Adapters;
@@ -14,7 +10,6 @@ namespace Nette\Config\Adapters;
 use Nette,
 	Nette\Config\Helpers,
 	Nette\Utils\Neon;
-
 
 
 /**
@@ -39,7 +34,6 @@ class NeonAdapter extends Nette\Object implements Nette\Config\IAdapter
 	}
 
 
-
 	private function process(array $arr)
 	{
 		$res = array();
@@ -51,7 +45,7 @@ class NeonAdapter extends Nette\Object implements Nette\Config\IAdapter
 				$key = substr($key, 0, -1);
 				$val[Helpers::EXTENDS_KEY] = Helpers::OVERWRITE;
 
-			} elseif (preg_match('#^(\S+)\s+' . self::INHERITING_SEPARATOR . '\s+(\S+)$#', $key, $matches)) {
+			} elseif (preg_match('#^(\S+)\s+' . self::INHERITING_SEPARATOR . '\s+(\S+)\z#', $key, $matches)) {
 				if (!is_array($val) && $val !== NULL) {
 					throw new Nette\InvalidStateException("Inheritance operator is available only for arrays, item '$key' is not array.");
 				}
@@ -72,10 +66,8 @@ class NeonAdapter extends Nette\Object implements Nette\Config\IAdapter
 	}
 
 
-
 	/**
 	 * Generates configuration in NEON format.
-	 * @param  array
 	 * @return string
 	 */
 	public function dump(array $data)

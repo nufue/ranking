@@ -2,18 +2,13 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Forms\Rendering;
 
 use Nette,
 	Nette\Utils\Html;
-
 
 
 /**
@@ -123,7 +118,6 @@ class DefaultFormRenderer extends Nette\Object implements Nette\Forms\IFormRende
 	protected $counter;
 
 
-
 	/**
 	 * Provides complete form rendering.
 	 * @param  Nette\Forms\Form
@@ -154,14 +148,12 @@ class DefaultFormRenderer extends Nette\Object implements Nette\Forms\IFormRende
 	}
 
 
-
 	/** @deprecated */
 	public function setClientScript()
 	{
 		trigger_error(__METHOD__ . '() is deprecated; use unobstructive JavaScript instead.', E_USER_WARNING);
 		return $this;
 	}
-
 
 
 	/**
@@ -183,7 +175,6 @@ class DefaultFormRenderer extends Nette\Object implements Nette\Forms\IFormRende
 			}
 		}
 	}
-
 
 
 	/**
@@ -222,7 +213,6 @@ class DefaultFormRenderer extends Nette\Object implements Nette\Forms\IFormRende
 	}
 
 
-
 	/**
 	 * Renders form end.
 	 * @return string
@@ -246,10 +236,8 @@ class DefaultFormRenderer extends Nette\Object implements Nette\Forms\IFormRende
 	}
 
 
-
 	/**
 	 * Renders validation errors (per form or per control).
-	 * @param  Nette\Forms\IControl
 	 * @return string
 	 */
 	public function renderErrors(Nette\Forms\IControl $control = NULL)
@@ -271,7 +259,6 @@ class DefaultFormRenderer extends Nette\Object implements Nette\Forms\IFormRende
 			return "\n" . $ul->render(0);
 		}
 	}
-
 
 
 	/**
@@ -334,7 +321,6 @@ class DefaultFormRenderer extends Nette\Object implements Nette\Forms\IFormRende
 	}
 
 
-
 	/**
 	 * Renders group of controls.
 	 * @param  Nette\Forms\Container|FormGroup
@@ -378,10 +364,8 @@ class DefaultFormRenderer extends Nette\Object implements Nette\Forms\IFormRende
 	}
 
 
-
 	/**
 	 * Renders single visual row.
-	 * @param  Nette\Forms\IControl
 	 * @return string
 	 */
 	public function renderPair(Nette\Forms\IControl $control)
@@ -397,7 +381,6 @@ class DefaultFormRenderer extends Nette\Object implements Nette\Forms\IFormRende
 		$pair->id = $control->getOption('id');
 		return $pair->render(0);
 	}
-
 
 
 	/**
@@ -421,10 +404,8 @@ class DefaultFormRenderer extends Nette\Object implements Nette\Forms\IFormRende
 	}
 
 
-
 	/**
 	 * Renders 'label' part of visual row of controls.
-	 * @param  Nette\Forms\IControl
 	 * @return string
 	 */
 	public function renderLabel(Nette\Forms\IControl $control)
@@ -446,10 +427,8 @@ class DefaultFormRenderer extends Nette\Object implements Nette\Forms\IFormRende
 	}
 
 
-
 	/**
 	 * Renders 'control' part of visual row of controls.
-	 * @param  Nette\Forms\IControl
 	 * @return string
 	 */
 	public function renderControl(Nette\Forms\IControl $control)
@@ -487,7 +466,6 @@ class DefaultFormRenderer extends Nette\Object implements Nette\Forms\IFormRende
 	}
 
 
-
 	/**
 	 * @param  string
 	 * @return Nette\Utils\Html
@@ -497,7 +475,6 @@ class DefaultFormRenderer extends Nette\Object implements Nette\Forms\IFormRende
 		$data = $this->getValue($name);
 		return $data instanceof Html ? clone $data : Html::el($data);
 	}
-
 
 
 	/**

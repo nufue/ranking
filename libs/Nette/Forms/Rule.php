@@ -2,11 +2,7 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Forms;
@@ -14,13 +10,12 @@ namespace Nette\Forms;
 use Nette;
 
 
-
 /**
  * Single validation rule or condition represented as value object.
  *
  * @author     David Grudl
  */
-final class Rule extends Nette\Object
+class Rule extends Nette\Object
 {
 	/** type */
 	const CONDITION = 1;

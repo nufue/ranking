@@ -2,18 +2,13 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Caching\Storages;
 
 use Nette,
 	Nette\Caching\Cache;
-
 
 
 /**
@@ -68,7 +63,6 @@ class FileStorage extends Nette\Object implements Nette\Caching\IStorage
 	private $locks;
 
 
-
 	public function __construct($dir, IJournal $journal = NULL)
 	{
 		$this->dir = realpath($dir);
@@ -83,7 +77,6 @@ class FileStorage extends Nette\Object implements Nette\Caching\IStorage
 			$this->clean(array());
 		}
 	}
-
 
 
 	/**
@@ -101,7 +94,6 @@ class FileStorage extends Nette\Object implements Nette\Caching\IStorage
 			return NULL;
 		}
 	}
-
 
 
 	/**
@@ -144,7 +136,6 @@ class FileStorage extends Nette\Object implements Nette\Caching\IStorage
 	}
 
 
-
 	/**
 	 * Prevents item reading and writing. Lock is released by write() or remove().
 	 * @param  string key
@@ -154,7 +145,7 @@ class FileStorage extends Nette\Object implements Nette\Caching\IStorage
 	{
 		$cacheFile = $this->getCacheFile($key);
 		if ($this->useDirs && !is_dir($dir = dirname($cacheFile))) {
-			@mkdir($dir, 0777); // @ - directory may already exist
+			@mkdir($dir); // @ - directory may already exist
 		}
 		$handle = @fopen($cacheFile, 'r+b'); // @ - file may not exist
 		if (!$handle) {
@@ -167,7 +158,6 @@ class FileStorage extends Nette\Object implements Nette\Caching\IStorage
 		$this->locks[$key] = $handle;
 		flock($handle, LOCK_EX);
 	}
-
 
 
 	/**
@@ -257,7 +247,6 @@ class FileStorage extends Nette\Object implements Nette\Caching\IStorage
 	}
 
 
-
 	/**
 	 * Removes item from the cache.
 	 * @param  string key
@@ -270,16 +259,15 @@ class FileStorage extends Nette\Object implements Nette\Caching\IStorage
 	}
 
 
-
 	/**
 	 * Removes items from the cache by conditions & garbage collector.
 	 * @param  array  conditions
 	 * @return void
 	 */
-	public function clean(array $conds)
+	public function clean(array $conditions)
 	{
-		$all = !empty($conds[Cache::ALL]);
-		$collector = empty($conds);
+		$all = !empty($conditions[Cache::ALL]);
+		$collector = empty($conditions);
 
 		// cleaning using file iterator
 		if ($all || $collector) {
@@ -312,19 +300,18 @@ class FileStorage extends Nette\Object implements Nette\Caching\IStorage
 			}
 
 			if ($this->journal) {
-				$this->journal->clean($conds);
+				$this->journal->clean($conditions);
 			}
 			return;
 		}
 
 		// cleaning using journal
 		if ($this->journal) {
-			foreach ($this->journal->clean($conds) as $file) {
+			foreach ($this->journal->clean($conditions) as $file) {
 				$this->delete($file);
 			}
 		}
 	}
-
 
 
 	/**
@@ -361,7 +348,6 @@ class FileStorage extends Nette\Object implements Nette\Caching\IStorage
 	}
 
 
-
 	/**
 	 * Reads cache data from disk and closes cache file handle.
 	 * @param  array
@@ -381,7 +367,6 @@ class FileStorage extends Nette\Object implements Nette\Caching\IStorage
 	}
 
 
-
 	/**
 	 * Returns file name.
 	 * @param  string
@@ -395,7 +380,6 @@ class FileStorage extends Nette\Object implements Nette\Caching\IStorage
 		}
 		return $this->dir . '/_' . $file;
 	}
-
 
 
 	/**

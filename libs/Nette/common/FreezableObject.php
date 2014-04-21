@@ -2,17 +2,12 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette;
 
 use Nette;
-
 
 
 /**
@@ -28,7 +23,6 @@ abstract class FreezableObject extends Object implements IFreezable
 	private $frozen = FALSE;
 
 
-
 	/**
 	 * Makes the object unmodifiable.
 	 * @return void
@@ -39,16 +33,14 @@ abstract class FreezableObject extends Object implements IFreezable
 	}
 
 
-
 	/**
 	 * Is the object unmodifiable?
 	 * @return bool
 	 */
-	final public function isFrozen()
+	public function isFrozen()
 	{
 		return $this->frozen;
 	}
-
 
 
 	/**
@@ -59,7 +51,6 @@ abstract class FreezableObject extends Object implements IFreezable
 	{
 		$this->frozen = FALSE;
 	}
-
 
 
 	/**

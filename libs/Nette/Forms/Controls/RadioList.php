@@ -2,18 +2,13 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Forms\Controls;
 
 use Nette,
 	Nette\Utils\Html;
-
 
 
 /**
@@ -37,7 +32,6 @@ class RadioList extends BaseControl
 	protected $items = array();
 
 
-
 	/**
 	 * @param  string  label
 	 * @param  array   options from which to choose
@@ -54,7 +48,6 @@ class RadioList extends BaseControl
 	}
 
 
-
 	/**
 	 * Returns selected radio value.
 	 * @param  bool
@@ -64,7 +57,6 @@ class RadioList extends BaseControl
 	{
 		return is_scalar($this->value) && ($raw || isset($this->items[$this->value])) ? $this->value : NULL;
 	}
-
 
 
 	/**
@@ -77,11 +69,10 @@ class RadioList extends BaseControl
 	}
 
 
-
 	/**
 	 * Sets options from which to choose.
 	 * @param  array
-	 * @return RadioList  provides a fluent interface
+	 * @return self
 	 */
 	public function setItems(array $items)
 	{
@@ -90,38 +81,34 @@ class RadioList extends BaseControl
 	}
 
 
-
 	/**
 	 * Returns options from which to choose.
 	 * @return array
 	 */
-	final public function getItems()
+	public function getItems()
 	{
 		return $this->items;
 	}
-
 
 
 	/**
 	 * Returns separator HTML element template.
 	 * @return Nette\Utils\Html
 	 */
-	final public function getSeparatorPrototype()
+	public function getSeparatorPrototype()
 	{
 		return $this->separator;
 	}
-
 
 
 	/**
 	 * Returns container HTML element template.
 	 * @return Nette\Utils\Html
 	 */
-	final public function getContainerPrototype()
+	public function getContainerPrototype()
 	{
 		return $this->container;
 	}
-
 
 
 	/**
@@ -174,11 +161,10 @@ class RadioList extends BaseControl
 	}
 
 
-
 	/**
 	 * Generates label's HTML element.
 	 * @param  string
-	 * @return void
+	 * @return Nette\Utils\Html
 	 */
 	public function getLabel($caption = NULL)
 	{

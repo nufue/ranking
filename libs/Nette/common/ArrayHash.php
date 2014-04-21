@@ -2,17 +2,12 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette;
 
 use Nette;
-
 
 
 /**
@@ -42,7 +37,6 @@ class ArrayHash extends \stdClass implements \ArrayAccess, \Countable, \Iterator
 	}
 
 
-
 	/**
 	 * Returns an iterator over all items.
 	 * @return \RecursiveArrayIterator
@@ -51,7 +45,6 @@ class ArrayHash extends \stdClass implements \ArrayAccess, \Countable, \Iterator
 	{
 		return new \RecursiveArrayIterator($this);
 	}
-
 
 
 	/**
@@ -64,11 +57,8 @@ class ArrayHash extends \stdClass implements \ArrayAccess, \Countable, \Iterator
 	}
 
 
-
 	/**
 	 * Replaces or appends a item.
-	 * @param  mixed
-	 * @param  mixed
 	 * @return void
 	 */
 	public function offsetSet($key, $value)
@@ -80,10 +70,8 @@ class ArrayHash extends \stdClass implements \ArrayAccess, \Countable, \Iterator
 	}
 
 
-
 	/**
 	 * Returns a item.
-	 * @param  mixed
 	 * @return mixed
 	 */
 	public function offsetGet($key)
@@ -92,10 +80,8 @@ class ArrayHash extends \stdClass implements \ArrayAccess, \Countable, \Iterator
 	}
 
 
-
 	/**
 	 * Determines whether a item exists.
-	 * @param  mixed
 	 * @return bool
 	 */
 	public function offsetExists($key)
@@ -104,10 +90,8 @@ class ArrayHash extends \stdClass implements \ArrayAccess, \Countable, \Iterator
 	}
 
 
-
 	/**
 	 * Removes the element from this list.
-	 * @param  mixed
 	 * @return void
 	 */
 	public function offsetUnset($key)

@@ -2,17 +2,12 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Application;
 
 use Nette;
-
 
 
 /**
@@ -42,10 +37,10 @@ class Application extends Nette\Object
 	/** @var array of function(Application $sender, \Exception $e = NULL); Occurs before the application shuts down */
 	public $onShutdown;
 
-	/** @var array of function(Application $sender, Request $request); Occurs when a new request is ready for dispatch */
+	/** @var array of function(Application $sender, Request $request); Occurs when a new request is received */
 	public $onRequest;
 
-	/** @var array of function(Application $sender, IResponse $response); Occurs when a new response is received */
+	/** @var array of function(Application $sender, IResponse $response); Occurs when a new response is ready for dispatch */
 	public $onResponse;
 
 	/** @var array of function(Application $sender, \Exception $e); Occurs when an unhandled exception occurs in the application */
@@ -73,7 +68,6 @@ class Application extends Nette\Object
 	private $router;
 
 
-
 	public function __construct(IPresenterFactory $presenterFactory, IRouter $router, Nette\Http\IRequest $httpRequest, Nette\Http\IResponse $httpResponse)
 	{
 		$this->httpRequest = $httpRequest;
@@ -81,7 +75,6 @@ class Application extends Nette\Object
 		$this->presenterFactory = $presenterFactory;
 		$this->router = $router;
 	}
-
 
 
 	/**
@@ -194,31 +187,27 @@ class Application extends Nette\Object
 	}
 
 
-
 	/**
 	 * Returns all processed requests.
 	 * @return Request[]
 	 */
-	final public function getRequests()
+	public function getRequests()
 	{
 		return $this->requests;
 	}
-
 
 
 	/**
 	 * Returns current presenter.
 	 * @return IPresenter
 	 */
-	final public function getPresenter()
+	public function getPresenter()
 	{
 		return $this->presenter;
 	}
 
 
-
 	/********************* services ****************d*g**/
-
 
 
 	/**
@@ -231,7 +220,6 @@ class Application extends Nette\Object
 	}
 
 
-
 	/**
 	 * Returns presenter factory.
 	 * @return IPresenterFactory
@@ -242,9 +230,7 @@ class Application extends Nette\Object
 	}
 
 
-
 	/********************* request serialization ****************d*g**/
-
 
 
 	/** @deprecated */

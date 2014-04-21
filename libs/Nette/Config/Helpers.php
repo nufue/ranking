@@ -2,17 +2,12 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Config;
 
 use Nette;
-
 
 
 /**
@@ -58,7 +53,6 @@ class Helpers
 	}
 
 
-
 	/**
 	 * Finds out and removes information about the parent.
 	 * @return mixed
@@ -73,7 +67,6 @@ class Helpers
 	}
 
 
-
 	/**
 	 * @return bool
 	 */
@@ -81,7 +74,6 @@ class Helpers
 	{
 		return is_array($data) && isset($data[self::EXTENDS_KEY]) && $data[self::EXTENDS_KEY] === self::OVERWRITE;
 	}
-
 
 
 	/**

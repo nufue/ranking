@@ -2,17 +2,12 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Forms\Controls;
 
 use Nette;
-
 
 
 /**
@@ -26,7 +21,6 @@ class HiddenField extends BaseControl
 	private $forcedValue;
 
 
-
 	public function __construct($forcedValue = NULL)
 	{
 		parent::__construct();
@@ -36,29 +30,16 @@ class HiddenField extends BaseControl
 	}
 
 
-
-	/**
-	 * Bypasses label generation.
-	 * @return void
-	 */
-	public function getLabel($caption = NULL)
-	{
-		return NULL;
-	}
-
-
-
 	/**
 	 * Sets control's value.
 	 * @param  string
-	 * @return HiddenField  provides a fluent interface
+	 * @return self
 	 */
 	public function setValue($value)
 	{
 		$this->value = is_scalar($value) ? (string) $value : '';
 		return $this;
 	}
-
 
 
 	/**
@@ -70,6 +51,16 @@ class HiddenField extends BaseControl
 		return parent::getControl()
 			->value($this->forcedValue === NULL ? $this->value : $this->forcedValue)
 			->data('nette-rules', NULL);
+	}
+
+
+	/**
+	 * Bypasses label generation.
+	 * @return void
+	 */
+	public function getLabel($caption = NULL)
+	{
+		return NULL;
 	}
 
 }

@@ -2,18 +2,13 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Reflection;
 
 use Nette,
 	Nette\ObjectMixin;
-
 
 
 /**
@@ -24,8 +19,8 @@ use Nette,
  * @property-read ClassType $declaringClass
  * @property-read Method $prototype
  * @property-read Extension $extension
- * @property-read array $parameters
- * @property-read array $annotations
+ * @property-read Parameter[] $parameters
+ * @property-read IAnnotation[][] $annotations
  * @property-read string $description
  * @property-read bool $public
  * @property-read bool $private
@@ -67,15 +62,13 @@ class Method extends \ReflectionMethod
 	}
 
 
-
 	/**
 	 * @return Nette\Callback
 	 */
 	public function toCallback()
 	{
-		return new Nette\Callback(array(parent::getDeclaringClass()->getName(), $this->getName()));
+		return new Nette\Callback(parent::getDeclaringClass()->getName(), $this->getName());
 	}
-
 
 
 	public function __toString()
@@ -84,9 +77,7 @@ class Method extends \ReflectionMethod
 	}
 
 
-
 	/********************* Reflection layer ****************d*g**/
-
 
 
 	/**
@@ -96,7 +87,6 @@ class Method extends \ReflectionMethod
 	{
 		return new ClassType(parent::getDeclaringClass()->getName());
 	}
-
 
 
 	/**
@@ -109,7 +99,6 @@ class Method extends \ReflectionMethod
 	}
 
 
-
 	/**
 	 * @return Extension
 	 */
@@ -119,7 +108,9 @@ class Method extends \ReflectionMethod
 	}
 
 
-
+	/**
+	 * @return Parameter[]
+	 */
 	public function getParameters()
 	{
 		$me = array(parent::getDeclaringClass()->getName(), $this->getName());
@@ -130,9 +121,7 @@ class Method extends \ReflectionMethod
 	}
 
 
-
 	/********************* Nette\Annotations support ****************d*g**/
-
 
 
 	/**
@@ -147,7 +136,6 @@ class Method extends \ReflectionMethod
 	}
 
 
-
 	/**
 	 * Returns an annotation value.
 	 * @param  string
@@ -160,16 +148,14 @@ class Method extends \ReflectionMethod
 	}
 
 
-
 	/**
 	 * Returns all annotations.
-	 * @return array
+	 * @return IAnnotation[][]
 	 */
 	public function getAnnotations()
 	{
 		return AnnotationsParser::getAll($this);
 	}
-
 
 
 	/**
@@ -182,9 +168,7 @@ class Method extends \ReflectionMethod
 	}
 
 
-
 	/********************* Nette\Object behaviour ****************d*g**/
-
 
 
 	/**
@@ -196,12 +180,10 @@ class Method extends \ReflectionMethod
 	}
 
 
-
 	public function __call($name, $args)
 	{
 		return ObjectMixin::call($this, $name, $args);
 	}
-
 
 
 	public function &__get($name)
@@ -210,19 +192,16 @@ class Method extends \ReflectionMethod
 	}
 
 
-
 	public function __set($name, $value)
 	{
-		return ObjectMixin::set($this, $name, $value);
+		ObjectMixin::set($this, $name, $value);
 	}
-
 
 
 	public function __isset($name)
 	{
 		return ObjectMixin::has($this, $name);
 	}
-
 
 
 	public function __unset($name)

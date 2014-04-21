@@ -2,11 +2,7 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Forms\Controls;
@@ -15,7 +11,6 @@ use Nette,
 	Nette\Forms\Form,
 	Nette\Utils\Strings,
 	Nette\Utils\Validators;
-
 
 
 /**
@@ -34,18 +29,26 @@ abstract class TextBase extends BaseControl
 	protected $filters = array();
 
 
+	/**
+	 * @param  string  label
+	 */
+	public function __construct($label = NULL)
+	{
+		parent::__construct($label);
+		$this->addFilter($this->sanitize);
+	}
+
 
 	/**
 	 * Sets control's value.
 	 * @param  string
-	 * @return TextBase  provides a fluent interface
+	 * @return self
 	 */
 	public function setValue($value)
 	{
-		$this->value = is_array($value) ? '' : (string) $value;
+		$this->value = is_array($value) ? '' : str_replace("\r\n", "\n", $value);
 		return $this;
 	}
-
 
 
 	/**
@@ -62,11 +65,10 @@ abstract class TextBase extends BaseControl
 	}
 
 
-
 	/**
 	 * Sets the special value which is treated as empty string.
 	 * @param  string
-	 * @return TextBase  provides a fluent interface
+	 * @return self
 	 */
 	public function setEmptyValue($value)
 	{
@@ -75,29 +77,42 @@ abstract class TextBase extends BaseControl
 	}
 
 
-
 	/**
 	 * Returns the special value which is treated as empty string.
 	 * @return string
 	 */
-	final public function getEmptyValue()
+	public function getEmptyValue()
 	{
 		return $this->emptyValue;
 	}
 
 
-
 	/**
 	 * Appends input string filter callback.
 	 * @param  callable
-	 * @return TextBase  provides a fluent interface
+	 * @return self
 	 */
 	public function addFilter($filter)
 	{
-		$this->filters[] = callback($filter);
+		$this->filters[] = new Nette\Callback($filter);
 		return $this;
 	}
 
+
+	/**
+	 * Filter: removes unnecessary whitespace and shortens value to control's max length.
+	 * @return string
+	 */
+	public function sanitize($value)
+	{
+		if ($this->control->maxlength) {
+			$value = Nette\Utils\Strings::substring($value, 0, $this->control->maxlength);
+		}
+		if (strcasecmp($this->control->getName(), 'input') === 0) {
+			$value = Nette\Utils\Strings::trim(strtr($value, "\r\n", '  '));
+		}
+		return $value;
+	}
 
 
 	public function getControl()
@@ -117,15 +132,20 @@ abstract class TextBase extends BaseControl
 	}
 
 
-
 	public function addRule($operation, $message = NULL, $arg = NULL)
 	{
 		if ($operation === Form::FLOAT) {
-			$this->addFilter(callback(__CLASS__, 'filterFloat'));
+			$this->addFilter(array(__CLASS__, 'filterFloat'));
+
+		} elseif ($operation === Form::LENGTH || $operation === Form::MAX_LENGTH) {
+			$tmp = is_array($arg) ? $arg[1] : $arg;
+			$this->control->maxlength = is_scalar($tmp) ? $tmp : NULL;
 		}
 		return parent::addRule($operation, $message, $arg);
 	}
 
+
+	/********************* validators ****************d*g**/
 
 
 	/**
@@ -140,7 +160,6 @@ abstract class TextBase extends BaseControl
 	}
 
 
-
 	/**
 	 * Max-length validator: is control's value length in limit?
 	 * @param  TextBase
@@ -151,7 +170,6 @@ abstract class TextBase extends BaseControl
 	{
 		return Strings::length($control->getValue()) <= $length;
 	}
-
 
 
 	/**
@@ -169,7 +187,6 @@ abstract class TextBase extends BaseControl
 	}
 
 
-
 	/**
 	 * Email validator: is control's value valid email address?
 	 * @param  TextBase
@@ -179,7 +196,6 @@ abstract class TextBase extends BaseControl
 	{
 		return Validators::isEmail($control->getValue());
 	}
-
 
 
 	/**
@@ -193,13 +209,11 @@ abstract class TextBase extends BaseControl
 	}
 
 
-
 	/** @deprecated */
 	public static function validateRegexp(TextBase $control, $regexp)
 	{
 		return (bool) Strings::match($control->getValue(), $regexp);
 	}
-
 
 
 	/**
@@ -210,9 +224,8 @@ abstract class TextBase extends BaseControl
 	 */
 	public static function validatePattern(TextBase $control, $pattern)
 	{
-		return (bool) Strings::match($control->getValue(), "\x01^($pattern)$\x01u");
+		return (bool) Strings::match($control->getValue(), "\x01^($pattern)\\z\x01u");
 	}
-
 
 
 	/**
@@ -226,7 +239,6 @@ abstract class TextBase extends BaseControl
 	}
 
 
-
 	/**
 	 * Float validator: is a control's value float number?
 	 * @param  TextBase
@@ -236,7 +248,6 @@ abstract class TextBase extends BaseControl
 	{
 		return Validators::isNumeric(static::filterFloat($control->getValue()));
 	}
-
 
 
 	/**
@@ -249,7 +260,6 @@ abstract class TextBase extends BaseControl
 	{
 		return Validators::isInRange($control->getValue(), $range);
 	}
-
 
 
 	/**

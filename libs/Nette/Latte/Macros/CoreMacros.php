@@ -2,11 +2,7 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Latte\Macros;
@@ -16,7 +12,6 @@ use Nette,
 	Nette\Latte\CompileException,
 	Nette\Latte\MacroNode,
 	Nette\Latte\PhpWriter;
-
 
 
 /**
@@ -52,19 +47,19 @@ class CoreMacros extends MacroSet
 		$me = new static($compiler);
 
 		$me->addMacro('if', array($me, 'macroIf'), array($me, 'macroEndIf'));
-		$me->addMacro('elseif', 'elseif (%node.args):');
+		$me->addMacro('elseif', '} elseif (%node.args) {');
 		$me->addMacro('else', array($me, 'macroElse'));
-		$me->addMacro('ifset', 'if (isset(%node.args)):', 'endif');
-		$me->addMacro('elseifset', 'elseif (isset(%node.args)):');
+		$me->addMacro('ifset', 'if (isset(%node.args)) {', '}');
+		$me->addMacro('elseifset', '} elseif (isset(%node.args)) {');
 
 		$me->addMacro('foreach', '', array($me, 'macroEndForeach'));
-		$me->addMacro('for', 'for (%node.args):', 'endfor');
-		$me->addMacro('while', 'while (%node.args):', 'endwhile');
+		$me->addMacro('for', 'for (%node.args) {', '}');
+		$me->addMacro('while', 'while (%node.args) {', '}');
 		$me->addMacro('continueIf', 'if (%node.args) continue');
 		$me->addMacro('breakIf', 'if (%node.args) break');
-		$me->addMacro('first', 'if ($iterator->isFirst(%node.args)):', 'endif');
-		$me->addMacro('last', 'if ($iterator->isLast(%node.args)):', 'endif');
-		$me->addMacro('sep', 'if (!$iterator->isLast(%node.args)):', 'endif');
+		$me->addMacro('first', 'if ($iterator->isFirst(%node.args)) {', '}');
+		$me->addMacro('last', 'if ($iterator->isLast(%node.args)) {', '}');
+		$me->addMacro('sep', 'if (!$iterator->isLast(%node.args)) {', '}');
 
 		$me->addMacro('var', array($me, 'macroVar'));
 		$me->addMacro('assign', array($me, 'macroVar')); // deprecated
@@ -88,7 +83,6 @@ class CoreMacros extends MacroSet
 	}
 
 
-
 	/**
 	 * Finishes template parsing.
 	 * @return array(prolog, epilog)
@@ -100,9 +94,7 @@ class CoreMacros extends MacroSet
 	}
 
 
-
 	/********************* macros ****************d*g**/
-
 
 
 	/**
@@ -114,11 +106,10 @@ class CoreMacros extends MacroSet
 			return 'ob_start()';
 		}
 		if ($node->prefix === $node::PREFIX_TAG) {
-			return $writer->write($node->htmlNode->closing ? 'if (array_pop($_l->ifs)):' : 'if ($_l->ifs[] = (%node.args)):');
+			return $writer->write($node->htmlNode->closing ? 'if (array_pop($_l->ifs)) {' : 'if ($_l->ifs[] = (%node.args)) {');
 		}
-		return $writer->write('if (%node.args):');
+		return $writer->write('if (%node.args) {');
 	}
-
 
 
 	/**
@@ -136,9 +127,8 @@ class CoreMacros extends MacroSet
 				. (isset($node->data->else) ? '{ $_else = ob_get_contents(); ob_end_clean(); ob_end_clean(); echo $_else; }' : 'ob_end_clean();')
 			);
 		}
-		return 'endif';
+		return '}';
 	}
-
 
 
 	/**
@@ -154,9 +144,8 @@ class CoreMacros extends MacroSet
 			$ifNode->data->else = TRUE;
 			return 'ob_start()';
 		}
-		return 'else:';
+		return '} else {';
 	}
-
 
 
 	/**
@@ -176,7 +165,6 @@ class CoreMacros extends MacroSet
 	}
 
 
-
 	/**
 	 * {include "file" [,] [params]}
 	 */
@@ -193,16 +181,15 @@ class CoreMacros extends MacroSet
 	}
 
 
-
 	/**
 	 * {use class MacroSet}
 	 */
 	public function macroUse(MacroNode $node, PhpWriter $writer)
 	{
-		callback($node->tokenizer->fetchWord(), 'install')->invoke($this->getCompiler())
+		Nette\Callback::create($node->tokenizer->fetchWord(), 'install')
+			->invoke($this->getCompiler())
 			->initialize();
 	}
-
 
 
 	/**
@@ -219,7 +206,6 @@ class CoreMacros extends MacroSet
 	}
 
 
-
 	/**
 	 * {/capture}
 	 */
@@ -229,22 +215,20 @@ class CoreMacros extends MacroSet
 	}
 
 
-
 	/**
 	 * {foreach ...}
 	 */
 	public function macroEndForeach(MacroNode $node, PhpWriter $writer)
 	{
-		if (preg_match('#\W(\$iterator|include|require|get_defined_vars)\W#', $this->getCompiler()->expandTokens($node->content))) {
+		if ($node->modifiers !== '|noiterator' && preg_match('#\W(\$iterator|include|require|get_defined_vars)\W#', $this->getCompiler()->expandTokens($node->content))) {
 			$node->openingCode = '<?php $iterations = 0; foreach ($iterator = $_l->its[] = new Nette\Iterators\CachingIterator('
-			. preg_replace('#(.*)\s+as\s+#i', '$1) as ', $writer->formatArgs(), 1) . '): ?>';
-			$node->closingCode = '<?php $iterations++; endforeach; array_pop($_l->its); $iterator = end($_l->its) ?>';
+			. preg_replace('#(.*)\s+as\s+#i', '$1) as ', $writer->formatArgs(), 1) . ') { ?>';
+			$node->closingCode = '<?php $iterations++; } array_pop($_l->its); $iterator = end($_l->its) ?>';
 		} else {
-			$node->openingCode = '<?php $iterations = 0; foreach (' . $writer->formatArgs() . '): ?>';
-			$node->closingCode = '<?php $iterations++; endforeach ?>';
+			$node->openingCode = '<?php $iterations = 0; foreach (' . $writer->formatArgs() . ') { ?>';
+			$node->closingCode = '<?php $iterations++; } ?>';
 		}
 	}
-
 
 
 	/**
@@ -256,7 +240,6 @@ class CoreMacros extends MacroSet
 	}
 
 
-
 	/**
 	 * n:attr="..."
 	 */
@@ -264,7 +247,6 @@ class CoreMacros extends MacroSet
 	{
 		return $writer->write('echo Nette\Utils\Html::el(NULL, %node.array)->attributes()');
 	}
-
 
 
 	/**
@@ -275,7 +257,6 @@ class CoreMacros extends MacroSet
 	{
 		return Nette\Utils\Strings::replace($node->args . ' ', '#\)\s+#', ')->');
 	}
-
 
 
 	/**
@@ -289,7 +270,6 @@ class CoreMacros extends MacroSet
 	}
 
 
-
 	/**
 	 * {debugbreak ...}
 	 */
@@ -298,7 +278,6 @@ class CoreMacros extends MacroSet
 		return $writer->write(($node->args == NULL ? '' : 'if (!(%node.args)); else')
 			. 'if (function_exists("debugbreak")) debugbreak(); elseif (function_exists("xdebug_break")) xdebug_break()');
 	}
-
 
 
 	/**
@@ -338,7 +317,6 @@ class CoreMacros extends MacroSet
 	}
 
 
-
 	/**
 	 * {= ...}
 	 * {? ...}
@@ -349,9 +327,7 @@ class CoreMacros extends MacroSet
 	}
 
 
-
 	/********************* run-time helpers ****************d*g**/
-
 
 
 	/**
@@ -385,11 +361,8 @@ class CoreMacros extends MacroSet
 	}
 
 
-
 	/**
 	 * Initializes local & global storage in template.
-	 * @param
-	 * @param  string
 	 * @return \stdClass
 	 */
 	public static function initRuntime(Nette\Templating\ITemplate $template, $templateId)
@@ -399,13 +372,13 @@ class CoreMacros extends MacroSet
 			$local = $template->_l;
 			unset($template->_l);
 		} else {
-			$local = (object) NULL;
+			$local = new \stdClass;
 		}
 		$local->templates[$templateId] = $template;
 
 		// global storage
 		if (!isset($template->_g)) {
-			$template->_g = (object) NULL;
+			$template->_g = new \stdClass;
 		}
 
 		return array($local, $template->_g);

@@ -2,17 +2,12 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Forms\Controls;
 
 use Nette;
-
 
 
 /**
@@ -25,7 +20,6 @@ class TextInput extends TextBase
 {
 
 	/**
-	 * @param  string  control name
 	 * @param  string  label
 	 * @param  int  width of the control
 	 * @param  int  maximum number of characters the user may enter
@@ -36,30 +30,13 @@ class TextInput extends TextBase
 		$this->control->type = 'text';
 		$this->control->size = $cols;
 		$this->control->maxlength = $maxLength;
-		$this->filters[] = callback($this, 'sanitize');
-		$this->value = '';
 	}
-
-
-
-	/**
-	 * Filter: removes unnecessary whitespace and shortens value to control's max length.
-	 * @return string
-	 */
-	public function sanitize($value)
-	{
-		if ($this->control->maxlength && Nette\Utils\Strings::length($value) > $this->control->maxlength) {
-			$value = Nette\Utils\Strings::substring($value, 0, $this->control->maxlength);
-		}
-		return Nette\Utils\Strings::trim(strtr($value, "\r\n", '  '));
-	}
-
 
 
 	/**
 	 * Changes control's type attribute.
 	 * @param  string
-	 * @return BaseControl  provides a fluent interface
+	 * @return self
 	 */
 	public function setType($type)
 	{
@@ -68,14 +45,12 @@ class TextInput extends TextBase
 	}
 
 
-
 	/** @deprecated */
 	public function setPasswordMode($mode = TRUE)
 	{
 		$this->control->type = $mode ? 'password' : 'text';
 		return $this;
 	}
-
 
 
 	/**

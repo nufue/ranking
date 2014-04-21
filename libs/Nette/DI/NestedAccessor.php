@@ -2,17 +2,12 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\DI;
 
 use Nette;
-
 
 
 /**
@@ -33,14 +28,12 @@ class NestedAccessor extends Nette\Object
 	private $namespace;
 
 
-
 	public function __construct(Container $container, $namespace)
 	{
 		$this->container = $container;
 		$this->namespace = $namespace . '.';
 		$this->parameters = & $container->parameters[$namespace];
 	}
-
 
 
 	/**
@@ -58,7 +51,6 @@ class NestedAccessor extends Nette\Object
 	}
 
 
-
 	/**
 	 * @return object
 	 */
@@ -67,7 +59,6 @@ class NestedAccessor extends Nette\Object
 		$service = $this->container->getService($this->namespace . $name);
 		return $service;
 	}
-
 
 
 	/**
@@ -79,7 +70,6 @@ class NestedAccessor extends Nette\Object
 	}
 
 
-
 	/**
 	 * @return bool
 	 */
@@ -87,7 +77,6 @@ class NestedAccessor extends Nette\Object
 	{
 		return $this->container->hasService($this->namespace . $name);
 	}
-
 
 
 	/**

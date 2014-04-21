@@ -2,11 +2,7 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Utils;
@@ -14,13 +10,12 @@ namespace Nette\Utils;
 use Nette;
 
 
-
 /**
  * Mime type detector.
  *
  * @author     David Grudl
  */
-final class MimeTypeDetector
+class MimeTypeDetector
 {
 
 	/**
@@ -30,7 +25,6 @@ final class MimeTypeDetector
 	{
 		throw new Nette\StaticClassException;
 	}
-
 
 
 	/**
@@ -49,15 +43,14 @@ final class MimeTypeDetector
 			return $info['mime'];
 
 		} elseif (extension_loaded('fileinfo')) {
-			$type = preg_replace('#[\s;].*$#', '', finfo_file(finfo_open(FILEINFO_MIME), $file));
+			$type = preg_replace('#[\s;].*\z#', '', finfo_file(finfo_open(FILEINFO_MIME), $file));
 
 		} elseif (function_exists('mime_content_type')) {
 			$type = mime_content_type($file);
 		}
 
-		return isset($type) && preg_match('#^\S+/\S+$#', $type) ? $type : 'application/octet-stream';
+		return isset($type) && preg_match('#^\S+/\S+\z#', $type) ? $type : 'application/octet-stream';
 	}
-
 
 
 	/**

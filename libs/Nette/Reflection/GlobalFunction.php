@@ -2,18 +2,13 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Reflection;
 
 use Nette,
 	Nette\ObjectMixin;
-
 
 
 /**
@@ -23,7 +18,7 @@ use Nette,
  * @property-read array $defaultParameters
  * @property-read bool $closure
  * @property-read Extension $extension
- * @property-read array $parameters
+ * @property-read Parameter[] $parameters
  * @property-read bool $disabled
  * @property-read bool $deprecated
  * @property-read bool $internal
@@ -37,7 +32,7 @@ use Nette,
  * @property-read int $numberOfParameters
  * @property-read int $numberOfRequiredParameters
  * @property-read string $shortName
- * @property-read intr $startLine
+ * @property-read int $startLine
  * @property-read array $staticVariables
  */
 class GlobalFunction extends \ReflectionFunction
@@ -52,7 +47,6 @@ class GlobalFunction extends \ReflectionFunction
 	}
 
 
-
 	/**
 	 * @return Nette\Callback
 	 */
@@ -62,12 +56,10 @@ class GlobalFunction extends \ReflectionFunction
 	}
 
 
-
 	public function __toString()
 	{
 		return 'Function ' . $this->getName() . '()';
 	}
-
 
 
 	public function getClosure()
@@ -76,9 +68,7 @@ class GlobalFunction extends \ReflectionFunction
 	}
 
 
-
 	/********************* Reflection layer ****************d*g**/
-
 
 
 	/**
@@ -90,7 +80,9 @@ class GlobalFunction extends \ReflectionFunction
 	}
 
 
-
+	/**
+	 * @return Parameter[]
+	 */
 	public function getParameters()
 	{
 		foreach ($res = parent::getParameters() as $key => $val) {
@@ -100,9 +92,7 @@ class GlobalFunction extends \ReflectionFunction
 	}
 
 
-
 	/********************* Nette\Object behaviour ****************d*g**/
-
 
 
 	/**
@@ -114,12 +104,10 @@ class GlobalFunction extends \ReflectionFunction
 	}
 
 
-
 	public function __call($name, $args)
 	{
 		return ObjectMixin::call($this, $name, $args);
 	}
-
 
 
 	public function &__get($name)
@@ -128,19 +116,16 @@ class GlobalFunction extends \ReflectionFunction
 	}
 
 
-
 	public function __set($name, $value)
 	{
-		return ObjectMixin::set($this, $name, $value);
+		ObjectMixin::set($this, $name, $value);
 	}
-
 
 
 	public function __isset($name)
 	{
 		return ObjectMixin::has($this, $name);
 	}
-
 
 
 	public function __unset($name)

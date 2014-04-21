@@ -1,14 +1,10 @@
 <?php
 
 /**
- * Nette Framework (version 2.0.3 released on 2012-04-04, http://nette.org)
+ * Nette Framework (version 2.0.14 released on 2014-01-01, http://nette.org)
  *
- * Copyright (c) 2004, 2012 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
+ * Copyright (c) 2004, 2014 David Grudl (http://davidgrudl.com)
  */
-
 
 
 /**
@@ -23,15 +19,13 @@ umask(0);
 @header('Content-Type: text/html; charset=utf-8'); // @ - headers may be sent
 
 
-
 /**
  * Load and configure Nette Framework.
  */
 define('NETTE', TRUE);
 define('NETTE_DIR', __DIR__);
-define('NETTE_VERSION_ID', 20003); // v2.0.3
+define('NETTE_VERSION_ID', 20014); // v2.0.14
 define('NETTE_PACKAGE', '5.3');
-
 
 
 require_once __DIR__ . '/common/exceptions.php';
@@ -50,6 +44,7 @@ Nette\Diagnostics\Debugger::_init();
 
 Nette\Utils\SafeStream::register();
 
+class_alias('Nette\Config\Configurator', 'Nette\Configurator');
 
 
 /**
@@ -60,8 +55,5 @@ Nette\Utils\SafeStream::register();
  */
 function callback($callback, $m = NULL)
 {
-	if ($m === NULL) {
-		return $callback instanceof Nette\Callback ? $callback : new Nette\Callback($callback);
-	}
-	return new Nette\Callback(array($callback, $m));
+	return new Nette\Callback($callback, $m);
 }

@@ -2,17 +2,12 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Utils\PhpGenerator;
 
 use Nette;
-
 
 
 /**
@@ -35,8 +30,7 @@ class Helpers
 	}
 
 
-
-	private static function _dump(&$var, $level = 0)
+	private static function _dump(& $var, $level = 0)
 	{
 		if ($var instanceof PhpLiteral) {
 			return $var->value;
@@ -82,10 +76,10 @@ class Helpers
 				$s .= "\n";
 				$var[$marker] = TRUE;
 				$counter = 0;
-				foreach ($var as $k => &$v) {
+				foreach ($var as $k => & $v) {
 					if ($k !== $marker) {
 						$s .= "$space\t" . ($k === $counter ? '' : self::_dump($k) . " => ") . self::_dump($v, $level + 1) . ",\n";
-						$counter = is_int($k) ? $k + 1 : $counter;
+						$counter = is_int($k) ? max($k + 1, $counter) : $counter;
 					}
 				}
 				unset($var[$marker]);
@@ -107,7 +101,7 @@ class Helpers
 			} else {
 				$s .= "\n";
 				$list[] = $var;
-				foreach ($arr as $k => &$v) {
+				foreach ($arr as $k => & $v) {
 					if ($k[0] === "\x00") {
 						$k = substr($k, strrpos($k, "\x00") + 1);
 					}
@@ -126,7 +120,6 @@ class Helpers
 	}
 
 
-
 	/**
 	 * Generates PHP statement.
 	 * @return string
@@ -136,7 +129,6 @@ class Helpers
 		$args = func_get_args();
 		return self::formatArgs(array_shift($args), $args);
 	}
-
 
 
 	/**
@@ -169,7 +161,6 @@ class Helpers
 	}
 
 
-
 	/**
 	 * Returns a PHP representation of a object member.
 	 * @return string
@@ -182,15 +173,13 @@ class Helpers
 	}
 
 
-
 	/**
 	 * @return bool
 	 */
 	public static function isIdentifier($value)
 	{
-		return is_string($value) && preg_match('#^' . self::PHP_IDENT . '$#', $value);
+		return is_string($value) && preg_match('#^' . self::PHP_IDENT . '\z#', $value);
 	}
-
 
 
 	public static function createObject($class, array $props)

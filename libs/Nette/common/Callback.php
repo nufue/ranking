@@ -2,17 +2,12 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette;
 
 use Nette;
-
 
 
 /**
@@ -23,28 +18,43 @@ use Nette;
  * @property-read string|array|\Closure $native
  * @property-read bool $static
  */
-final class Callback extends Object
+class Callback extends Object
 {
 	/** @var callable */
 	private $cb;
 
 
+	/**
+	 * Factory. Workaround for missing (new Callback)->invoke() in PHP 5.3.
+	 * @param  mixed   class, object, callable
+	 * @param  string  method
+	 * @return Callback
+	 */
+	public static function create($callback, $m = NULL)
+	{
+		return new self($callback, $m);
+	}
+
 
 	/**
-	 * Do not call directly, use callback() function.
-	 * @param  callable
+	 * @param  mixed   class, object, callable
+	 * @param  string  method
 	 */
 	public function __construct($cb, $m = NULL)
 	{
 		if ($m !== NULL) {
-			$cb = array($cb, $m); // back-compatibility
+			$cb = array($cb, $m);
+
+		} elseif ($cb instanceof self) { // prevents wrapping itself
+			$this->cb = $cb->cb;
+			return;
 		}
+
 		if (!is_callable($cb, TRUE)) {
 			throw new InvalidArgumentException("Invalid callback.");
 		}
 		$this->cb = $cb;
 	}
-
 
 
 	/**
@@ -56,10 +66,8 @@ final class Callback extends Object
 		if (!is_callable($this->cb)) {
 			throw new InvalidStateException("Callback '$this' is not callable.");
 		}
-		$args = func_get_args();
-		return call_user_func_array($this->cb, $args);
+		return call_user_func_array($this->cb, func_get_args());
 	}
-
 
 
 	/**
@@ -71,10 +79,8 @@ final class Callback extends Object
 		if (!is_callable($this->cb)) {
 			throw new InvalidStateException("Callback '$this' is not callable.");
 		}
-		$args = func_get_args();
-		return call_user_func_array($this->cb, $args);
+		return call_user_func_array($this->cb, func_get_args());
 	}
-
 
 
 	/**
@@ -91,7 +97,6 @@ final class Callback extends Object
 	}
 
 
-
 	/**
 	 * Verifies that callback can be called.
 	 * @return bool
@@ -102,7 +107,6 @@ final class Callback extends Object
 	}
 
 
-
 	/**
 	 * Returns PHP callback pseudotype.
 	 * @return string|array|\Closure
@@ -111,7 +115,6 @@ final class Callback extends Object
 	{
 		return $this->cb;
 	}
-
 
 
 	/**
@@ -132,7 +135,6 @@ final class Callback extends Object
 	}
 
 
-
 	/**
 	 * @return bool
 	 */
@@ -140,7 +142,6 @@ final class Callback extends Object
 	{
 		return is_array($this->cb) ? is_string($this->cb[0]) : is_string($this->cb);
 	}
-
 
 
 	/**

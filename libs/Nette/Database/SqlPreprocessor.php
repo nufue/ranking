@@ -2,17 +2,12 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Database;
 
 use Nette;
-
 
 
 /**
@@ -41,13 +36,11 @@ class SqlPreprocessor extends Nette\Object
 	private $arrayMode;
 
 
-
 	public function __construct(Connection $connection)
 	{
 		$this->connection = $connection;
 		$this->driver = $connection->getSupplementalDriver();
 	}
-
 
 
 	/**
@@ -60,15 +53,9 @@ class SqlPreprocessor extends Nette\Object
 		$this->params = $params;
 		$this->counter = 0;
 		$this->remaining = array();
+		$this->arrayMode = 'assoc';
 
-		$cmd = strtoupper(substr(ltrim($sql), 0, 6)); // detect array mode
-		$this->arrayMode = $cmd === 'INSERT' || $cmd === 'REPLAC' ? 'values' : 'assoc';
-
-		/*~
-			\'.*?\'|".*?"|   ## string
-			\?               ## placeholder
-		~xs*/
-		$sql = Nette\Utils\Strings::replace($sql, '~\'.*?\'|".*?"|\?~s', array($this, 'callback'));
+		$sql = Nette\Utils\Strings::replace($sql, '~\'.*?\'|".*?"|\?|\b(?:INSERT|REPLACE|UPDATE)\b|/\*.*?\*/|--[^\n]*~si', array($this, 'callback'));
 
 		while ($this->counter < count($params)) {
 			$sql .= ' ' . $this->formatValue($params[$this->counter++]);
@@ -78,19 +65,24 @@ class SqlPreprocessor extends Nette\Object
 	}
 
 
-
 	/** @internal */
 	public function callback($m)
 	{
 		$m = $m[0];
-		if ($m[0] === "'" || $m[0] === '"') { // string
+		if ($m[0] === "'" || $m[0] === '"' || $m[0] === '/' || $m[0] === '-') { // string or comment
 			return $m;
 
-		} else { // placeholder
+		} elseif ($m === '?') { // placeholder
+			if ($this->counter >= count($this->params)) {
+				throw new Nette\InvalidArgumentException('There are more placeholders than passed parameters.');
+			}
 			return $this->formatValue($this->params[$this->counter++]);
+
+		} else { // INSERT, REPLACE, UPDATE
+			$this->arrayMode = strtoupper($m) === 'UPDATE' ? 'assoc' : 'values';
+			return $m;
 		}
 	}
-
 
 
 	private function formatValue($value)
@@ -111,8 +103,7 @@ class SqlPreprocessor extends Nette\Object
 			return rtrim(rtrim(number_format($value, 10, '.', ''), '0'), '.');
 
 		} elseif (is_bool($value)) {
-			$this->remaining[] = $value;
-			return '?';
+			return $this->driver->formatBool($value);
 
 		} elseif ($value === NULL) {
 			return 'NULL';
@@ -122,6 +113,10 @@ class SqlPreprocessor extends Nette\Object
 
 		} elseif (is_array($value) || $value instanceof \Traversable) {
 			$vx = $kx = array();
+
+			if ($value instanceof \Traversable) {
+				$value = iterator_to_array($value);
+			}
 
 			if (isset($value[0])) { // non-associative; value, value, value
 				foreach ($value as $v) {
@@ -144,7 +139,7 @@ class SqlPreprocessor extends Nette\Object
 				return implode(', ', $vx);
 
 			} elseif ($this->arrayMode === 'multi') { // multiple insert (value, value, ...), ...
-				foreach ($value as $k => $v) {
+				foreach ($value as $v) {
 					$vx[] = $this->formatValue($v);
 				}
 				return '(' . implode(', ', $vx) . ')';

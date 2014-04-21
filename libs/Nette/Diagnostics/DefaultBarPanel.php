@@ -2,17 +2,12 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Diagnostics;
 
 use Nette;
-
 
 
 /**
@@ -21,7 +16,7 @@ use Nette;
  * @author     David Grudl
  * @internal
  */
-final class DefaultBarPanel extends Nette\Object implements IBarPanel
+class DefaultBarPanel extends Nette\Object implements IBarPanel
 {
 	private $id;
 
@@ -32,7 +27,6 @@ final class DefaultBarPanel extends Nette\Object implements IBarPanel
 	{
 		$this->id = $id;
 	}
-
 
 
 	/**
@@ -54,7 +48,6 @@ final class DefaultBarPanel extends Nette\Object implements IBarPanel
 		}
 		return ob_get_clean();
 	}
-
 
 
 	/**

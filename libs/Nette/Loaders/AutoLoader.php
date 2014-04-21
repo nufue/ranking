@@ -2,17 +2,12 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Loaders;
 
 use Nette;
-
 
 
 /**
@@ -29,13 +24,12 @@ abstract class AutoLoader extends Nette\Object
 	public static $count = 0;
 
 
-
 	/**
 	 * Try to load the requested class.
 	 * @param  string  class/interface name
 	 * @return void
 	 */
-	final public static function load($type)
+	public static function load($type)
 	{
 		foreach (func_get_args() as $type) {
 			if (!class_exists($type)) {
@@ -45,16 +39,14 @@ abstract class AutoLoader extends Nette\Object
 	}
 
 
-
 	/**
 	 * Return all registered autoloaders.
 	 * @return AutoLoader[]
 	 */
-	final public static function getLoaders()
+	public static function getLoaders()
 	{
 		return array_values(self::$loaders);
 	}
-
 
 
 	/**
@@ -72,7 +64,6 @@ abstract class AutoLoader extends Nette\Object
 	}
 
 
-
 	/**
 	 * Unregister autoloader.
 	 * @return bool
@@ -82,7 +73,6 @@ abstract class AutoLoader extends Nette\Object
 		unset(self::$loaders[spl_object_hash($this)]);
 		return spl_autoload_unregister(array($this, 'tryLoad'));
 	}
-
 
 
 	/**

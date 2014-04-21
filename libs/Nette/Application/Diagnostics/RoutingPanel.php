@@ -2,20 +2,15 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Application\Diagnostics;
 
 use Nette,
 	Nette\Application\Routers,
-	Nette\Application\UI\Presenter, // templates
+	Nette\Application\UI\Presenter, // used in templates
 	Nette\Diagnostics\Debugger;
-
 
 
 /**
@@ -38,7 +33,6 @@ class RoutingPanel extends Nette\Object implements Nette\Diagnostics\IBarPanel
 	private $request;
 
 
-
 	public static function initializePanel(Nette\Application\Application $application)
 	{
 		Debugger::$blueScreen->addPanel(function($e) use ($application) {
@@ -51,13 +45,11 @@ class RoutingPanel extends Nette\Object implements Nette\Diagnostics\IBarPanel
 	}
 
 
-
 	public function __construct(Nette\Application\IRouter $router, Nette\Http\IRequest $httpRequest)
 	{
 		$this->router = $router;
 		$this->httpRequest = $httpRequest;
 	}
-
 
 
 	/**
@@ -73,7 +65,6 @@ class RoutingPanel extends Nette\Object implements Nette\Diagnostics\IBarPanel
 	}
 
 
-
 	/**
 	 * Renders panel.
 	 * @return string
@@ -84,7 +75,6 @@ class RoutingPanel extends Nette\Object implements Nette\Diagnostics\IBarPanel
 		require __DIR__ . '/templates/RoutingPanel.panel.phtml';
 		return ob_get_clean();
 	}
-
 
 
 	/**

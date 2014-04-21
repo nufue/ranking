@@ -2,19 +2,14 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\DI\Diagnostics;
 
 use Nette,
 	Nette\DI\Container,
-	Nette\Diagnostics\Helpers;
-
+	Nette\Diagnostics\Helpers; // used in templates
 
 
 /**
@@ -28,7 +23,6 @@ class ContainerPanel extends Nette\Object implements Nette\Diagnostics\IBarPanel
 	private $container;
 
 
-
 	public function __construct(Container $container)
 	{
 		if (PHP_VERSION_ID < 50300) {
@@ -36,7 +30,6 @@ class ContainerPanel extends Nette\Object implements Nette\Diagnostics\IBarPanel
 		}
 		$this->container = $container;
 	}
-
 
 
 	/**
@@ -51,7 +44,6 @@ class ContainerPanel extends Nette\Object implements Nette\Diagnostics\IBarPanel
 	}
 
 
-
 	/**
 	 * Renders panel.
 	 * @return string
@@ -61,7 +53,7 @@ class ContainerPanel extends Nette\Object implements Nette\Diagnostics\IBarPanel
 		$services = $this->getContainerProperty('factories');
 		$factories = array();
 		foreach (Nette\Reflection\ClassType::from($this->container)->getMethods() as $method) {
-			if (preg_match('#^create(Service)?(.+)$#', $method->getName(), $m)) {
+			if (preg_match('#^create(Service)?_*(.+)\z#', $method->getName(), $m)) {
 				$name = str_replace('__', '.', strtolower(substr($m[2], 0, 1)) . substr($m[2], 1));
 				if ($m[1]) {
 					$services[$name] = $method->getAnnotation('return');
@@ -80,7 +72,6 @@ class ContainerPanel extends Nette\Object implements Nette\Diagnostics\IBarPanel
 		require __DIR__ . '/templates/ContainerPanel.panel.phtml';
 		return ob_get_clean();
 	}
-
 
 
 	private function getContainerProperty($name)

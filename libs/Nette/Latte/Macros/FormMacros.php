@@ -2,11 +2,7 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Latte\Macros;
@@ -16,9 +12,7 @@ use Nette,
 	Nette\Latte\MacroNode,
 	Nette\Latte\PhpWriter,
 	Nette\Latte\CompileException,
-	Nette\Forms\Form,
-	Nette\Utils\Strings;
-
+	Nette\Forms\Form;
 
 
 /**
@@ -40,11 +34,11 @@ class FormMacros extends MacroSet
 		$me->addMacro('form',
 			'Nette\Latte\Macros\FormMacros::renderFormBegin($form = $_form = (is_object(%node.word) ? %node.word : $_control[%node.word]), %node.array)',
 			'Nette\Latte\Macros\FormMacros::renderFormEnd($_form)');
-		$me->addMacro('label', array($me, 'macroLabel'), '?></label><?php');
-		$me->addMacro('input', 'echo $_form[%node.word]->getControl()->addAttributes(%node.array)', NULL, array($me, 'macroAttrInput'));
-		$me->addMacro('formContainer', '$_formStack[] = $_form; $formContainer = $_form = $_form[%node.word]', '$_form = array_pop($_formStack)');
+		$me->addMacro('label', array($me, 'macroLabel'), 'if ($_label) echo $_label->endTag()');
+		$me->addMacro('input', '$_input = (is_object(%node.word) ? %node.word : $_form[%node.word]); echo $_input->getControl()->addAttributes(%node.array)', NULL, array($me, 'macroAttrName'));
+		$me->addMacro('formContainer', '$_formStack[] = $_form; $formContainer = $_form = (is_object(%node.word) ? %node.word : $_form[%node.word])', '$_form = array_pop($_formStack)');
+		$me->addMacro('name', NULL, NULL, array($me, 'macroAttrName'));
 	}
-
 
 
 	/********************* macros ****************d*g**/
@@ -55,7 +49,7 @@ class FormMacros extends MacroSet
 	 */
 	public function macroLabel(MacroNode $node, PhpWriter $writer)
 	{
-		$cmd = 'if ($_label = $_form[%node.word]->getLabel()) echo $_label->addAttributes(%node.array)';
+		$cmd = '$_input = is_object(%node.word) ? %node.word : $_form[%node.word]; if ($_label = $_input->getLabel()) echo $_label->addAttributes(%node.array)';
 		if ($node->isEmpty = (substr($node->args, -1) === '/')) {
 			$node->setArgs(substr($node->args, 0, -1));
 			return $writer->write($cmd);
@@ -65,23 +59,20 @@ class FormMacros extends MacroSet
 	}
 
 
-
 	/**
-	 * n:input
+	 * <input n:name> or alias n:input
 	 */
-	public function macroAttrInput(MacroNode $node, PhpWriter $writer)
+	public function macroAttrName(MacroNode $node, PhpWriter $writer)
 	{
 		if ($node->htmlNode->attrs) {
 			$reset = array_fill_keys(array_keys($node->htmlNode->attrs), NULL);
-			return $writer->write('echo $_form[%node.word]->getControl()->addAttributes(%var)->attributes()', $reset);
+			return $writer->write('$_input = (is_object(%node.word) ? %node.word : $_form[%node.word]); echo $_input->getControl()->addAttributes(%var)->attributes()', $reset);
 		}
-		return $writer->write('echo $_form[%node.word]->getControl()->attributes()');
+		return $writer->write('$_input = (is_object(%node.word) ? %node.word : $_form[%node.word]); echo $_input->getControl()->attributes()');
 	}
 
 
-
 	/********************* run-time writers ****************d*g**/
-
 
 
 	/**
@@ -91,14 +82,16 @@ class FormMacros extends MacroSet
 	public static function renderFormBegin(Form $form, array $attrs)
 	{
 		$el = $form->getElementPrototype();
-		$el->action = (string) $el->action;
+		$el->action = $action = (string) $el->action;
 		$el = clone $el;
 		if (strcasecmp($form->getMethod(), 'get') === 0) {
-			list($el->action) = explode('?', $el->action, 2);
+			list($el->action) = explode('?', $action, 2);
+			if (($i = strpos($action, '#')) !== FALSE) {
+				$el->action .= substr($action, $i);
+			}
 		}
 		echo $el->addAttributes($attrs)->startTag();
 	}
-
 
 
 	/**
@@ -111,6 +104,7 @@ class FormMacros extends MacroSet
 		if (strcasecmp($form->getMethod(), 'get') === 0) {
 			$url = explode('?', $form->getElementPrototype()->action, 2);
 			if (isset($url[1])) {
+				list($url[1]) = explode('#', $url[1], 2);
 				foreach (preg_split('#[;&]#', $url[1]) as $param) {
 					$parts = explode('=', $param, 2);
 					$name = urldecode($parts[0]);

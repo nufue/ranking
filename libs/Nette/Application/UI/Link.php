@@ -2,17 +2,12 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Application\UI;
 
 use Nette;
-
 
 
 /**
@@ -39,9 +34,6 @@ class Link extends Nette\Object
 
 	/**
 	 * Link specification.
-	 * @param  PresenterComponent
-	 * @param  string
-	 * @param  array
 	 */
 	public function __construct(PresenterComponent $component, $destination, array $params)
 	{
@@ -49,7 +41,6 @@ class Link extends Nette\Object
 		$this->destination = $destination;
 		$this->params = $params;
 	}
-
 
 
 	/**
@@ -62,19 +53,17 @@ class Link extends Nette\Object
 	}
 
 
-
 	/**
 	 * Changes link parameter.
 	 * @param  string
 	 * @param  mixed
-	 * @return Link  provides a fluent interface
+	 * @return self
 	 */
 	public function setParameter($key, $value)
 	{
 		$this->params[$key] = $value;
 		return $this;
 	}
-
 
 
 	/**
@@ -88,7 +77,6 @@ class Link extends Nette\Object
 	}
 
 
-
 	/**
 	 * Returns link parameters.
 	 * @return array
@@ -99,7 +87,6 @@ class Link extends Nette\Object
 	}
 
 
-
 	/**
 	 * Converts link to URL.
 	 * @return string
@@ -107,10 +94,10 @@ class Link extends Nette\Object
 	public function __toString()
 	{
 		try {
-			return $this->component->link($this->destination, $this->params);
+			return (string) $this->component->link($this->destination, $this->params);
 
 		} catch (\Exception $e) {
-			Nette\Diagnostics\Debugger::toStringException($e);
+			trigger_error("Exception in " . __METHOD__ . "(): {$e->getMessage()} in {$e->getFile()}:{$e->getLine()}", E_USER_ERROR);
 		}
 	}
 

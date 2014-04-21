@@ -2,11 +2,7 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Latte\Macros;
@@ -17,7 +13,6 @@ use Nette,
 	Nette\Latte\PhpWriter,
 	Nette\Latte\CompileException,
 	Nette\Utils\Strings;
-
 
 
 /**
@@ -33,15 +28,11 @@ use Nette,
  */
 class UIMacros extends MacroSet
 {
-	/** @internal PHP identifier */
-	const RE_IDENTIFIER = '[_a-zA-Z\x7F-\xFF][_a-zA-Z0-9\x7F-\xFF]*';
-
 	/** @var array */
 	private $namedBlocks = array();
 
 	/** @var bool */
 	private $extends;
-
 
 
 	public static function install(Latte\Compiler $compiler)
@@ -54,7 +45,7 @@ class UIMacros extends MacroSet
 		$me->addMacro('block', array($me, 'macroBlock'), array($me, 'macroBlockEnd'));
 		$me->addMacro('define', array($me, 'macroBlock'), array($me, 'macroBlockEnd'));
 		$me->addMacro('snippet', array($me, 'macroBlock'), array($me, 'macroBlockEnd'));
-		$me->addMacro('ifset', array($me, 'macroIfset'), 'endif');
+		$me->addMacro('ifset', array($me, 'macroIfset'), '}');
 
 		$me->addMacro('widget', array($me, 'macroControl')); // deprecated - use control
 		$me->addMacro('control', array($me, 'macroControl'));
@@ -64,12 +55,11 @@ class UIMacros extends MacroSet
 		});
 		$me->addMacro('plink', array($me, 'macroLink'));
 		$me->addMacro('link', array($me, 'macroLink'));
-		$me->addMacro('ifCurrent', array($me, 'macroIfCurrent'), 'endif'); // deprecated; use n:class="$presenter->linkCurrent ? ..."
+		$me->addMacro('ifCurrent', array($me, 'macroIfCurrent'), '}'); // deprecated; use n:class="$presenter->linkCurrent ? ..."
 
 		$me->addMacro('contentType', array($me, 'macroContentType'));
 		$me->addMacro('status', array($me, 'macroStatus'));
 	}
-
 
 
 	/**
@@ -81,7 +71,6 @@ class UIMacros extends MacroSet
 		$this->namedBlocks = array();
 		$this->extends = NULL;
 	}
-
 
 
 	/**
@@ -104,8 +93,7 @@ class UIMacros extends MacroSet
 				$snippet = $name[0] === '_';
 				$prolog[] = "//\n// block $name\n//\n"
 					. "if (!function_exists(\$_l->blocks[" . var_export($name, TRUE) . "][] = '$func')) { "
-					. "function $func(\$_l, \$_args) { "
-					. (PHP_VERSION_ID > 50208 ? 'extract($_args)' : 'foreach ($_args as $__k => $__v) $$__k = $__v') // PHP bug #46873
+					. "function $func(\$_l, \$_args) { foreach (\$_args as \$__k => \$__v) \$\$__k = \$__v"
 					. ($snippet ? '; $_control->validateControl(' . var_export(substr($name, 1), TRUE) . ')' : '')
 					. "\n?>$code<?php\n}}";
 			}
@@ -138,9 +126,7 @@ if (!empty($_control->snippetMode)) {
 	}
 
 
-
 	/********************* macros ****************d*g**/
-
 
 
 	/**
@@ -154,10 +140,6 @@ if (!empty($_control->snippetMode)) {
 		}
 
 		$destination = ltrim($destination, '#');
-		if (!Strings::match($destination, '#^\$?' . self::RE_IDENTIFIER . '$#')) {
-			throw new CompileException("Included block name must be alphanumeric string, '$destination' given.");
-		}
-
 		$parent = $destination === 'parent';
 		if ($destination === 'parent' || $destination === 'this') {
 			for ($item = $node->parentNode; $item && $item->name !== 'block' && !isset($item->data->name); $item = $item->parentNode);
@@ -167,7 +149,7 @@ if (!empty($_control->snippetMode)) {
 			$destination = $item->data->name;
 		}
 
-		$name = $destination[0] === '$' ? $destination : var_export($destination, TRUE);
+		$name = Strings::contains($destination, '$') ? $destination : var_export($destination, TRUE);
 		if (isset($this->namedBlocks[$destination]) && !$parent) {
 			$cmd = "call_user_func(reset(\$_l->blocks[$name]), \$_l, %node.array? + get_defined_vars())";
 		} else {
@@ -182,7 +164,6 @@ if (!empty($_control->snippetMode)) {
 	}
 
 
-
 	/**
 	 * {includeblock "file"}
 	 */
@@ -193,20 +174,19 @@ if (!empty($_control->snippetMode)) {
 	}
 
 
-
 	/**
 	 * {extends auto | none | $var | "file"}
 	 */
 	public function macroExtends(MacroNode $node, PhpWriter $writer)
 	{
 		if (!$node->args) {
-			throw new CompileException("Missing destination in {extends}");
+			throw new CompileException('Missing destination in {' . $node->name . '}');
 		}
 		if (!empty($node->parentNode)) {
-			throw new CompileException("{extends} must be placed outside any macro.");
+			throw new CompileException('{' . $node->name . '} must be placed outside any macro.');
 		}
 		if ($this->extends !== NULL) {
-			throw new CompileException("Multiple {extends} declarations are not allowed.");
+			throw new CompileException('Multiple {' . $node->name . '} declarations are not allowed.');
 		}
 		if ($node->args === 'none') {
 			$this->extends = 'FALSE';
@@ -217,7 +197,6 @@ if (!empty($_control->snippetMode)) {
 		}
 		return;
 	}
-
 
 
 	/**
@@ -239,7 +218,7 @@ if (!empty($_control->snippetMode)) {
 				throw new CompileException("Missing block name.");
 			}
 
-		} elseif (!Strings::match($name, '#^' . self::RE_IDENTIFIER . '$#')) { // dynamic blok/snippet
+		} elseif (Strings::contains($name, '$')) { // dynamic block/snippet
 			if ($node->name === 'snippet') {
 				for ($parent = $node->parentNode; $parent && $parent->name !== 'snippet'; $parent = $parent->parentNode);
 				if (!$parent) {
@@ -261,24 +240,24 @@ if (!empty($_control->snippetMode)) {
 			} else {
 				$node->data->leave = TRUE;
 				$fname = $writer->formatWord($name);
-				$node->closingCode = "<?php }} call_user_func(reset(\$_l->blocks[$fname]), \$_l, get_defined_vars()) ?>";
+				$node->closingCode = "<?php }} " . ($node->name === 'define' ? '' : "call_user_func(reset(\$_l->blocks[$fname]), \$_l, get_defined_vars())") . " ?>";
 				$func = '_lb' . substr(md5($this->getCompiler()->getTemplateId() . $name), 0, 10) . '_' . preg_replace('#[^a-z0-9_]#i', '_', $name);
-				return "//\n// block $name\n//\n"
-					. "if (!function_exists(\$_l->blocks[$fname][] = '$func')) { "
-					. "function $func(\$_l, \$_args) { "
-					. (PHP_VERSION_ID > 50208 ? 'extract($_args)' : 'foreach ($_args as $__k => $__v) $$__k = $__v'); // PHP bug #46873
+				return "\n\n//\n// block $name\n//\n"
+					. "if (!function_exists(\$_l->blocks[$fname]['{$this->getCompiler()->getTemplateId()}'] = '$func')) { "
+					. "function $func(\$_l, \$_args) { foreach (\$_args as \$__k => \$__v) \$\$__k = \$__v";
 			}
 		}
 
-		// static blok/snippet
+		// static block/snippet
 		if ($node->name === 'snippet') {
 			$node->data->name = $name = '_' . $name;
 		}
+
 		if (isset($this->namedBlocks[$name])) {
 			throw new CompileException("Cannot redeclare static block '$name'");
 		}
+
 		$prolog = $this->namedBlocks ? '' : "if (\$_l->extends) { ob_end_clean(); return Nette\\Latte\\Macros\\CoreMacros::includeTemplate(\$_l->extends, get_defined_vars(), \$template)->render(); }\n";
-		$top = empty($node->parentNode);
 		$this->namedBlocks[$name] = TRUE;
 
 		$include = 'call_user_func(reset($_l->blocks[%var]), $_l, ' . ($node->name === 'snippet' ? '$template->getParameters()' : 'get_defined_vars()') . ')';
@@ -306,7 +285,6 @@ if (!empty($_control->snippetMode)) {
 	}
 
 
-
 	/**
 	 * {/block}
 	 * {/snippet}
@@ -316,7 +294,7 @@ if (!empty($_control->snippetMode)) {
 	{
 		if (isset($node->data->name)) { // block, snippet, define
 			if ($node->name === 'snippet' && $node->htmlNode && !$node->prefix // n:snippet -> n:inner-snippet
-				&& preg_match("#^.*? n:\w+>\n?#s", $node->content, $m1) && preg_match("#[ \t]*<[^<]+$#sD", $node->content, $m2))
+				&& preg_match('#^.*? n:\w+>\n?#s', $node->content, $m1) && preg_match('#[ \t]*<[^<]+\z#s', $node->content, $m2))
 			{
 				$node->openingCode = $m1[0] . $node->openingCode;
 				$node->content = substr($node->content, strlen($m1[0]), -strlen($m2[0]));
@@ -338,7 +316,6 @@ if (!empty($_control->snippetMode)) {
 	}
 
 
-
 	/**
 	 * {ifset #block}
 	 */
@@ -351,9 +328,8 @@ if (!empty($_control->snippetMode)) {
 		while (($name = $node->tokenizer->fetchWord()) !== FALSE) {
 			$list[] = $name[0] === '#' ? '$_l->blocks["' . substr($name, 1) . '"]' : $name;
 		}
-		return 'if (isset(' . implode(', ', $list) . ')):';
+		return 'if (isset(' . implode(', ', $list) . ')) {';
 	}
-
 
 
 	/**
@@ -368,7 +344,7 @@ if (!empty($_control->snippetMode)) {
 		$pair = explode(':', $pair, 2);
 		$name = $writer->formatWord($pair[0]);
 		$method = isset($pair[1]) ? ucfirst($pair[1]) : '';
-		$method = Strings::match($method, '#^(' . self::RE_IDENTIFIER . '|)$#') ? "render$method" : "{\"render$method\"}";
+		$method = Strings::match($method, '#^\w*\z#') ? "render$method" : "{\"render$method\"}";
 		$param = $writer->formatArray();
 		if (!Strings::contains($node->args, '=>')) {
 			$param = substr($param, 6, -1); // removes array()
@@ -378,7 +354,6 @@ if (!empty($_control->snippetMode)) {
 			. 'if ($_ctrl instanceof Nette\Application\UI\IRenderable) $_ctrl->validateControl(); '
 			. "\$_ctrl->$method($param)";
 	}
-
 
 
 	/**
@@ -392,16 +367,14 @@ if (!empty($_control->snippetMode)) {
 	}
 
 
-
 	/**
 	 * {ifCurrent destination [,] [params]}
 	 */
 	public function macroIfCurrent(MacroNode $node, PhpWriter $writer)
 	{
 		return $writer->write(($node->args ? 'try { $_presenter->link(%node.word, %node.array?); } catch (Nette\Application\UI\InvalidLinkException $e) {}' : '')
-			. '; if ($_presenter->getLastCreatedRequestFlag("current")):');
+			. '; if ($_presenter->getLastCreatedRequestFlag("current")) {');
 	}
-
 
 
 	/**
@@ -438,7 +411,6 @@ if (!empty($_control->snippetMode)) {
 	}
 
 
-
 	/**
 	 * {status ...}
 	 */
@@ -450,9 +422,7 @@ if (!empty($_control->snippetMode)) {
 	}
 
 
-
 	/********************* run-time writers ****************d*g**/
-
 
 
 	/**
@@ -469,7 +439,6 @@ if (!empty($_control->snippetMode)) {
 	}
 
 
-
 	/**
 	 * Calls parent block.
 	 * @return void
@@ -481,7 +450,6 @@ if (!empty($_control->snippetMode)) {
 		}
 		$block($context, $params);
 	}
-
 
 
 	public static function renderSnippets(Nette\Application\UI\Control $control, \stdClass $local, array $params)
@@ -503,6 +471,7 @@ if (!empty($_control->snippetMode)) {
 				}
 			}
 		}
+		$control->snippetMode = TRUE;
 		if ($control instanceof Nette\Application\UI\IRenderable) {
 			$queue = array($control);
 			do {

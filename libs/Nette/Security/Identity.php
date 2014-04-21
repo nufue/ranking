@@ -2,17 +2,12 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Security;
 
 use Nette;
-
 
 
 /**
@@ -51,11 +46,10 @@ class Identity extends Nette\FreezableObject implements IIdentity
 	}
 
 
-
 	/**
 	 * Sets the ID of user.
 	 * @param  mixed
-	 * @return Identity  provides a fluent interface
+	 * @return self
 	 */
 	public function setId($id)
 	{
@@ -63,7 +57,6 @@ class Identity extends Nette\FreezableObject implements IIdentity
 		$this->id = is_numeric($id) ? 1 * $id : $id;
 		return $this;
 	}
-
 
 
 	/**
@@ -76,11 +69,10 @@ class Identity extends Nette\FreezableObject implements IIdentity
 	}
 
 
-
 	/**
 	 * Sets a list of roles that the user is a member of.
 	 * @param  array
-	 * @return Identity  provides a fluent interface
+	 * @return self
 	 */
 	public function setRoles(array $roles)
 	{
@@ -88,7 +80,6 @@ class Identity extends Nette\FreezableObject implements IIdentity
 		$this->roles = $roles;
 		return $this;
 	}
-
 
 
 	/**
@@ -101,7 +92,6 @@ class Identity extends Nette\FreezableObject implements IIdentity
 	}
 
 
-
 	/**
 	 * Returns a user data.
 	 * @return array
@@ -110,7 +100,6 @@ class Identity extends Nette\FreezableObject implements IIdentity
 	{
 		return $this->data;
 	}
-
 
 
 	/**
@@ -131,7 +120,6 @@ class Identity extends Nette\FreezableObject implements IIdentity
 	}
 
 
-
 	/**
 	 * Returns user data value.
 	 * @param  string  property name
@@ -148,7 +136,6 @@ class Identity extends Nette\FreezableObject implements IIdentity
 	}
 
 
-
 	/**
 	 * Is property defined?
 	 * @param  string  property name
@@ -158,7 +145,6 @@ class Identity extends Nette\FreezableObject implements IIdentity
 	{
 		return isset($this->data[$key]) || parent::__isset($key);
 	}
-
 
 
 	/**

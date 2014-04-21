@@ -2,11 +2,7 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace NetteModule;
@@ -15,7 +11,6 @@ use Nette,
 	Nette\Application,
 	Nette\Application\Responses,
 	Nette\Http;
-
 
 
 /**
@@ -34,27 +29,23 @@ class MicroPresenter extends Nette\Object implements Application\IPresenter
 	private $request;
 
 
-
 	public function __construct(Nette\DI\Container $context)
 	{
 		$this->context = $context;
 	}
 
 
-
 	/**
 	 * Gets the context.
 	 * @return \SystemContainer|Nette\DI\Container
 	 */
-	final public function getContext()
+	public function getContext()
 	{
 		return $this->context;
 	}
 
 
-
 	/**
-	 * @param  Nette\Application\Request
 	 * @return Nette\Application\IResponse
 	 */
 	public function run(Application\Request $request)
@@ -64,7 +55,7 @@ class MicroPresenter extends Nette\Object implements Application\IPresenter
 		$httpRequest = $this->context->getByType('Nette\Http\IRequest');
 		if (!$httpRequest->isAjax() && ($request->isMethod('get') || $request->isMethod('head'))) {
 			$refUrl = clone $httpRequest->getUrl();
-			$url = $this->context->router->constructUrl($request, $refUrl->setPath($refUrl->getScriptPath()));
+			$url = $this->context->getService('router')->constructUrl($request, $refUrl->setPath($refUrl->getScriptPath()));
 			if ($url !== NULL && !$httpRequest->getUrl()->isEqual($url)) {
 				return new Responses\RedirectResponse($url, Http\IResponse::S301_MOVED_PERMANENTLY);
 			}
@@ -72,11 +63,11 @@ class MicroPresenter extends Nette\Object implements Application\IPresenter
 
 		$params = $request->getParameters();
 		if (!isset($params['callback'])) {
-			return;
+			throw new Application\BadRequestException("Parameter callback is missing.");
 		}
 		$params['presenter'] = $this;
-		$method = callback($params['callback'])->toReflection();
-		$response = $method->invokeArgs(Application\UI\PresenterComponentReflection::combineArgs($method, $params));
+		$callback = new Nette\Callback($params['callback']);
+		$response = $callback->invokeArgs(Application\UI\PresenterComponentReflection::combineArgs($callback->toReflection(), $params));
 
 		if (is_string($response)) {
 			$response = array($response, array());
@@ -98,7 +89,6 @@ class MicroPresenter extends Nette\Object implements Application\IPresenter
 	}
 
 
-
 	/**
 	 * Template factory.
 	 * @param  string
@@ -117,26 +107,24 @@ class MicroPresenter extends Nette\Object implements Application\IPresenter
 		$template->basePath = rtrim($url->getBasePath(), '/');
 
 		$template->registerHelperLoader('Nette\Templating\Helpers::loader');
-		$template->setCacheStorage($context->nette->templateCacheStorage);
-		$template->onPrepareFilters[] = function($template) use ($latteFactory, $context) {
+		$template->setCacheStorage($context->getService('nette.templateCacheStorage'));
+		$template->onPrepareFilters[] = function($template) use ($latteFactory) {
 			$template->registerFilter($latteFactory ? $latteFactory() : new Nette\Latte\Engine);
 		};
 		return $template;
 	}
 
 
-
 	/**
 	 * Redirects to another URL.
 	 * @param  string
 	 * @param  int HTTP code
-	 * @return void
+	 * @return Nette\Application\Responses\RedirectResponse
 	 */
 	public function redirectUrl($url, $code = Http\IResponse::S302_FOUND)
 	{
 		return new Responses\RedirectResponse($url, $code);
 	}
-
 
 
 	/**
@@ -150,7 +138,6 @@ class MicroPresenter extends Nette\Object implements Application\IPresenter
 	{
 		throw new Application\BadRequestException($message, $code);
 	}
-
 
 
 	/**

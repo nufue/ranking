@@ -2,17 +2,12 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Forms\Controls;
 
 use Nette;
-
 
 
 /**
@@ -35,7 +30,6 @@ class SubmitButton extends Button implements Nette\Forms\ISubmitterControl
 	private $validationScope = TRUE;
 
 
-
 	/**
 	 * @param  string  caption
 	 */
@@ -46,11 +40,10 @@ class SubmitButton extends Button implements Nette\Forms\ISubmitterControl
 	}
 
 
-
 	/**
 	 * Sets 'pressed' indicator.
 	 * @param  bool
-	 * @return SubmitButton  provides a fluent interface
+	 * @return self
 	 */
 	public function setValue($value)
 	{
@@ -59,7 +52,6 @@ class SubmitButton extends Button implements Nette\Forms\ISubmitterControl
 		}
 		return $this;
 	}
-
 
 
 	/**
@@ -72,11 +64,10 @@ class SubmitButton extends Button implements Nette\Forms\ISubmitterControl
 	}
 
 
-
 	/**
 	 * Sets the validation scope. Clicking the button validates only the controls within the specified scope.
 	 * @param  mixed
-	 * @return SubmitButton  provides a fluent interface
+	 * @return self
 	 */
 	public function setValidationScope($scope)
 	{
@@ -87,16 +78,14 @@ class SubmitButton extends Button implements Nette\Forms\ISubmitterControl
 	}
 
 
-
 	/**
 	 * Gets the validation scope.
 	 * @return mixed
 	 */
-	final public function getValidationScope()
+	public function getValidationScope()
 	{
 		return $this->validationScope;
 	}
-
 
 
 	/**
@@ -109,10 +98,8 @@ class SubmitButton extends Button implements Nette\Forms\ISubmitterControl
 	}
 
 
-
 	/**
 	 * Submitted validator: has been button pressed?
-	 * @param  Nette\Forms\ISubmitterControl
 	 * @return bool
 	 */
 	public static function validateSubmitted(Nette\Forms\ISubmitterControl $control)

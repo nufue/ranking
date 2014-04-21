@@ -2,11 +2,7 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Forms;
@@ -14,20 +10,19 @@ namespace Nette\Forms;
 use Nette;
 
 
-
 /**
  * List of validation & condition rules.
  *
  * @author     David Grudl
  */
-final class Rules extends Nette\Object implements \IteratorAggregate
+class Rules extends Nette\Object implements \IteratorAggregate
 {
 	/** @internal */
 	const VALIDATE_PREFIX = 'validate';
 
 	/** @var array */
 	public static $defaultMessages = array(
-		Form::PROTECTION => 'Security token did not match. Possible CSRF attack.',
+		Form::PROTECTION => 'Please submit this form again (security token has expired).',
 		Form::EQUAL => 'Please enter %s.',
 		Form::FILLED => 'Please complete mandatory field.',
 		Form::MIN_LENGTH => 'Please enter a value of at least %d characters.',
@@ -55,12 +50,10 @@ final class Rules extends Nette\Object implements \IteratorAggregate
 	private $control;
 
 
-
 	public function __construct(IControl $control)
 	{
 		$this->control = $control;
 	}
-
 
 
 	/**
@@ -68,7 +61,7 @@ final class Rules extends Nette\Object implements \IteratorAggregate
 	 * @param  mixed      rule type
 	 * @param  string     message to display for invalid data
 	 * @param  mixed      optional rule arguments
-	 * @return Rules      provides a fluent interface
+	 * @return self
 	 */
 	public function addRule($operation, $message = NULL, $arg = NULL)
 	{
@@ -88,7 +81,6 @@ final class Rules extends Nette\Object implements \IteratorAggregate
 	}
 
 
-
 	/**
 	 * Adds a validation condition a returns new branch.
 	 * @param  mixed      condition type
@@ -99,7 +91,6 @@ final class Rules extends Nette\Object implements \IteratorAggregate
 	{
 		return $this->addConditionOn($this->control, $operation, $arg);
 	}
-
 
 
 	/**
@@ -125,7 +116,6 @@ final class Rules extends Nette\Object implements \IteratorAggregate
 	}
 
 
-
 	/**
 	 * Adds a else statement.
 	 * @return Rules      else branch
@@ -141,7 +131,6 @@ final class Rules extends Nette\Object implements \IteratorAggregate
 	}
 
 
-
 	/**
 	 * Ends current validation condition.
 	 * @return Rules      parent branch
@@ -152,19 +141,17 @@ final class Rules extends Nette\Object implements \IteratorAggregate
 	}
 
 
-
 	/**
 	 * Toggles HTML elememnt visibility.
 	 * @param  string     element id
 	 * @param  bool       hide element?
-	 * @return Rules      provides a fluent interface
+	 * @return self
 	 */
 	public function toggle($id, $hide = TRUE)
 	{
 		$this->toggles[$id] = $hide;
 		return $this;
 	}
-
 
 
 	/**
@@ -197,26 +184,23 @@ final class Rules extends Nette\Object implements \IteratorAggregate
 	}
 
 
-
 	/**
 	 * Iterates over ruleset.
 	 * @return \ArrayIterator
 	 */
-	final public function getIterator()
+	public function getIterator()
 	{
 		return new \ArrayIterator($this->rules);
 	}
 
 
-
 	/**
 	 * @return array
 	 */
-	final public function getToggles()
+	public function getToggles()
 	{
 		return $this->toggles;
 	}
-
 
 
 	/**
@@ -233,22 +217,20 @@ final class Rules extends Nette\Object implements \IteratorAggregate
 
 		if (!$this->getCallback($rule)->isCallable()) {
 			$operation = is_scalar($rule->operation) ? " '$rule->operation'" : '';
-			throw new Nette\InvalidArgumentException("Unknown operation$operation for control '{$rule->control->name}'.");
+			throw new Nette\InvalidArgumentException("Unknown operation$operation for control '{$rule->control->getName()}'.");
 		}
 	}
-
 
 
 	private function getCallback($rule)
 	{
 		$op = $rule->operation;
 		if (is_string($op) && strncmp($op, ':', 1) === 0) {
-			return callback(get_class($rule->control), self::VALIDATE_PREFIX . ltrim($op, ':'));
+			return new Nette\Callback(get_class($rule->control), self::VALIDATE_PREFIX . ltrim($op, ':'));
 		} else {
-			return callback($op);
+			return new Nette\Callback($op);
 		}
 	}
-
 
 
 	public static function formatMessage($rule, $withValue)
@@ -257,8 +239,8 @@ final class Rules extends Nette\Object implements \IteratorAggregate
 		if ($message instanceof Nette\Utils\Html) {
 			return $message;
 		}
-		if (!isset($message)) { // report missing message by notice
-			$message = static::$defaultMessages[$rule->operation];
+		if ($message == NULL) { // intentionally ==
+			trigger_error("Missing validation message for control '{$rule->control->getName()}'.", E_USER_WARNING);
 		}
 		if ($translator = $rule->control->getForm()->getTranslator()) {
 			$message = $translator->translate($message, is_int($rule->arg) ? $rule->arg : NULL);

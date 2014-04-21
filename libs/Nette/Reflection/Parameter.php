@@ -2,18 +2,13 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Reflection;
 
 use Nette,
 	Nette\ObjectMixin;
-
 
 
 /**
@@ -44,7 +39,6 @@ class Parameter extends \ReflectionParameter
 	}
 
 
-
 	/**
 	 * @return ClassType
 	 */
@@ -52,7 +46,6 @@ class Parameter extends \ReflectionParameter
 	{
 		return ($ref = parent::getClass()) ? new ClassType($ref->getName()) : NULL;
 	}
-
 
 
 	/**
@@ -71,7 +64,6 @@ class Parameter extends \ReflectionParameter
 	}
 
 
-
 	/**
 	 * @return ClassType
 	 */
@@ -81,9 +73,8 @@ class Parameter extends \ReflectionParameter
 	}
 
 
-
 	/**
-	 * @return Method | FunctionReflection
+	 * @return Method|GlobalFunction
 	 */
 	public function getDeclaringFunction()
 	{
@@ -93,6 +84,22 @@ class Parameter extends \ReflectionParameter
 	}
 
 
+	/**
+	 * @return bool
+	 */
+	public function isDefaultValueAvailable()
+	{
+		if (PHP_VERSION_ID === 50316) { // PHP bug #62988
+			try {
+				$this->getDefaultValue();
+				return TRUE;
+			} catch (\ReflectionException $e) {
+				return FALSE;
+			}
+		}
+		return parent::isDefaultValueAvailable();
+	}
+
 
 	public function __toString()
 	{
@@ -100,9 +107,7 @@ class Parameter extends \ReflectionParameter
 	}
 
 
-
 	/********************* Nette\Object behaviour ****************d*g**/
-
 
 
 	/**
@@ -114,12 +119,10 @@ class Parameter extends \ReflectionParameter
 	}
 
 
-
 	public function __call($name, $args)
 	{
 		return ObjectMixin::call($this, $name, $args);
 	}
-
 
 
 	public function &__get($name)
@@ -128,19 +131,16 @@ class Parameter extends \ReflectionParameter
 	}
 
 
-
 	public function __set($name, $value)
 	{
-		return ObjectMixin::set($this, $name, $value);
+		ObjectMixin::set($this, $name, $value);
 	}
-
 
 
 	public function __isset($name)
 	{
 		return ObjectMixin::has($this, $name);
 	}
-
 
 
 	public function __unset($name)

@@ -2,11 +2,7 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Application;
@@ -14,13 +10,12 @@ namespace Nette\Application;
 use Nette;
 
 
-
 /**
  * Default presenter loader.
  *
  * @author     David Grudl
  */
-class PresenterFactory implements IPresenterFactory
+class PresenterFactory extends Nette\Object implements IPresenterFactory
 {
 	/** @var bool */
 	public $caseSensitive = FALSE;
@@ -32,38 +27,45 @@ class PresenterFactory implements IPresenterFactory
 	private $cache = array();
 
 	/** @var Nette\DI\Container */
-	private $context;
-
+	private $container;
 
 
 	/**
 	 * @param  string
 	 */
-	public function __construct($baseDir, Nette\DI\Container $context)
+	public function __construct($baseDir, Nette\DI\Container $container)
 	{
 		$this->baseDir = $baseDir;
-		$this->context = $context;
+		$this->container = $container;
 	}
 
 
-
 	/**
-	 * Create new presenter instance.
+	 * Creates new presenter instance.
 	 * @param  string  presenter name
 	 * @return IPresenter
 	 */
 	public function createPresenter($name)
 	{
-		$presenter = $this->context->createInstance($this->getPresenterClass($name));
+		$presenter = $this->container->createInstance($this->getPresenterClass($name));
 		if (method_exists($presenter, 'setContext')) {
-			$this->context->callMethod(array($presenter, 'setContext'));
+			$this->container->callMethod(array($presenter, 'setContext'));
+		}
+		foreach (array_reverse(get_class_methods($presenter)) as $method) {
+			if (substr($method, 0, 6) === 'inject') {
+				$this->container->callMethod(array($presenter, $method));
+			}
+		}
+
+		if ($presenter instanceof UI\Presenter && $presenter->invalidLinkMode === NULL) {
+			$presenter->invalidLinkMode = $this->container->parameters['debugMode'] ? UI\Presenter::INVALID_LINK_WARNING : UI\Presenter::INVALID_LINK_SILENT;
 		}
 		return $presenter;
 	}
 
 
-
 	/**
+	 * Generates and checks presenter class name.
 	 * @param  string  presenter name
 	 * @return string  class name
 	 * @throws InvalidPresenterException
@@ -75,7 +77,7 @@ class PresenterFactory implements IPresenterFactory
 			return $class;
 		}
 
-		if (!is_string($name) || !Nette\Utils\Strings::match($name, "#^[a-zA-Z\x7f-\xff][a-zA-Z0-9\x7f-\xff:]*$#")) {
+		if (!is_string($name) || !Nette\Utils\Strings::match($name, '#^[a-zA-Z\x7f-\xff][a-zA-Z0-9\x7f-\xff:]*\z#')) {
 			throw new InvalidPresenterException("Presenter name must be alphanumeric string, '$name' is invalid.");
 		}
 
@@ -121,7 +123,6 @@ class PresenterFactory implements IPresenterFactory
 	}
 
 
-
 	/**
 	 * Formats presenter class name from its name.
 	 * @param  string
@@ -133,7 +134,6 @@ class PresenterFactory implements IPresenterFactory
 	}
 
 
-
 	/**
 	 * Formats presenter name from class name.
 	 * @param  string
@@ -143,7 +143,6 @@ class PresenterFactory implements IPresenterFactory
 	{
 		return str_replace('Module\\', ':', substr($class, 0, -9));
 	}
-
 
 
 	/**

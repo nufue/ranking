@@ -2,18 +2,13 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Http;
 
 use Nette,
 	Nette\Utils\Strings;
-
 
 
 /**
@@ -29,24 +24,22 @@ class RequestFactory extends Nette\Object
 	/** @var array */
 	public $urlFilters = array(
 		'path' => array('#/{2,}#' => '/'), // '%20' => ''
-		'url' => array(), // '#[.,)]$#' => ''
+		'url' => array(), // '#[.,)]\z#' => ''
 	);
 
 	/** @var string */
 	private $encoding;
 
 
-
 	/**
 	 * @param  string
-	 * @return RequestFactory  provides a fluent interface
+	 * @return self
 	 */
 	public function setEncoding($encoding)
 	{
 		$this->encoding = $encoding;
 		return $this;
 	}
-
 
 
 	/**
@@ -57,28 +50,20 @@ class RequestFactory extends Nette\Object
 	{
 		// DETECTS URI, base path and script path of the request.
 		$url = new UrlScript;
-		$url->scheme = isset($_SERVER['HTTPS']) && strcasecmp($_SERVER['HTTPS'], 'off') ? 'https' : 'http';
+		$url->scheme = !empty($_SERVER['HTTPS']) && strcasecmp($_SERVER['HTTPS'], 'off') ? 'https' : 'http';
 		$url->user = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : '';
 		$url->password = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : '';
 
 		// host & port
-		if (isset($_SERVER['HTTP_HOST'])) {
-			$pair = explode(':', $_SERVER['HTTP_HOST']);
-
-		} elseif (isset($_SERVER['SERVER_NAME'])) {
-			$pair = explode(':', $_SERVER['SERVER_NAME']);
-
-		} else {
-			$pair = array('');
-		}
-
-		$url->host = preg_match('#^[-._a-z0-9]+$#', $pair[0]) ? $pair[0] : '';
-
-		if (isset($pair[1])) {
-			$url->port = (int) $pair[1];
-
-		} elseif (isset($_SERVER['SERVER_PORT'])) {
-			$url->port = (int) $_SERVER['SERVER_PORT'];
+		if ((isset($_SERVER[$tmp = 'HTTP_HOST']) || isset($_SERVER[$tmp = 'SERVER_NAME']))
+			&& preg_match('#^([a-z0-9_.-]+|\[[a-fA-F0-9:]+\])(:\d+)?\z#', $_SERVER[$tmp], $pair)
+		) {
+			$url->host = strtolower($pair[1]);
+			if (isset($pair[2])) {
+				$url->port = (int) substr($pair[2], 1);
+			} elseif (isset($_SERVER['SERVER_PORT'])) {
+				$url->port = (int) $_SERVER['SERVER_PORT'];
+			}
 		}
 
 		// path & query
@@ -181,7 +166,7 @@ class RequestFactory extends Nette\Object
 		}
 
 
-		// FILES and create HttpUploadedFile objects
+		// FILES and create FileUpload objects
 		$files = array();
 		$list = array();
 		if (!empty($_FILES)) {

@@ -2,18 +2,13 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Config;
 
 use Nette,
 	Nette\Utils\Validators;
-
 
 
 /**
@@ -35,7 +30,6 @@ class Loader extends Nette\Object
 	);
 
 	private $dependencies = array();
-
 
 
 	/**
@@ -73,7 +67,6 @@ class Loader extends Nette\Object
 	}
 
 
-
 	/**
 	 * Save configuration to file.
 	 * @param  array
@@ -88,7 +81,6 @@ class Loader extends Nette\Object
 	}
 
 
-
 	/**
 	 * Returns configuration files.
 	 * @return array
@@ -99,19 +91,17 @@ class Loader extends Nette\Object
 	}
 
 
-
 	/**
 	 * Registers adapter for given file extension.
 	 * @param  string  file extension
 	 * @param  string|Nette\Config\IAdapter
-	 * @return Loader  provides a fluent interface
+	 * @return self
 	 */
 	public function addAdapter($extension, $adapter)
 	{
 		$this->adapters[strtolower($extension)] = $adapter;
 		return $this;
 	}
-
 
 
 	/** @return IAdapter */
@@ -123,7 +113,6 @@ class Loader extends Nette\Object
 		}
 		return is_object($this->adapters[$extension]) ? $this->adapters[$extension] : new $this->adapters[$extension];
 	}
-
 
 
 	private function getSection(array $data, $key, $file)

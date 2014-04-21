@@ -2,17 +2,12 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Application\Responses;
 
 use Nette;
-
 
 
 /**
@@ -56,38 +51,34 @@ class FileResponse extends Nette\Object implements Nette\Application\IResponse
 	}
 
 
-
 	/**
 	 * Returns the path to a downloaded file.
 	 * @return string
 	 */
-	final public function getFile()
+	public function getFile()
 	{
 		return $this->file;
 	}
-
 
 
 	/**
 	 * Returns the file name.
 	 * @return string
 	 */
-	final public function getName()
+	public function getName()
 	{
 		return $this->name;
 	}
-
 
 
 	/**
 	 * Returns the MIME content type of a downloaded file.
 	 * @return string
 	 */
-	final public function getContentType()
+	public function getContentType()
 	{
 		return $this->contentType;
 	}
-
 
 
 	/**
@@ -104,18 +95,16 @@ class FileResponse extends Nette\Object implements Nette\Application\IResponse
 
 		if ($this->resuming) {
 			$httpResponse->setHeader('Accept-Ranges', 'bytes');
-			$range = $httpRequest->getHeader('Range');
-			if ($range !== NULL) {
-				$range = substr($range, 6); // 6 == strlen('bytes=')
-				list($start, $end) = explode('-', $range);
-				if ($start == NULL) {
-					$start = 0;
-				}
-				if ($end == NULL) {
+			if (preg_match('#^bytes=(\d*)-(\d*)\z#', $httpRequest->getHeader('Range'), $matches)) {
+				list(, $start, $end) = $matches;
+				if ($start === '') {
+					$start = max(0, $filesize - $end);
+					$end = $filesize - 1;
+
+				} elseif ($end === '' || $end > $filesize - 1) {
 					$end = $filesize - 1;
 				}
-
-				if ($start < 0 || $end <= $start || $end > $filesize -1) {
+				if ($end < $start) {
 					$httpResponse->setCode(416); // requested range not satisfiable
 					return;
 				}
@@ -131,8 +120,9 @@ class FileResponse extends Nette\Object implements Nette\Application\IResponse
 		}
 
 		$httpResponse->setHeader('Content-Length', $length);
-		while (!feof($handle)) {
-			echo fread($handle, 4e6);
+		while (!feof($handle) && $length > 0) {
+			echo $s = fread($handle, min(4e6, $length));
+			$length -= strlen($s);
 		}
 		fclose($handle);
 	}

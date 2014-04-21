@@ -2,18 +2,13 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Caching\Storages;
 
 use Nette,
 	Nette\Caching\Cache;
-
 
 
 /**
@@ -38,7 +33,6 @@ class MemcachedStorage extends Nette\Object implements Nette\Caching\IStorage
 	private $journal;
 
 
-
 	/**
 	 * Checks if Memcached extension is available.
 	 * @return bool
@@ -47,7 +41,6 @@ class MemcachedStorage extends Nette\Object implements Nette\Caching\IStorage
 	{
 		return extension_loaded('memcache');
 	}
-
 
 
 	public function __construct($host = 'localhost', $port = 11211, $prefix = '', IJournal $journal = NULL)
@@ -65,16 +58,13 @@ class MemcachedStorage extends Nette\Object implements Nette\Caching\IStorage
 	}
 
 
-
 	public function addServer($host = 'localhost', $port = 11211, $timeout = 1)
 	{
-		Nette\Diagnostics\Debugger::tryError();
-		$this->memcache->addServer($host, $port, TRUE, 1, $timeout);
-		if (Nette\Diagnostics\Debugger::catchError($e)) {
-			throw new Nette\InvalidStateException('Memcache::addServer(): ' . $e->getMessage(), 0, $e);
+		if ($this->memcache->addServer($host, $port, TRUE, 1, $timeout) === FALSE) {
+			$error = error_get_last();
+			throw new Nette\InvalidStateException("Memcache::addServer(): $error[message].");
 		}
 	}
-
 
 
 	/**
@@ -84,7 +74,6 @@ class MemcachedStorage extends Nette\Object implements Nette\Caching\IStorage
 	{
 		return $this->memcache;
 	}
-
 
 
 	/**
@@ -121,7 +110,6 @@ class MemcachedStorage extends Nette\Object implements Nette\Caching\IStorage
 	}
 
 
-
 	/**
 	 * Prevents item reading and writing. Lock is released by write() or remove().
 	 * @param  string key
@@ -130,7 +118,6 @@ class MemcachedStorage extends Nette\Object implements Nette\Caching\IStorage
 	public function lock($key)
 	{
 	}
-
 
 
 	/**
@@ -174,7 +161,6 @@ class MemcachedStorage extends Nette\Object implements Nette\Caching\IStorage
 	}
 
 
-
 	/**
 	 * Removes item from the cache.
 	 * @param  string key
@@ -186,19 +172,18 @@ class MemcachedStorage extends Nette\Object implements Nette\Caching\IStorage
 	}
 
 
-
 	/**
 	 * Removes items from the cache by conditions & garbage collector.
 	 * @param  array  conditions
 	 * @return void
 	 */
-	public function clean(array $conds)
+	public function clean(array $conditions)
 	{
-		if (!empty($conds[Cache::ALL])) {
+		if (!empty($conditions[Cache::ALL])) {
 			$this->memcache->flush();
 
 		} elseif ($this->journal) {
-			foreach ($this->journal->clean($conds) as $entry) {
+			foreach ($this->journal->clean($conditions) as $entry) {
 				$this->memcache->delete($entry, 0);
 			}
 		}

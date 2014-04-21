@@ -2,17 +2,12 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Forms\Controls;
 
 use Nette;
-
 
 
 /**
@@ -34,18 +29,16 @@ class Checkbox extends BaseControl
 	}
 
 
-
 	/**
 	 * Sets control's value.
 	 * @param  bool
-	 * @return Checkbox  provides a fluent interface
+	 * @return self
 	 */
 	public function setValue($value)
 	{
 		$this->value = is_scalar($value) ? (bool) $value : FALSE;
 		return $this;
 	}
-
 
 
 	/**

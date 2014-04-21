@@ -2,17 +2,12 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Forms\Controls;
 
 use Nette;
-
 
 
 /**
@@ -24,7 +19,6 @@ class TextArea extends TextBase
 {
 
 	/**
-	 * @param  string  control name
 	 * @param  string  label
 	 * @param  int  width of the control
 	 * @param  int  height of the control in text lines
@@ -35,9 +29,7 @@ class TextArea extends TextBase
 		$this->control->setName('textarea');
 		$this->control->cols = $cols;
 		$this->control->rows = $rows;
-		$this->value = '';
 	}
-
 
 
 	/**

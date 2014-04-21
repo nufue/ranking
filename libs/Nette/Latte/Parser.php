@@ -2,18 +2,13 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Latte;
 
 use Nette,
 	Nette\Utils\Strings;
-
 
 
 /**
@@ -74,7 +69,6 @@ class Parser extends Nette\Object
 		CONTEXT_COMMENT = 'comment';
 
 
-
 	/**
 	 * Process all {macros} and <tags/>.
 	 * @param  string
@@ -83,8 +77,8 @@ class Parser extends Nette\Object
 	public function parse($input)
 	{
 		if (substr($input, 0, 3) === "\xEF\xBB\xBF") { // BOM
-	    	$input = substr($input, 3);
-	    }
+			$input = substr($input, 3);
+		}
 		if (!Strings::checkEncoding($input)) {
 			throw new Nette\InvalidArgumentException('Template is not valid UTF-8 stream.');
 		}
@@ -96,7 +90,6 @@ class Parser extends Nette\Object
 		$this->setSyntax($this->defaultSyntax);
 		$this->setContext(self::CONTEXT_TEXT);
 		$this->lastHtmlTag = $this->syntaxEndTag = NULL;
-		$this->xmlMode = (bool) preg_match('#^<\?xml\s#m', $input);
 
 		while ($this->offset < strlen($input)) {
 			$matches = $this->{"context".$this->context[0]}();
@@ -120,7 +113,6 @@ class Parser extends Nette\Object
 		}
 		return $this->output;
 	}
-
 
 
 	/**
@@ -149,7 +141,6 @@ class Parser extends Nette\Object
 	}
 
 
-
 	/**
 	 * Handles CONTEXT_CDATA.
 	 */
@@ -169,7 +160,6 @@ class Parser extends Nette\Object
 		}
 		return $matches;
 	}
-
 
 
 	/**
@@ -208,7 +198,6 @@ class Parser extends Nette\Object
 	}
 
 
-
 	/**
 	 * Handles CONTEXT_ATTRIBUTE.
 	 */
@@ -225,7 +214,6 @@ class Parser extends Nette\Object
 		}
 		return $matches;
 	}
-
 
 
 	/**
@@ -246,7 +234,6 @@ class Parser extends Nette\Object
 	}
 
 
-
 	/**
 	 * Handles CONTEXT_NONE.
 	 */
@@ -257,7 +244,6 @@ class Parser extends Nette\Object
 		~xsi');
 		return $matches;
 	}
-
 
 
 	/**
@@ -279,9 +265,8 @@ class Parser extends Nette\Object
 	}
 
 
-
 	/**
-	 * @return Parser  provides a fluent interface
+	 * @return self
 	 */
 	public function setContext($context, $quote = NULL)
 	{
@@ -290,11 +275,10 @@ class Parser extends Nette\Object
 	}
 
 
-
 	/**
 	 * Changes macro tag delimiters.
 	 * @param  string
-	 * @return Parser  provides a fluent interface
+	 * @return self
 	 */
 	public function setSyntax($type)
 	{
@@ -308,12 +292,11 @@ class Parser extends Nette\Object
 	}
 
 
-
 	/**
 	 * Changes macro tag delimiters.
 	 * @param  string  left regular expression
 	 * @param  string  right regular expression
-	 * @return Parser  provides a fluent interface
+	 * @return self
 	 */
 	public function setDelimiters($left, $right)
 	{
@@ -330,7 +313,6 @@ class Parser extends Nette\Object
 	}
 
 
-
 	/**
 	 * Parses macro tag to name, arguments a modifiers parts.
 	 * @param  string {name arguments | modifiers}
@@ -340,24 +322,24 @@ class Parser extends Nette\Object
 	{
 		$match = Strings::match($tag, '~^
 			(
-				(?P<name>\?|/?[a-z]\w*+(?:[.:]\w+)*+(?!::|\())|   ## ?, name, /name, but not function( or class::
+				(?P<name>\?|/?[a-z]\w*+(?:[.:]\w+)*+(?!::|\(|\\\\))|   ## ?, name, /name, but not function( or class:: or namespace\
 				(?P<noescape>!?)(?P<shortname>/?[=\~#%^&_]?)      ## !expression, !=expression, ...
 			)(?P<args>.*?)
 			(?P<modifiers>\|[a-z](?:'.Parser::RE_STRING.'|[^\'"])*)?
-		()$~isx');
+		()\z~isx');
 
 		if (!$match) {
 			return FALSE;
 		}
+		$modifiers = preg_replace('#\|noescape\s?(?=\||\z)#i', '', $match['modifiers'], -1, $noescape);
 		if ($match['name'] === '') {
 			$match['name'] = $match['shortname'] ?: '=';
-			if (!$match['noescape'] && substr($match['shortname'], 0, 1) !== '/') {
-				$match['modifiers'] .= '|escape';
+			if (!$noescape && !$match['noescape'] && substr($match['shortname'], 0, 1) !== '/') {
+				$modifiers .= '|escape';
 			}
 		}
-		return array($match['name'], trim($match['args']), $match['modifiers']);
+		return array($match['name'], trim($match['args']), $modifiers);
 	}
-
 
 
 	private function addToken($type, $text)
@@ -368,7 +350,6 @@ class Parser extends Nette\Object
 		$token->line = substr_count($this->input, "\n", 0, max(1, $this->offset - 1)) + 1;
 		return $token;
 	}
-
 
 
 	/**

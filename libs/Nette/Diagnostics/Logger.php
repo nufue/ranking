@@ -2,17 +2,12 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Diagnostics;
 
 use Nette;
-
 
 
 /**
@@ -41,7 +36,6 @@ class Logger extends Nette\Object
 	public $email;
 
 
-
 	/**
 	 * Logs message or exception to file and sends email notification.
 	 * @param  string|array
@@ -63,11 +57,10 @@ class Logger extends Nette\Object
 			&& @filemtime($this->directory . '/email-sent') + self::$emailSnooze < time() // @ - file may not exist
 			&& @file_put_contents($this->directory . '/email-sent', 'sent') // @ - file may not be writable
 		) {
-			callback($this->mailer)->invoke($message, $this->email);
+			Nette\Callback::create($this->mailer)->invoke($message, $this->email);
 		}
 		return $res;
 	}
-
 
 
 	/**
@@ -78,10 +71,10 @@ class Logger extends Nette\Object
 	 */
 	public static function defaultMailer($message, $email)
 	{
-		$host = '';
+		$host = php_uname('n');
 		foreach (array('HTTP_HOST','SERVER_NAME', 'HOSTNAME') as $item) {
 			if (isset($_SERVER[$item])) {
-				$host = $_SERVER[$item]; break;
+				$host = preg_replace('#[^\w.-]+#', '', $_SERVER[$item]); break;
 			}
 		}
 
@@ -89,7 +82,12 @@ class Logger extends Nette\Object
 			array("\r\n", "\n"),
 			array("\n", PHP_EOL),
 			array(
-				'headers' => "From: noreply@$host\nX-Mailer: Nette Framework\n",
+				'headers' => implode("\n", array(
+					"From: noreply@$host",
+					'X-Mailer: Nette Framework',
+					'Content-Type: text/plain; charset=UTF-8',
+					'Content-Transfer-Encoding: 8bit',
+				)) . "\n",
 				'subject' => "PHP: An error occurred on the server $host",
 				'body' => "[" . @date('Y-m-d H:i:s') . "] $message", // @ - timezone may not be set
 			)

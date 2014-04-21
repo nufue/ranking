@@ -2,17 +2,12 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Utils\PhpGenerator;
 
 use Nette;
-
 
 
 /**
@@ -43,33 +38,32 @@ class ClassType extends Nette\Object
 	/** @var bool */
 	public $abstract;
 
-	/** @var array of string */
+	/** @var string[] */
 	public $extends = array();
 
-	/** @var array of string */
+	/** @var string[] */
 	public $implements = array();
 
-	/** @var array of string */
+	/** @var string[] */
 	public $traits = array();
 
-	/** @var array of string */
+	/** @var string[] */
 	public $documents = array();
 
-	/** @var array of name => value */
+	/** @var mixed[] name => value */
 	public $consts = array();
 
-	/** @var array of name => Property */
+	/** @var Property[] name => Property */
 	public $properties = array();
 
-	/** @var array of name => Method */
+	/** @var Method[] name => Method */
 	public $methods = array();
 
 
-	public function __construct($name)
+	public function __construct($name = NULL)
 	{
 		$this->name = $name;
 	}
-
 
 
 	/** @return ClassType */
@@ -80,14 +74,12 @@ class ClassType extends Nette\Object
 	}
 
 
-
 	/** @return Property */
 	public function addProperty($name, $value = NULL)
 	{
 		$property = new Property;
 		return $this->properties[$name] = $property->setName($name)->setValue($value);
 	}
-
 
 
 	/** @return Method */
@@ -103,12 +95,10 @@ class ClassType extends Nette\Object
 	}
 
 
-
 	public function __call($name, $args)
 	{
 		return Nette\ObjectMixin::callProperty($this, $name, $args);
 	}
-
 
 
 	/** @return string  PHP code */
@@ -121,7 +111,7 @@ class ClassType extends Nette\Object
 		$properties = array();
 		foreach ($this->properties as $property) {
 			$properties[] = ($property->documents ? str_replace("\n", "\n * ", "/**\n" . implode("\n", (array) $property->documents)) . "\n */\n" : '')
-				. $property->visibility . ' $' . $property->name
+				. $property->visibility . ($property->static ? ' static' : '') . ' $' . $property->name
 				. ($property->value === NULL ? '' : ' = ' . Helpers::dump($property->value))
 				. ";\n";
 		}

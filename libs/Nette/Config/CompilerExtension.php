@@ -2,18 +2,13 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Config;
 
 use Nette,
 	Nette\DI\ContainerBuilder;
-
 
 
 /**
@@ -32,14 +27,12 @@ abstract class CompilerExtension extends Nette\Object
 	protected $name;
 
 
-
 	public function setCompiler(Compiler $compiler, $name)
 	{
 		$this->compiler = $compiler;
 		$this->name = $name;
 		return $this;
 	}
-
 
 
 	/**
@@ -58,7 +51,6 @@ abstract class CompilerExtension extends Nette\Object
 	}
 
 
-
 	/**
 	 * @return Nette\DI\ContainerBuilder
 	 */
@@ -66,7 +58,6 @@ abstract class CompilerExtension extends Nette\Object
 	{
 		return $this->compiler->getContainerBuilder();
 	}
-
 
 
 	/**
@@ -86,7 +77,6 @@ abstract class CompilerExtension extends Nette\Object
 	}
 
 
-
 	/**
 	 * Prepend extension name to identifier or service name.
 	 * @param  string
@@ -98,7 +88,6 @@ abstract class CompilerExtension extends Nette\Object
 	}
 
 
-
 	/**
 	 * Processes configuration data. Intended to be overridden by descendant.
 	 * @return void
@@ -108,7 +97,6 @@ abstract class CompilerExtension extends Nette\Object
 	}
 
 
-
 	/**
 	 * Adjusts DI container before is compiled to PHP class. Intended to be overridden by descendant.
 	 * @return void
@@ -116,7 +104,6 @@ abstract class CompilerExtension extends Nette\Object
 	public function beforeCompile()
 	{
 	}
-
 
 
 	/**

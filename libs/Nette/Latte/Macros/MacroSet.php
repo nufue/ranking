@@ -2,11 +2,7 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Latte\Macros;
@@ -14,7 +10,6 @@ namespace Nette\Latte\Macros;
 use Nette,
 	Nette\Latte,
 	Nette\Latte\MacroNode;
-
 
 
 /**
@@ -31,12 +26,10 @@ class MacroSet extends Nette\Object implements Latte\IMacro
 	private $macros;
 
 
-
 	public function __construct(Latte\Compiler $compiler)
 	{
 		$this->compiler = $compiler;
 	}
-
 
 
 	public function addMacro($name, $begin, $end = NULL, $attr = NULL)
@@ -47,12 +40,10 @@ class MacroSet extends Nette\Object implements Latte\IMacro
 	}
 
 
-
 	public static function install(Latte\Compiler $compiler)
 	{
 		return new static($compiler);
 	}
-
 
 
 	/**
@@ -64,7 +55,6 @@ class MacroSet extends Nette\Object implements Latte\IMacro
 	}
 
 
-
 	/**
 	 * Finishes template parsing.
 	 * @return array(prolog, epilog)
@@ -72,7 +62,6 @@ class MacroSet extends Nette\Object implements Latte\IMacro
 	public function finalize()
 	{
 	}
-
 
 
 	/**
@@ -100,7 +89,6 @@ class MacroSet extends Nette\Object implements Latte\IMacro
 	}
 
 
-
 	/**
 	 * Node is closed.
 	 * @return void
@@ -114,7 +102,6 @@ class MacroSet extends Nette\Object implements Latte\IMacro
 	}
 
 
-
 	/**
 	 * Generates code.
 	 * @return string
@@ -126,10 +113,9 @@ class MacroSet extends Nette\Object implements Latte\IMacro
 		if (is_string($def)) {
 			return $writer->write($def);
 		} else {
-			return callback($def)->invoke($node, $writer);
+			return Nette\Callback::create($def)->invoke($node, $writer);
 		}
 	}
-
 
 
 	/**

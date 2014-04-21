@@ -2,18 +2,13 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Application\Routers;
 
 use Nette,
 	Nette\Application;
-
 
 
 /**
@@ -37,7 +32,6 @@ class SimpleRouter extends Nette\Object implements Application\IRouter
 
 	/** @var int */
 	private $flags;
-
 
 
 	/**
@@ -67,10 +61,8 @@ class SimpleRouter extends Nette\Object implements Application\IRouter
 	}
 
 
-
 	/**
 	 * Maps HTTP request to a Request object.
-	 * @param  Nette\Http\IRequest
 	 * @return Nette\Application\Request|NULL
 	 */
 	public function match(Nette\Http\IRequest $httpRequest)
@@ -82,8 +74,8 @@ class SimpleRouter extends Nette\Object implements Application\IRouter
 		$params = $httpRequest->getQuery();
 		$params += $this->defaults;
 
-		if (!isset($params[self::PRESENTER_KEY])) {
-			throw new Nette\InvalidStateException('Missing presenter.');
+		if (!isset($params[self::PRESENTER_KEY]) || !is_string($params[self::PRESENTER_KEY])) {
+			return NULL;
 		}
 
 		$presenter = $this->module . $params[self::PRESENTER_KEY];
@@ -100,11 +92,8 @@ class SimpleRouter extends Nette\Object implements Application\IRouter
 	}
 
 
-
 	/**
 	 * Constructs absolute URL from Request object.
-	 * @param  Nette\Application\Request
-	 * @param  Nette\Http\Url
 	 * @return string|NULL
 	 */
 	public function constructUrl(Application\Request $appRequest, Nette\Http\Url $refUrl)
@@ -139,7 +128,6 @@ class SimpleRouter extends Nette\Object implements Application\IRouter
 	}
 
 
-
 	/**
 	 * Returns default values.
 	 * @return array
@@ -148,7 +136,6 @@ class SimpleRouter extends Nette\Object implements Application\IRouter
 	{
 		return $this->defaults;
 	}
-
 
 
 	/**

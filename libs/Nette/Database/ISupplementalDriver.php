@@ -2,17 +2,12 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Database;
 
 use Nette;
-
 
 
 /**
@@ -22,7 +17,9 @@ use Nette;
  */
 interface ISupplementalDriver
 {
-	const META = 'meta';
+	const SUPPORT_COLUMNS_META = 'meta',
+		SUPPORT_SEQUENCE = 'sequence',
+		SUPPORT_SELECT_UNGROUPED_COLUMNS = 'ungrouped_cols';
 
 	/**
 	 * Delimites identifier for use in a SQL statement.
@@ -53,7 +50,7 @@ interface ISupplementalDriver
 	 * @param  int
 	 * @return void
 	 */
-	function applyLimit(&$sql, $limit, $offset);
+	function applyLimit(& $sql, $limit, $offset);
 
 	/**
 	 * Normalizes result row.
@@ -93,5 +90,11 @@ interface ISupplementalDriver
 	 * @return array
 	 */
 	function getForeignKeys($table);
+
+	/**
+	 * Cheks if driver supports specific property
+	 * @return bool
+	 */
+	function isSupported($item);
 
 }

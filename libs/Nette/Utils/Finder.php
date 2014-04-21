@@ -2,18 +2,13 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Utils;
 
 use Nette,
 	RecursiveIteratorIterator;
-
 
 
 /**
@@ -49,7 +44,6 @@ class Finder extends Nette\Object implements \IteratorAggregate
 	private $cursor;
 
 
-
 	/**
 	 * Begins search for files matching mask and all directories.
 	 * @param  mixed
@@ -63,7 +57,6 @@ class Finder extends Nette\Object implements \IteratorAggregate
 		$finder = new static;
 		return $finder->select(array(), 'isDir')->select($mask, 'isFile');
 	}
-
 
 
 	/**
@@ -81,7 +74,6 @@ class Finder extends Nette\Object implements \IteratorAggregate
 	}
 
 
-
 	/**
 	 * Begins search for directories matching mask.
 	 * @param  mixed
@@ -97,12 +89,11 @@ class Finder extends Nette\Object implements \IteratorAggregate
 	}
 
 
-
 	/**
 	 * Creates filtering group by mask & type selector.
 	 * @param  array
 	 * @param  string
-	 * @return Finder  provides a fluent interface
+	 * @return self
 	 */
 	private function select($masks, $type)
 	{
@@ -119,11 +110,10 @@ class Finder extends Nette\Object implements \IteratorAggregate
 	}
 
 
-
 	/**
 	 * Searchs in the given folder(s).
 	 * @param  string|array
-	 * @return Finder  provides a fluent interface
+	 * @return self
 	 */
 	public function in($path)
 	{
@@ -135,11 +125,10 @@ class Finder extends Nette\Object implements \IteratorAggregate
 	}
 
 
-
 	/**
 	 * Searchs recursively from the given folder(s).
 	 * @param  string|array
-	 * @return Finder  provides a fluent interface
+	 * @return self
 	 */
 	public function from($path)
 	{
@@ -155,17 +144,15 @@ class Finder extends Nette\Object implements \IteratorAggregate
 	}
 
 
-
 	/**
 	 * Shows folder content prior to the folder.
-	 * @return Finder  provides a fluent interface
+	 * @return self
 	 */
 	public function childFirst()
 	{
 		$this->order = RecursiveIteratorIterator::CHILD_FIRST;
 		return $this;
 	}
-
 
 
 	/**
@@ -193,13 +180,11 @@ class Finder extends Nette\Object implements \IteratorAggregate
 			$pattern[] = $prefix . strtr(preg_quote($mask, '#'),
 				array('\*\*' => '.*', '\*' => '[^/]*', '\?' => '[^/]', '\[\!' => '[^', '\[' => '[', '\]' => ']', '\-' => '-'));
 		}
-		return $pattern ? '#/(' . implode('|', $pattern) . ')$#i' : NULL;
+		return $pattern ? '#/(' . implode('|', $pattern) . ')\z#i' : NULL;
 	}
 
 
-
 	/********************* iterator generator ****************d*g**/
-
 
 
 	/**
@@ -215,14 +200,15 @@ class Finder extends Nette\Object implements \IteratorAggregate
 			return $this->buildIterator($this->paths[0]);
 
 		} else {
-			$iterator = new \AppendIterator(); // buggy!
+			$iterator = new \AppendIterator();
+			$iterator->append($workaround = new \ArrayIterator(array('workaround PHP bugs #49104, #63077')));
 			foreach ($this->paths as $path) {
 				$iterator->append($this->buildIterator($path));
 			}
+			unset($workaround[0]);
 			return $iterator;
 		}
 	}
-
 
 
 	/**
@@ -276,16 +262,14 @@ class Finder extends Nette\Object implements \IteratorAggregate
 	}
 
 
-
 	/********************* filtering ****************d*g**/
-
 
 
 	/**
 	 * Restricts the search using mask.
 	 * Excludes directories from recursive traversing.
 	 * @param  mixed
-	 * @return Finder  provides a fluent interface
+	 * @return self
 	 */
 	public function exclude($masks)
 	{
@@ -302,11 +286,10 @@ class Finder extends Nette\Object implements \IteratorAggregate
 	}
 
 
-
 	/**
 	 * Restricts the search using callback.
 	 * @param  callable
-	 * @return Finder  provides a fluent interface
+	 * @return self
 	 */
 	public function filter($callback)
 	{
@@ -315,11 +298,10 @@ class Finder extends Nette\Object implements \IteratorAggregate
 	}
 
 
-
 	/**
 	 * Limits recursion level.
 	 * @param  int
-	 * @return Finder  provides a fluent interface
+	 * @return self
 	 */
 	public function limitDepth($depth)
 	{
@@ -328,17 +310,16 @@ class Finder extends Nette\Object implements \IteratorAggregate
 	}
 
 
-
 	/**
 	 * Restricts the search by size.
 	 * @param  string  "[operator] [size] [unit]" example: >=10kB
 	 * @param  int
-	 * @return Finder  provides a fluent interface
+	 * @return self
 	 */
 	public function size($operator, $size = NULL)
 	{
 		if (func_num_args() === 1) { // in $operator is predicate
-			if (!preg_match('#^(?:([=<>!]=?|<>)\s*)?((?:\d*\.)?\d+)\s*(K|M|G|)B?$#i', $operator, $matches)) {
+			if (!preg_match('#^(?:([=<>!]=?|<>)\s*)?((?:\d*\.)?\d+)\s*(K|M|G|)B?\z#i', $operator, $matches)) {
 				throw new Nette\InvalidArgumentException('Invalid size predicate format.');
 			}
 			list(, $operator, $size, $unit) = $matches;
@@ -352,17 +333,16 @@ class Finder extends Nette\Object implements \IteratorAggregate
 	}
 
 
-
 	/**
 	 * Restricts the search by modified time.
 	 * @param  string  "[operator] [date]" example: >1978-01-23
 	 * @param  mixed
-	 * @return Finder  provides a fluent interface
+	 * @return self
 	 */
 	public function date($operator, $date = NULL)
 	{
 		if (func_num_args() === 1) { // in $operator is predicate
-			if (!preg_match('#^(?:([=<>!]=?|<>)\s*)?(.+)$#i', $operator, $matches)) {
+			if (!preg_match('#^(?:([=<>!]=?|<>)\s*)?(.+)\z#i', $operator, $matches)) {
 				throw new Nette\InvalidArgumentException('Invalid date predicate format.');
 			}
 			list(, $operator, $date) = $matches;
@@ -375,7 +355,6 @@ class Finder extends Nette\Object implements \IteratorAggregate
 	}
 
 
-
 	/**
 	 * Compares two values.
 	 * @param  mixed
@@ -385,27 +364,27 @@ class Finder extends Nette\Object implements \IteratorAggregate
 	public static function compare($l, $operator, $r)
 	{
 		switch ($operator) {
-		case '>':
-			return $l > $r;
-		case '>=':
-			return $l >= $r;
-		case '<':
-			return $l < $r;
-		case '<=':
-			return $l <= $r;
-		case '=':
-		case '==':
-			return $l == $r;
-		case '!':
-		case '!=':
-		case '<>':
-			return $l != $r;
+			case '>':
+				return $l > $r;
+			case '>=':
+				return $l >= $r;
+			case '<':
+				return $l < $r;
+			case '<=':
+				return $l <= $r;
+			case '=':
+			case '==':
+				return $l == $r;
+			case '!':
+			case '!=':
+			case '<>':
+				return $l != $r;
+			default:
+				throw new Nette\InvalidArgumentException("Unknown operator $operator.");
 		}
-		throw new Nette\InvalidArgumentException("Unknown operator $operator.");
 	}
 
 }
-
 
 
 if (PHP_VERSION_ID < 50301) {

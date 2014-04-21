@@ -2,18 +2,13 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Forms\Controls;
 
 use Nette,
 	Nette\Http;
-
 
 
 /**
@@ -34,11 +29,10 @@ class UploadControl extends BaseControl
 	}
 
 
-
 	/**
 	 * This method will be called when the component (or component's parent)
 	 * becomes attached to a monitored object. Do not call this method yourself.
-	 * @param  Nette\Forms\IComponent
+	 * @param  Nette\ComponentModel\IComponent
 	 * @return void
 	 */
 	protected function attached($form)
@@ -53,11 +47,10 @@ class UploadControl extends BaseControl
 	}
 
 
-
 	/**
 	 * Sets control's value.
 	 * @param  array|Nette\Http\FileUpload
-	 * @return Nette\Http\FileUpload  provides a fluent interface
+	 * @return self
 	 */
 	public function setValue($value)
 	{
@@ -74,7 +67,6 @@ class UploadControl extends BaseControl
 	}
 
 
-
 	/**
 	 * Has been any file uploaded?
 	 * @return bool
@@ -84,6 +76,8 @@ class UploadControl extends BaseControl
 		return $this->value instanceof Http\FileUpload && $this->value->isOK();
 	}
 
+
+	/********************* validators ****************d*g**/
 
 
 	/**
@@ -97,7 +91,6 @@ class UploadControl extends BaseControl
 		$file = $control->getValue();
 		return $file instanceof Http\FileUpload && $file->getSize() <= $limit;
 	}
-
 
 
 	/**
@@ -123,10 +116,8 @@ class UploadControl extends BaseControl
 	}
 
 
-
 	/**
 	 * Image validator: is file image?
-	 * @param  UploadControl
 	 * @return bool
 	 */
 	public static function validateImage(UploadControl $control)

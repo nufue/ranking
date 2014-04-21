@@ -2,17 +2,12 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\ComponentModel;
 
 use Nette;
-
 
 
 /**
@@ -24,7 +19,7 @@ interface IContainer extends IComponent
 {
 
 	/**
-	 * Adds the specified component to the IComponentContainer.
+	 * Adds the specified component to the IContainer.
 	 * @param  IComponent
 	 * @param  string
 	 * @return void
@@ -32,7 +27,7 @@ interface IContainer extends IComponent
 	function addComponent(IComponent $component, $name);
 
 	/**
-	 * Removes a component from the IComponentContainer.
+	 * Removes a component from the IContainer.
 	 * @param  IComponent
 	 * @return void
 	 */

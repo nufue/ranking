@@ -2,11 +2,7 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Reflection;
@@ -15,14 +11,13 @@ use Nette,
 	Nette\Utils\Strings;
 
 
-
 /**
  * Annotations support for PHP.
  *
  * @author     David Grudl
  * @Annotation
  */
-final class AnnotationsParser
+class AnnotationsParser
 {
 	/** @internal single & double quoted PHP string */
 	const RE_STRING = '\'(?:\\\\.|[^\'\\\\])*\'|"(?:\\\\.|[^"\\\\])*"';
@@ -46,7 +41,6 @@ final class AnnotationsParser
 	private static $cacheStorage;
 
 
-
 	/**
 	 * Static class - cannot be instantiated.
 	 */
@@ -54,7 +48,6 @@ final class AnnotationsParser
 	{
 		throw new Nette\StaticClassException;
 	}
-
 
 
 	/**
@@ -140,7 +133,6 @@ final class AnnotationsParser
 	}
 
 
-
 	/**
 	 * Parses phpDoc comment.
 	 * @param  string
@@ -183,6 +175,7 @@ final class AnnotationsParser
 				) {
 					$value = substr($value, strlen($m[0]));
 					list(, $key, $val) = $m;
+					$val = rtrim($val);
 					if ($val[0] === "'" || $val[0] === '"') {
 						$val = substr($val, 1, -1);
 
@@ -228,7 +221,6 @@ final class AnnotationsParser
 	}
 
 
-
 	/**
 	 * Parses PHP file.
 	 * @param  string
@@ -252,64 +244,65 @@ final class AnnotationsParser
 
 			if (is_array($token)) {
 				switch ($token[0]) {
-				case T_DOC_COMMENT:
-					$docComment = $token[1];
-				case T_WHITESPACE:
-				case T_COMMENT:
-					continue 2;
+					case T_DOC_COMMENT:
+						$docComment = $token[1];
+						// break intentionally omitted
+					case T_WHITESPACE:
+					case T_COMMENT:
+						continue 2;
 
-				case T_STRING:
-				case $T_NS_SEPARATOR:
-				case T_VARIABLE:
-					if ($expected) {
-						$name .= $token[1];
-					}
-					continue 2;
+					case T_STRING:
+					case $T_NS_SEPARATOR:
+					case T_VARIABLE:
+						if ($expected) {
+							$name .= $token[1];
+						}
+						continue 2;
 
-				case T_FUNCTION:
-				case T_VAR:
-				case T_PUBLIC:
-				case T_PROTECTED:
-				case $T_NAMESPACE:
-				case T_CLASS:
-				case T_INTERFACE:
-					$expected = $token[0];
-					$name = NULL;
-					continue 2;
+					case T_FUNCTION:
+					case T_VAR:
+					case T_PUBLIC:
+					case T_PROTECTED:
+					case $T_NAMESPACE:
+					case T_CLASS:
+					case T_INTERFACE:
+						$expected = $token[0];
+						$name = NULL;
+						continue 2;
 
-				case T_STATIC:
-				case T_ABSTRACT:
-				case T_FINAL:
-					continue 2; // ignore in expectation
+					case T_STATIC:
+					case T_ABSTRACT:
+					case T_FINAL:
+						continue 2; // ignore in expectation
 
-				case T_CURLY_OPEN:
-				case T_DOLLAR_OPEN_CURLY_BRACES:
-					$level++;
+					case T_CURLY_OPEN:
+					case T_DOLLAR_OPEN_CURLY_BRACES:
+						$level++;
 				}
 			}
 
 			if ($expected) {
 				switch ($expected) {
-				case T_CLASS:
-				case T_INTERFACE:
-					$class = $namespace . $name;
-					$classLevel = $level;
-					$name = '';
-					// break intentionally omitted
-				case T_FUNCTION:
-					if ($token === '&') {
-						continue 2; // ignore
-					}
-				case T_VAR:
-				case T_PUBLIC:
-				case T_PROTECTED:
-					if ($class && $name !== NULL && $docComment) {
-						self::$cache[$class][$name] = self::parseComment($docComment);
-					}
-					break;
+					case T_CLASS:
+					case T_INTERFACE:
+						$class = $namespace . $name;
+						$classLevel = $level;
+						$name = '';
+						// break intentionally omitted
+					case T_FUNCTION:
+						if ($token === '&') {
+							continue 2; // ignore
+						}
+					case T_VAR:
+					case T_PUBLIC:
+					case T_PROTECTED:
+						if ($class && $name !== NULL && $docComment) {
+							self::$cache[$class][$name] = self::parseComment($docComment);
+						}
+						break;
 
-				case $T_NAMESPACE:
-					$namespace = $name . '\\';
+					case $T_NAMESPACE:
+						$namespace = $name . '\\';
 				}
 
 				$expected = $docComment = NULL;
@@ -330,20 +323,16 @@ final class AnnotationsParser
 	}
 
 
-
 	/********************* backend ****************d*g**/
 
 
-
 	/**
-	 * @param  Nette\Caching\IStorage
 	 * @return void
 	 */
 	public static function setCacheStorage(Nette\Caching\IStorage $storage)
 	{
 		self::$cacheStorage = $storage;
 	}
-
 
 
 	/**

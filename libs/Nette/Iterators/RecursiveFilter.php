@@ -2,17 +2,12 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Iterators;
 
 use Nette;
-
 
 
 /**
@@ -29,18 +24,12 @@ class RecursiveFilter extends \FilterIterator implements \RecursiveIterator
 	private $childrenCallback;
 
 
-	/**
-	 * Constructs a filter around another iterator.
-	 * @param
-	 * @param  callable
-	 */
 	public function __construct(\RecursiveIterator $iterator, $callback, $childrenCallback = NULL)
 	{
 		parent::__construct($iterator);
-		$this->callback = $callback === NULL ? NULL : callback($callback);
-		$this->childrenCallback = $childrenCallback === NULL ? NULL : callback($childrenCallback);
+		$this->callback = $callback === NULL ? NULL : new Nette\Callback($callback);
+		$this->childrenCallback = $childrenCallback === NULL ? NULL : new Nette\Callback($childrenCallback);
 	}
-
 
 
 	public function accept()
@@ -49,13 +38,11 @@ class RecursiveFilter extends \FilterIterator implements \RecursiveIterator
 	}
 
 
-
 	public function hasChildren()
 	{
 		return $this->getInnerIterator()->hasChildren()
 			&& ($this->childrenCallback === NULL || $this->childrenCallback->invoke($this));
 	}
-
 
 
 	public function getChildren()

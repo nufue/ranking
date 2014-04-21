@@ -2,17 +2,12 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Loaders;
 
 use Nette;
-
 
 
 /**
@@ -27,7 +22,6 @@ class NetteLoader extends AutoLoader
 
 	/** @var array */
 	public $renamed = array(
-		'Nette\Configurator' => 'Nette\Config\Configurator',
 		'Nette\Http\User' => 'Nette\Security\User',
 		'Nette\Templating\DefaultHelpers' => 'Nette\Templating\Helpers',
 		'Nette\Latte\ParseException' => 'Nette\Latte\CompileException',
@@ -47,6 +41,8 @@ class NetteLoader extends AutoLoader
 		'Nette\Callback' => '/common/Callback',
 		'Nette\DI\MissingServiceException' => '/DI/exceptions',
 		'Nette\DI\ServiceCreationException' => '/DI/exceptions',
+		'Nette\Database\Reflection\AmbiguousReferenceKeyException' => '/Database/Reflection/exceptions',
+		'Nette\Database\Reflection\MissingReferenceException' => '/Database/Reflection/exceptions',
 		'Nette\DateTime' => '/common/DateTime',
 		'Nette\DeprecatedException' => '/common/exceptions',
 		'Nette\DirectoryNotFoundException' => '/common/exceptions',
@@ -80,7 +76,6 @@ class NetteLoader extends AutoLoader
 	);
 
 
-
 	/**
 	 * Returns singleton instance with lazy instantiation.
 	 * @return NetteLoader
@@ -92,7 +87,6 @@ class NetteLoader extends AutoLoader
 		}
 		return self::$instance;
 	}
-
 
 
 	/**

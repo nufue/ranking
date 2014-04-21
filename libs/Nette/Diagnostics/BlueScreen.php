@@ -2,17 +2,12 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Diagnostics;
 
 use Nette;
-
 
 
 /**
@@ -26,11 +21,10 @@ class BlueScreen extends Nette\Object
 	private $panels = array();
 
 
-
 	/**
 	 * Add custom panel.
 	 * @param  callable
-	 * @return BlueScreen  provides a fluent interface
+	 * @return self
 	 */
 	public function addPanel($panel)
 	{
@@ -39,7 +33,6 @@ class BlueScreen extends Nette\Object
 		}
 		return $this;
 	}
-
 
 
 	/**
@@ -52,7 +45,6 @@ class BlueScreen extends Nette\Object
 		$panels = $this->panels;
 		require __DIR__ . '/templates/bluescreen.phtml';
 	}
-
 
 
 	/**
@@ -69,7 +61,6 @@ class BlueScreen extends Nette\Object
 			return static::highlightPhp($source, $line, $lines, $vars);
 		}
 	}
-
 
 
 	/**

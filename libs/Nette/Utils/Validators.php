@@ -2,17 +2,12 @@
 
 /**
  * This file is part of the Nette Framework (http://nette.org)
- *
  * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
- *
- * For the full copyright and license information, please view
- * the file license.txt that was distributed with this source code.
  */
 
 namespace Nette\Utils;
 
 use Nette;
-
 
 
 /**
@@ -68,7 +63,6 @@ class Validators extends Nette\Object
 	);
 
 
-
 	/**
 	 * Throws exception if a variable is of unexpected type.
 	 * @param  mixed
@@ -94,7 +88,6 @@ class Validators extends Nette\Object
 	}
 
 
-
 	/**
 	 * Throws exception if an array field is missing or of unexpected type.
 	 * @param  array
@@ -112,7 +105,6 @@ class Validators extends Nette\Object
 			static::assert($arr[$field], $expected, str_replace('%', $field, $label));
 		}
 	}
-
 
 
 	/**
@@ -134,7 +126,7 @@ class Validators extends Nette\Object
 					continue;
 				}
 			} elseif ($type === 'pattern') {
-				if (preg_match('|^' . (isset($item[1]) ? $item[1] : '') . '$|', $value)) {
+				if (preg_match('|^' . (isset($item[1]) ? $item[1] : '') . '\z|', $value)) {
 					return TRUE;
 				}
 				continue;
@@ -160,41 +152,34 @@ class Validators extends Nette\Object
 	}
 
 
-
 	/**
 	 * Finds whether a value is an integer.
-	 * @param  mixed
 	 * @return bool
 	 */
 	public static function isNumericInt($value)
 	{
-		return is_int($value) || is_string($value) && preg_match('#^-?[0-9]+$#', $value);
+		return is_int($value) || is_string($value) && preg_match('#^-?[0-9]+\z#', $value);
 	}
-
 
 
 	/**
 	 * Finds whether a string is a floating point number in decimal base.
-	 * @param  mixed
 	 * @return bool
 	 */
 	public static function isNumeric($value)
 	{
-		return is_float($value) || is_int($value) || is_string($value) && preg_match('#^-?[0-9]*[.]?[0-9]+$#', $value);
+		return is_float($value) || is_int($value) || is_string($value) && preg_match('#^-?[0-9]*[.]?[0-9]+\z#', $value);
 	}
-
 
 
 	/**
 	 * Finds whether a value is a syntactically correct callback.
-	 * @param  mixed
 	 * @return bool
 	 */
 	public static function isCallable($value)
 	{
 		return $value && is_callable($value, TRUE);
 	}
-
 
 
 	/**
@@ -208,17 +193,14 @@ class Validators extends Nette\Object
 	}
 
 
-
 	/**
 	 * Finds whether a value is "falsy".
-	 * @param  mixed
 	 * @return bool
 	 */
 	public static function isNone($value)
 	{
 		return $value == NULL; // intentionally ==
 	}
-
 
 
 	/**
@@ -230,7 +212,6 @@ class Validators extends Nette\Object
 	{
 		return is_array($value) && (!$value || array_keys($value) === range(0, count($value) - 1));
 	}
-
 
 
 	/**
@@ -245,7 +226,6 @@ class Validators extends Nette\Object
 	}
 
 
-
 	/**
 	 * Finds whether a string is a valid email address.
 	 * @param  string
@@ -255,11 +235,11 @@ class Validators extends Nette\Object
 	{
 		$atom = "[-a-z0-9!#$%&'*+/=?^_`{|}~]"; // RFC 5322 unquoted characters in local-part
 		$localPart = "(?:\"(?:[ !\\x23-\\x5B\\x5D-\\x7E]*|\\\\[ -~])+\"|$atom+(?:\\.$atom+)*)"; // quoted or unquoted
-		$chars = "a-z0-9\x80-\xFF"; // superset of IDN
-		$domain = "[$chars](?:[-$chars]{0,61}[$chars])"; // RFC 1034 one domain component
-		return (bool) preg_match("(^$localPart@(?:$domain?\\.)+[-$chars]{2,19}\\z)i", $value);
+		$alpha = "a-z\x80-\xFF"; // superset of IDN
+		$domain = "[0-9$alpha](?:[-0-9$alpha]{0,61}[0-9$alpha])?"; // RFC 1034 one domain component
+		$topDomain = "[$alpha][-0-9$alpha]{0,17}[$alpha]";
+		return (bool) preg_match("(^$localPart@(?:$domain\\.)+$topDomain\\z)i", $value);
 	}
-
 
 
 	/**
@@ -269,12 +249,13 @@ class Validators extends Nette\Object
 	 */
 	public static function isUrl($value)
 	{
-		$chars = "a-z0-9\x80-\xFF";
-		return (bool) preg_match("#^https?://(?:[$chars](?:[-$chars]{0,61}[$chars])?\\.)+[-$chars]{2,19}(/\S*)?$#i", $value);
+		$alpha = "a-z\x80-\xFF";
+		$domain = "[0-9$alpha](?:[-0-9$alpha]{0,61}[0-9$alpha])?";
+		$topDomain = "[$alpha][-0-9$alpha]{0,17}[$alpha]";
+		return (bool) preg_match("(^https?://(?:(?:$domain\\.)*$topDomain|\\d{1,3}\.\\d{1,3}\.\\d{1,3}\.\\d{1,3}|\[[0-9a-f:]{3,39}\])(:\\d{1,5})?(/\\S*)?\\z)i", $value);
 	}
 
 }
-
 
 
 /**
