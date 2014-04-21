@@ -22,7 +22,7 @@ class Zavodnici extends Base {
 	}
 
 	public function getZavodnikByJmeno($jmeno) {
-		$dbResult = $this->database->query("SELECT `id`, `cele_jmeno` FROM `zavodnici` WHERE `cele_jmeno` = ?", $jmeno);
+		$dbResult = $this->database->query("SELECT `id`, `cele_jmeno` FROM `zavodnici` WHERE `cele_jmeno` = ? AND `registrovany` = 'A'", $jmeno);
 		if ($result = $dbResult->fetch()) {
 			return $result;
 		} else
@@ -30,7 +30,7 @@ class Zavodnici extends Base {
 	}
 
 	public function getZavodnikByRegistrace($registrace) {
-		$dbResult = $this->database->query("SELECT `id`, `cele_jmeno` FROM `zavodnici` WHERE `registrace` = ?", $registrace);
+		$dbResult = $this->database->query("SELECT `id`, `cele_jmeno` FROM `zavodnici` WHERE `registrace` = ? AND `registrovany` = 'A'", $registrace);
 		if ($result = $dbResult->fetch()) {
 			return $result;
 		} else
