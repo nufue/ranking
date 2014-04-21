@@ -8,7 +8,7 @@
  */
 abstract class BasePresenter extends Nette\Application\UI\Presenter {
 
-	protected static $defaultYear = 2013;
+	protected static $defaultYear = 2014;
 
 	public function startup() {
 		parent::startup();

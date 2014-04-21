@@ -37,7 +37,7 @@ class Tymy extends Base {
 
 	public function getTym($id) {
 		$info = $this->database->query("SELECT * FROM tymy WHERE id = ?", $id)->fetch();
-		$zavodnici = $this->database->query("SELECT z.id, z.cele_jmeno, z.registrace, zk.kategorie FROM zavodnici z JOIN zavodnici_kategorie zk ON z.id = zk.id_zavodnika JOIN tymy_zavodnici tz ON tz.id_zavodnika = z.id WHERE tz.id_tymu = ? AND zk.rok = ?", $id, $info->rok)->fetchAll();
+		$zavodnici = $this->database->query("SELECT `z`.`id`, `z`.`cele_jmeno`, `z`.`registrace`, `zk`.`kategorie` FROM `zavodnici` `z` LEFT JOIN `zavodnici_kategorie` `zk` ON `z`.`id` = `zk`.`id_zavodnika` JOIN `tymy_zavodnici` `tz` ON `tz`.`id_zavodnika` = `z`.`id` WHERE `tz`.`id_tymu` = ? AND `zk`.`rok` = ?", $id, $info->rok)->fetchAll();
 		return array('info' => $info, 'zavodnici' => $zavodnici);
 	}
 
@@ -46,7 +46,12 @@ class Tymy extends Base {
 	}
 
 	public function addZavodnik($idTymu, $idZavodnika) {
-		$this->database->query("INSERT INTO tymy_zavodnici VALUES (?, ?)", $idTymu, $idZavodnika);
+		$dbResult = $this->database->query("SELECT (MAX(`poradi`) + 1) `poradi` FROM `tymy_zavodnici` WHERE `id_tymu` = ?", (int)$idTymu)->fetch();
+		if ($dbResult) {
+			$poradi = $dbResult->poradi;
+			if ($poradi === NULL) $poradi = 1;
+			$this->database->query("INSERT INTO `tymy_zavodnici`(`id_tymu`, `id_zavodnika`, `poradi`) VALUES (?, ?, ?)", $idTymu, $idZavodnika, $poradi);
+		}
 	}
 	
 	public function getClenstvi($idZavodnika, $rok) {

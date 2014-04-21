@@ -40,6 +40,7 @@ class Zavodnici extends Base {
 	public function getZavodnikById($id, $rok) {
 		$dbResult = $this->database->query("SELECT `id`, `registrace`, `cele_jmeno`, `kategorie` FROM `zavodnici` `z` LEFT JOIN `zavodnici_kategorie` `zk` ON `id` = `zk`.`id_zavodnika` WHERE `id` = ? AND `rok` = ?", $id, $rok);
 		if ($result = $dbResult->fetch()) {
+			$result->kategorie_original = $result->kategorie;
 			$result->kategorie = Kategorie::$kategorie[$result->kategorie];
 			return $result;
 		} else

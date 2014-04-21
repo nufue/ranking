@@ -15,7 +15,7 @@ $configurator = new Nette\Config\Configurator;
 
 // Enable Nette Debugger for error visualisation & logging
 //$configurator->setDebugMode($configurator::AUTO);
-$configurator->setDebugMode(array('212.4.129.229'));
+$configurator->setDebugMode(array('212.4.129.229', '62.168.39.34'));
 $configurator->enableDebugger(__DIR__ . '/../log');
 
 // Enable RobotLoader - this will load all classes automatically

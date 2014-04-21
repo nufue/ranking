@@ -8,12 +8,10 @@ common:
 	parameters:
 		database:
 			driver: mysql
-			host: 127.0.0.1
+			host: localhost
 			dbname: plavana
 			user: root
 			password: ***REMOVED***
-
-		rok: 2012
 
 
 	php:

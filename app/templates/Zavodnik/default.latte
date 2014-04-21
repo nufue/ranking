@@ -1,6 +1,6 @@
-{block title}{$zavodnik->cele_jmeno} - Žebříček LRU plavaná{/block}
+{block title}{if $zavodnik !== NULL}{$zavodnik->cele_jmeno}{else}Závodník nenalezen{/if} - Žebříček LRU plavaná{/block}
 {block content}
-
+{if $zavodnik !== NULL}
 <h1>{$zavodnik->cele_jmeno}</h1>
 <table id="hlavickaDetailuZebricku">
 	<tr><th>Rok</th><td>{$rok}</td></tr>
@@ -19,33 +19,39 @@
 
 <h2>Výsledky závodů</h2>
 {var $bodyCelkem = 0}
-{var $bodyZebricek = 0}
+{var $bodyZebricekCelkovy = 0}
+{var $bodyZebricekDorost = 0}
+{var $bodyZebricekZeny = 0}
 {var $cipsCelkem = 0}
 {if $vysledky !== NULL}
 <table id="detailZebricku">
-    <tbody>
-    <tr n:class="$iterator->odd ? odd : even" n:foreach="$vysledky as $v">
-        <td class="vlevo"><a n:href="Zavody:detail $v['id_zavodu'], $rok">{$v['nazev_zavodu']}{if !empty($v['kategorie_zavodu'])} {$v['kategorie_zavodu']}{/if}</a></td>
-		<td class="vlevo">{$v['tym']}</td>
-		<td>{$v['cips1']}</td>
-        <td>{if $v['umisteni1'] == (int)$v['umisteni1']}{(int)$v['umisteni1']}{else}{$v['umisteni1']|number:1:',':' '}{/if}</td>
-        <td>{if $v['body1_zebricek']}<span class="zebricek">{/if}{$v['body1']}{if $v['body1_zebricek']}</span>{/if}</td>
-		<td>{if $v['umisteni2'] !== NULL}{$v['cips2']}{/if}</td>
-        <td>{if $v['umisteni2'] !== NULL}{if $v['umisteni2'] == (int)$v['umisteni2']}{(int)$v['umisteni2']}{else}{$v['umisteni2']|number:1:',':' '}{/if}{/if}</td>
-        <td>{if $v['body2_zebricek']}<span class="zebricek">{/if}{$v['body2']}{if $v['body2_zebricek']}</span>{/if}</td>
-		{?$bodyCelkem += $v['body1'] + $v['body2']}
-		{?$bodyZebricek += ($v['body1_zebricek'] ? $v['body1'] : 0) + ($v['body2_zebricek'] ? $v['body2'] : 0)}
-		{?$cipsCelkem += $v['cips1'] + $v['cips2']}
-		
-    </tr>
-    </tbody>
     <thead>
         <tr><th rowspan="2">Název závodu</th><th rowspan="2">Tým</th><th colspan="3">1. závod</th><th colspan="3">2. závod</th></tr>
         <tr><th>CIPS</th><th>Umístění</th><th>Body</th><th>CIPS</th><th>Umístění</th><th>Body</th></tr>
     </thead>
+    <tbody>
+    <tr n:class="$iterator->odd ? odd : even" n:foreach="$vysledky as $k => $v">
+        <td class="vlevo"><a n:href="Zavody:detail $v['id_zavodu'], $rok">{$v['nazev_zavodu']}{if !empty($v['kategorie_zavodu'])} {$v['kategorie_zavodu']}{/if}</a></td>
+		<td class="vlevo">{$v['tym']}</td>
+		<td>{$v['cips1']}</td>
+        <td>{if $v['umisteni1'] == (int)$v['umisteni1']}{(int)$v['umisteni1']}{else}{$v['umisteni1']|number:1:',':' '}{/if}</td>
+        <td>{if isset($vysledkyCelkovy['vysledky'][$k]['body1_zebricek']) && $vysledkyCelkovy['vysledky'][$k]['body1_zebricek']}<span class="zebricek">{/if}{$v['body1']}{if isset($vysledkyCelkovy['vysledky'][$k]['body1_zebricek']) && $vysledkyCelkovy['vysledky'][$k]['body1_zebricek']}</span>{/if}</td>
+		<td>{if $v['umisteni2'] !== NULL}{$v['cips2']}{/if}</td>
+        <td>{if $v['umisteni2'] !== NULL}{if $v['umisteni2'] == (int)$v['umisteni2']}{(int)$v['umisteni2']}{else}{$v['umisteni2']|number:1:',':' '}{/if}{/if}</td>
+        <td>{if isset($vysledkyCelkovy['vysledky'][$k]['body2_zebricek']) && $vysledkyCelkovy['vysledky'][$k]['body2_zebricek']}<span class="zebricek">{/if}{$v['body2']}{if isset($vysledkyCelkovy['vysledky'][$k]['body2_zebricek']) && $vysledkyCelkovy['vysledky'][$k]['body2_zebricek']}</span>{/if}</td>        
+		{?$bodyCelkem += $v['body1'] + $v['body2']}
+		{if isset($vysledkyCelkovy['vysledky'][$k])}{?$bodyZebricekCelkovy += ($vysledkyCelkovy['vysledky'][$k]['body1_zebricek'] ? $vysledkyCelkovy['vysledky'][$k]['body1'] : 0) + ($vysledkyCelkovy['vysledky'][$k]['body2_zebricek'] ? $vysledkyCelkovy['vysledky'][$k]['body2'] : 0)}{/if}
+		{if isset($vysledkyDorost['vysledky'][$k])}{?$bodyZebricekDorost += ($vysledkyDorost['vysledky'][$k]['body1_zebricek'] ? $vysledkyDorost['vysledky'][$k]['body1'] : 0) + ($vysledkyDorost['vysledky'][$k]['body2_zebricek'] ? $vysledkyDorost['vysledky'][$k]['body2'] : 0)}{/if}
+		{if isset($vysledkyZeny['vysledky'][$k])}{?$bodyZebricekZeny += ($vysledkyZeny['vysledky'][$k]['body1_zebricek'] ? $vysledkyZeny['vysledky'][$k]['body1'] : 0) + ($vysledkyZeny['vysledky'][$k]['body2_zebricek'] ? $vysledkyZeny['vysledky'][$k]['body2'] : 0)}{/if}
+		{?$cipsCelkem += $v['cips1'] + $v['cips2']}
+		
+    </tr>
+    </tbody>
 	<tfoot>
 		<tr><th colspan="2">Body celkem</th><td colspan="6">{$bodyCelkem}</td></tr>
-		<tr><th colspan="2">Body do žebříčku</th><td colspan="6"><span class="zebricek">{$bodyZebricek}</span></td></tr>
+		<tr><th colspan="2">Body do celkového žebříčku</th><td colspan="6"><span class="zebricek">{$bodyZebricekCelkovy}</span></td></tr>
+		<tr n:if="$bodyZebricekZeny > 0"><th colspan="2">Body do žebříčku žen</th><td colspan="6">{$bodyZebricekZeny}</td></tr>
+		<tr n:if="$bodyZebricekDorost > 0"><th colspan="2">Body do žebříčku {$zavodnik->kategorie|substr:0,3}</th><td colspan="6">{$bodyZebricekDorost}</td></tr>
 		<tr><th colspan="2">CIPS celkem</th><td colspan="6"><span>{$cipsCelkem}</span></td></tr>
 	</tfoot>
 </table>
@@ -54,5 +60,8 @@
 <p>U tohoto závodníka nejsou vedeny žádné výsledky.</p>
 {/if}
 
-<p>{if !empty($backlink)}<a href="{$backlink}">zpět</a>{else}<a n:href="Homepage:default">zpět</a>{/if}</p>
+{else}
+<p>Závodník nebyl nalezen.</p>
+{/if}
 
+<p>{if !empty($backlink)}<a href="{$backlink}">zpět</a>{else}<a n:href="Homepage:default">zpět</a>{/if}</p>
