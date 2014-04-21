@@ -53,6 +53,39 @@ class Tymy extends Base {
 			$this->database->query("INSERT INTO `tymy_zavodnici`(`id_tymu`, `id_zavodnika`, `poradi`) VALUES (?, ?, ?)", $idTymu, $idZavodnika, $poradi);
 		}
 	}
+
+	public function getSoupiskaLiga($rok, $liga) {
+		$result = array();
+		$dbResult = $this->database->query("SELECT * FROM `tymy` WHERE `rok` = ? AND `liga` = ? ORDER BY `kod`", (int)$rok, $liga)->fetchAll();
+
+		foreach ($dbResult as $row) {
+			$result[$row->id] = array('nazev' => $row->nazev_tymu, 'clenove' => array());
+		}
+
+		$dbResult = $this->database->query("SELECT z.*, tz.id_tymu FROM zavodnici z JOIN tymy_zavodnici tz ON z.id = tz.id_zavodnika WHERE tz.id_tymu IN (?)", array_keys($result));
+
+		$idZavodnici = array();
+		foreach ($dbResult as $row) {
+			$result[$row->id_tymu]['clenove'][$row->id] = array('registrace' => $row->registrace, 'jmeno' => $row->cele_jmeno, 'kategorie' => NULL);
+			$idZavodnici[$row->id] = NULL;
+		}
+
+		$dbResult = $this->database->query("SELECT `id_zavodnika`, `kategorie` FROM `zavodnici_kategorie` WHERE `id_zavodnika` IN (?) AND `rok` = ?", array_keys($idZavodnici), (int)$rok);
+
+		foreach ($dbResult as $row) {
+			$idZavodnici[$row->id_zavodnika] = $row->kategorie;
+		}
+
+		foreach ($result as $idTymu => $tym) {
+			foreach ($tym['clenove'] as $idZavodnika => $zavodnik) {
+				if (isset($idZavodnici[$idZavodnika])) {
+					$result[$idTymu]['clenove'][$idZavodnika]['kategorie'] = $idZavodnici[$idZavodnika];
+				} 
+			}
+		}
+		
+		return $result;
+	}
 	
 	public function getClenstvi($idZavodnika, $rok) {
 		return $this->database->query("SELECT t.id, t.liga, t.nazev_tymu FROM tymy t JOIN tymy_zavodnici tz ON t.id = tz.id_tymu WHERE t.rok = ? AND tz.id_zavodnika = ?", $rok, $idZavodnika);

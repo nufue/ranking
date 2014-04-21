@@ -35,12 +35,15 @@ $container->router[] = new Route('<rok [0-9]{4}>/zavodnik/<id>', 'Zavodnik:defau
 $container->router[] = new Route('<rok [0-9]{4}>/zavody/add', 'Zavody:add');
 $container->router[] = new Route('<rok [0-9]{4}>/zavody/<id>', 'Zavody:detail');
 $container->router[] = new Route('<rok [0-9]{4}>/<typ u23|u18|u14|zeny|u10>[/<show>]', array('presenter' => 'Homepage', 'action' => 'default'));
+$container->router[] = new Route('<rok [0-9]{4}>/soupisky/<liga>', array('presenter' => 'Soupisky', 'action' => 'detail'));
 $container->router[] = new Route('<rok [0-9]{4}>/<presenter>/<action>[/<id>]', 'Homepage:default');
 $container->router[] = new Route('<rok [0-9]{4}>/excel-export', 'Homepage:excelExport');
+
 
 $container->router[] = new Route('zavodnik/<id>', 'Zavodnik:default');
 $container->router[] = new Route('zavody/add', 'Zavody:add');
 $container->router[] = new Route('zavody/<id>', 'Zavody:detail');
+
 $container->router[] = new Route('<typ u23|u18|u14|zeny|u10>[/<show>]', array('presenter' => 'Homepage', 'action' => 'default'));
 $container->router[] = new Route('<presenter>/<action>[/<id>]', 'Homepage:default');
 
