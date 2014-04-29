@@ -305,6 +305,7 @@ class ZavodyPresenter extends BasePresenter {
 				continue;
 
 			$poznamka = '';
+			$prijmeniZebricek = '';
 			if (!preg_match('~^\d+$~', $registrace)) {
 				$poznamka = 'n';
 				$zavodnik = $this->context->zavodnici->checkNeregistrovanyZavodnik($prijmeni);
@@ -314,7 +315,12 @@ class ZavodyPresenter extends BasePresenter {
 				$zavodnik = $this->context->zavodnici->getZavodnik($registrace, $rok);
 				if ($zavodnik === NULL) {
 					$poznamka = 'p';
-				}
+				} else {
+					if ($zavodnik->cele_jmeno != $prijmeni) {
+						$poznamka = 'r';
+						$prijmeniZebricek = $zavodnik->cele_jmeno;
+					}
+				}				
 			}
 
 			$tym = $radek[$sloupce['druzstvo']];
@@ -340,7 +346,7 @@ class ZavodyPresenter extends BasePresenter {
 				$umisteni2 = str_replace(',', '.', $umisteni2);
 			}
 
-			$vysledky[] = array('prijmeni' => $prijmeni, 'registrace' => $registrace, 'kategorie' => $kategorie, 'tym' => $tym, 'cips1' => $cips1, 'umisteni1' => $umisteni1, 'cips2' => $cips2, 'umisteni2' => $umisteni2, 'poznamka' => $poznamka);
+			$vysledky[] = array('prijmeni' => $prijmeni, 'prijmeni_zebricek' => $prijmeniZebricek, 'registrace' => $registrace, 'kategorie' => $kategorie, 'tym' => $tym, 'cips1' => $cips1, 'umisteni1' => $umisteni1, 'cips2' => $cips2, 'umisteni2' => $umisteni2, 'poznamka' => $poznamka);
 		}
 		$this->context->session->getSection('vysledky')->vysledkyParsed = $vysledky;
 		$this->redirect('pridatVysledky3', $this->id);
