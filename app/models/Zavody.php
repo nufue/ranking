@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Model;
+
 class Zavody extends Base {
 
 	public function getZavody($rok, $vsechny = false) {

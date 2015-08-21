@@ -1,67 +1,44 @@
-#
-# SECURITY WARNING: it is CRITICAL that this file & directory are NOT accessible directly via a web browser!
-#
-# If you don't protect this directory from direct web access, anybody will be able to see your passwords.
+# WARNING: it is CRITICAL that this file & directory are NOT accessible directly via a web browser!
 # http://nette.org/security-warning
-#
-common:
-	parameters:
-		database:
-			driver: mysql
-			host: localhost
-			dbname: plavana
-			user: root
-			password: ***REMOVED***
+
+parameters:
+	db:
+		server:
+		dbname:
+		user:
+		password:
+
+php:
+	date.timezone: Europe/Prague
 
 
-	php:
-		date.timezone: Europe/Prague
-		# session.save_path: "%tempDir%/sessions"
-		# zlib.output_compression: yes
+application:
+	errorPresenter: Error
+	mapping:
+		*: App\*Module\Presenters\*Presenter
 
 
-	nette:
-		session:
-			expiration: '+ 14 days'
+session:
+	expiration: 14 days
 
-		database:
-			default:
-				dsn: '%database.driver%:host=%database.host%;dbname=%database.dbname%'
-				user: %database.user%
-				password: %database.password%
+database:
+	dsn: 'mysql:host=%db.server%;dbname=%db.dbname%'
+	user: %db.user%
+	password: %db.password%
 
 
-	services:
-		database: @Nette\Database\Connection
+services:
+	router: App\RouterFactory::createRouter
+	tymy: App\Model\Tymy
+	kategorie: App\Model\Kategorie
+	zavody: App\Model\Zavody
+	zavodnici: App\Model\Zavodnici
+	zebricek: App\Model\Zebricek
+	suggest: App\Model\Suggest
 
-		tymy:
-			class: Tymy
-			
-		kategorie:
-			class: Kategorie
-			
-		zavody:
-			class: Zavody
-			
-		zavodnici:
-			class: Zavodnici
-		
-		zebricek:
-			class: Zebricek
-
-		suggest:
-			class: Suggest
-
-		authenticator:
-			class: Nette\Security\SimpleAuthenticator
-			arguments: [[
-				***REMOVED***: ***REMOVED***
-				***REMOVED***: ***REMOVED***
-			]]
-
-	factories:
-
-
-production < common:
-
-development < common:
+	authenticator:
+		class: Nette\Security\SimpleAuthenticator
+		arguments: [[
+			***REMOVED***: ***REMOVED***
+			***REMOVED***: ***REMOVED***
+		]]

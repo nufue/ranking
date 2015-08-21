@@ -1,6 +1,8 @@
 <?php
 
-use \Nette\Application\UI\Form;
+namespace App\Presenters;
+
+use \Nette\Application\UI\Form, \App\Model\Tymy;
 
 /**
  * Homepage presenter.
@@ -10,16 +12,25 @@ use \Nette\Application\UI\Form;
  */
 class TymyPresenter extends BasePresenter {
 
+	/** @var \App\Model\Tymy @inject */
+	public $tymy;
+	
+	/** @var \App\Model\Zavodnici @inject */
+	public $zavodnici;
+	
+	/** @var \App\Model\Suggest @inject */
+	public $suggest;
+	
 	public function renderDefault($rok = NULL) {
 		if ($rok === NULL) $rok = self::$defaultYear;
-		$this->template->ligy = Tymy::$ligy;
+		$this->template->ligy = \App\Model\Tymy::$ligy;
 		$this->template->rok = $rok;
-		$this->template->tymy = $this->context->tymy->getTymyRok($rok);
+		$this->template->tymy = $this->tymy->getTymyRok($rok);
 	}
 
 	public function renderDetail($id, $rok) {
 		$this->template->ligy = Tymy::$ligy;
-		$detail = $this->context->tymy->getTym($id);
+		$detail = $this->tymy->getTym($id);
 		$this->template->kategoriePrevod = Kategorie::$kategorie;
 		$this->template->detail = $detail['info'];
 		$this->template->zavodnici = $detail['zavodnici'];
@@ -49,7 +60,7 @@ class TymyPresenter extends BasePresenter {
 		$values = $form->getValues();
 		$id = $values['id'];
 		if (!empty($id)) {
-			$this->context->tymy->removeZavodnici($id);
+			$this->tymy->removeZavodnici($id);
 			foreach ($values as $k => $v) {
 				if (mb_substr($k, 0, 8) != 'zavodnik') {
 					continue;
@@ -57,12 +68,12 @@ class TymyPresenter extends BasePresenter {
 				if (trim($v) == '')
 					continue;
 				if (preg_match('~^\d+$~', $v)) {
-					$zavodnik = $this->context->zavodnici->getZavodnikByRegistrace($v);
+					$zavodnik = $this->zavodnici->getZavodnikByRegistrace($v);
 				} else {
-					$zavodnik = $this->context->zavodnici->getZavodnikByJmeno($v);
+					$zavodnik = $this->zavodnici->getZavodnikByJmeno($v);
 				}
 				if ($zavodnik !== NULL) {
-					$this->context->tymy->addZavodnik($id, $zavodnik->id);
+					$this->tymy->addZavodnik($id, $zavodnik->id);
 					$this->flashMessage('Závodník ' . $v . ' byl přidán do týmu ID = ' . $id);
 				} else {
 					$this->flashMessage('Závodníka ' . $v . ' se nepodařilo vyhledat.', 'error');
@@ -73,8 +84,7 @@ class TymyPresenter extends BasePresenter {
 	}
 
 	public function actionSuggest($typedText) {
-		//$this->sendResponse(new Nette\Application\Responses\JsonResponse(array('test' => $typedText)));
-		$response = $this->context->suggest->getSuggest($typedText);
+		$response = $this->suggest->getSuggest($typedText);
 		$this->sendResponse(new Nette\Application\Responses\JsonResponse(array('values' => $response)));
 	}
 

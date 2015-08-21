@@ -1,14 +1,10 @@
 <?php
 
-/**
- * Base class for all application presenters.
- *
- * @author     John Doe
- * @package    MyApplication
- */
-abstract class BasePresenter extends Nette\Application\UI\Presenter {
+namespace App\Presenters;
 
-	protected static $defaultYear = 2014;
+abstract class BasePresenter extends \Nette\Application\UI\Presenter {
+
+	protected static $defaultYear = 2015;
 
 	public function startup() {
 		parent::startup();
@@ -18,14 +14,14 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter {
 		
 		$this->template->userName = $userName;
 
-		$bcStorage = $this->context->session->getSection('breadcrumb');
+		$bcStorage = $this->getSession('breadcrumb');
 		if ($bcStorage->breadcrumb === NULL) {
-			$bcStorage->breadcrumb = array();
+			$bcStorage->breadcrumb = [];
 		}
 
 		$this->template->backlink = '';
 		//\Nette\Diagnostics\Debugger::dump($bcStorage->breadcrumb);
-		$httpRequest = $this->context->httpRequest;
+		$httpRequest = $this->getHttpRequest();
 		$absoluteUrl = $httpRequest->getUrl()->getAbsoluteUrl();
 		$deleted = false;
 		if (isset($bcStorage->breadcrumb[1]) && $bcStorage->breadcrumb[1] == $absoluteUrl) {

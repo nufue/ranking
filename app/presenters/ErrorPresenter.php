@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Presenters;
+
 use Nette\Diagnostics\Debugger,
 	Nette\Application as NA;
 

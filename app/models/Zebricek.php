@@ -1,6 +1,20 @@
 <?php
 
+namespace App\Model;
+
 class Zebricek extends Base {
+
+	/** @var \App\Model\Zavody @inject */
+	private $zavody;
+	
+	/** @var \App\Model\Zavodnici @inject */
+	private $zavodnici;
+
+	public function __construct(\Nette\Database\Context $database, \App\Model\Zavody $zavody, \App\Model\Zavodnici $zavodnici) {
+		parent::__construct($database);
+		$this->zavody = $zavody;
+		$this->zavodnici = $zavodnici;
+	}
 
 	public static $bodovaci_tabulky = array(
 		1 => array(1 => 40, 38, 36, 34, 32, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 1),
@@ -57,11 +71,11 @@ class Zebricek extends Base {
 	public function getZebricek($rok, $typ) {
 		$zavody = array();
 
-		$result = $this->context->database->query("SELECT DATE_FORMAT(MAX(`datum_do`), '%e. %c. %Y') `datum`, MAX(`datum_do`) `datum_platnosti` FROM `zavody` WHERE `rok` = ? AND zobrazovat = 'ano' AND vysledky = 'ano'", $rok)->fetch();
+		$result = $this->database->query("SELECT DATE_FORMAT(MAX(`datum_do`), '%e. %c. %Y') `datum`, MAX(`datum_do`) `datum_platnosti` FROM `zavody` WHERE `rok` = ? AND zobrazovat = 'ano' AND vysledky = 'ano'", $rok)->fetch();
 		$datumPlatnosti = $result->datum;
 		$datumPlatnostiOrig = $result->datum_platnosti;
 
-		$result = $this->context->zavody->getZavody($rok);
+		$result = $this->zavody->getZavody($rok);
 		foreach ($result as $row) {
 			$zavody[$row->id] = array('typ' => $row->typ, 'nazev' => $row->nazev, 'kategorie' => $row->kategorie);
 		}
@@ -78,13 +92,14 @@ class Zebricek extends Base {
 			$query .= " AND `zk`.`kategorie` IN ('u10', 'u10_zena') AND `zav`.`kategorie` != 'ženy'";
 		else if ($typ == 'zeny')
 			$query .= " AND `zk`.`kategorie` IN ('u10_zena', 'u14_zena', 'u18_zena', 'u23_zena', 'zena', 'u12_zena') AND (`zav`.`kategorie` = '' OR `zav`.`kategorie` = 'ženy')";
-		else if ($typ == 'u12') 
+		else if ($typ == 'u12')
 			$query .= " AND `zk`.`kategorie` IN ('u12', 'u12_zena') AND `zav`.`kategorie` != 'ženy'";
-		else if ($typ == 'excel') ;
+		else if ($typ == 'excel')
+			;
 //		else $query .= " AND (`zav`.`kategorie` = '')"; // do celkoveho zebricku se nepocitaji vysledky zavodu kategorii
 //		echo $query;
 
-		$result = $this->context->database->query($query . " ORDER BY `zav`.`datum_od`, `zav`.`nazev`", $rok);
+		$result = $this->database->query($query . " ORDER BY `zav`.`datum_od`, `zav`.`nazev`", $rok);
 		foreach ($result as $row) {
 			$id = $row->id_zavodnika;
 			if (!isset($zavodnici[$id]))
@@ -93,13 +108,13 @@ class Zebricek extends Base {
 				$zavodnici[$id]['vysledky'][$row->id_zavodu] = array('zavod' => $row->id_zavodu, 'kategorie_zavodu' => $row->kategorie_zavodu, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2, 'cips1' => $row->cips1, 'cips2' => $row->cips2, 'body' => 0);
 			}
 			if ($row->umisteni1 !== NULL)
-				$zavodnici[$id]['zavodu']++;
+				$zavodnici[$id]['zavodu'] ++;
 			if ($row->umisteni2 !== NULL)
-				$zavodnici[$id]['zavodu']++;
+				$zavodnici[$id]['zavodu'] ++;
 		}
 
 		if (count($zavodnici) > 0) {
-			$result = $this->context->database->query("SELECT `tz`.`id_zavodnika`, `t`.`nazev_tymu`, 
+			$result = $this->database->query("SELECT `tz`.`id_zavodnika`, `t`.`nazev_tymu`, 
 (select min(poradi) from `tymy_zavodnici` `tz2` WHERE `tz2`.`id_tymu` = `tz`.`id_tymu` AND `tz2`.`id_zavodnika` = `tz`.`id_zavodnika`) `pocet`,
 (select count(*) from `tymy_zavodnici` `tz2` WHERE `tz2`.`id_tymu` = `tz`.`id_tymu`) `procento`
 FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `tz`.`id_zavodnika` IN (?) AND `rok` = ? ORDER BY id_zavodnika, `pocet` / `procento` DESC", array_keys($zavodnici), $rok);
@@ -124,7 +139,8 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 					$zavodnici[$id]['vysledky'][$k]['body1'] = $body1;
 					$zavodnici[$id]['vysledky'][$k]['body1_zebricek'] = FALSE;
 					$zavodnici[$id]['body_celkem'][] = $body1;
-					if ($typ != 'celkem' || $kategorieZavodu == '') $zavodnici[$id]['body_zebricek'][] = $body1;
+					if ($typ != 'celkem' || $kategorieZavodu == '')
+						$zavodnici[$id]['body_zebricek'][] = $body1;
 					$zavodnici[$id]['cips_celkem'][] = $cips1;
 				} else {
 					$zavodnici[$id]['vysledky'][$k]['body1'] = NULL;
@@ -134,7 +150,8 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 					$zavodnici[$id]['vysledky'][$k]['body2'] = $body2;
 					$zavodnici[$id]['vysledky'][$k]['body2_zebricek'] = FALSE;
 					$zavodnici[$id]['body_celkem'][] = $body2;
-					if ($typ != 'celkem' || $kategorieZavodu == '') $zavodnici[$id]['body_zebricek'][] = $body2;
+					if ($typ != 'celkem' || $kategorieZavodu == '')
+						$zavodnici[$id]['body_zebricek'][] = $body2;
 					$zavodnici[$id]['cips_celkem'][] = $cips2;
 				} else {
 					$zavodnici[$id]['vysledky'][$k]['body2'] = NULL;
@@ -193,7 +210,6 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 	}
 
 	public function getVysledkyZavodu($idZavodnika, $rok, $omezeni = NULL) {
-
 		$zavodnik = array();
 		$headerSet = false;
 
@@ -209,14 +225,16 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 					AND (`zav`.`vysledky` = 'ano')
 					AND `z`.`id` = ? AND `zav`.`rok` = ?";
 
-		if ($omezeni === NULL) $query .= " AND `zav`.`kategorie` = ''";
-		if ($omezeni == 'ženy') $query .= " AND `zk`.`kategorie` IN ('u10_zena', 'u14_zena', 'u18_zena', 'u23_zena', 'zena', 'u12_zena') AND (`zav`.`kategorie` = '' OR `zav`.`kategorie` = 'ženy')";
-		if ($omezeni[0] == 'u') $query .= " AND `zk`.`kategorie` IN ('".$omezeni."', '".$omezeni."_zena') AND `zav`.`kategorie` != 'ženy'";
-					
+		if ($omezeni === NULL)
+			$query .= " AND `zav`.`kategorie` = ''";
+		if ($omezeni == 'ženy')
+			$query .= " AND `zk`.`kategorie` IN ('u10_zena', 'u14_zena', 'u18_zena', 'u23_zena', 'zena', 'u12_zena') AND (`zav`.`kategorie` = '' OR `zav`.`kategorie` = 'ženy')";
+		if ($omezeni[0] == 'u')
+			$query .= " AND `zk`.`kategorie` IN ('" . $omezeni . "', '" . $omezeni . "_zena') AND `zav`.`kategorie` != 'ženy'";
 
 		$query .= " ORDER BY `zav`.`datum_od`, `zav`.`nazev`";
 
-		$result = $this->context->database->query($query, $idZavodnika, $rok);
+		$result = $this->database->query($query, $idZavodnika, $rok);
 
 		foreach ($result as $row) {
 			if (!$headerSet) {
@@ -226,9 +244,9 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 				$zavodnik['vysledky'][$row->id_zavodu] = array('nazev_zavodu' => $row->nazev_zavodu, 'tym' => $row['tym'], 'typ_zavodu' => $row->typ, 'kategorie_zavodu' => $row->kategorie_zavodu, 'id_zavodu' => $row->id_zavodu, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2, 'cips1' => $row->cips1, 'cips2' => $row->cips2);
 			}
 			if ($row->umisteni1 !== NULL)
-				$zavodnik['zavodu']++;
+				$zavodnik['zavodu'] ++;
 			if ($row->umisteni2 !== NULL)
-				$zavodnik['zavodu']++;
+				$zavodnik['zavodu'] ++;
 		}
 
 		if (isset($zavodnik['vysledky'])) {
@@ -290,7 +308,7 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 	}
 
 	public function getZavodnikRok($idZavodnika, $rok) {
-		$zavodnik = $this->context->zavodnici->getZavodnikById($idZavodnika, $rok);
+		$zavodnik = $this->zavodnici->getZavodnikById($idZavodnika, $rok);
 		$vysledky = $this->getVysledkyZavodu($idZavodnika, $rok, 'všechny');
 
 		$vysledkyDorost = NULL;
@@ -313,10 +331,12 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 		$sumB = array_sum($b['body_zebricek']);
 		$sumCips1 = array_sum($a['cips_celkem']);
 		$sumCips2 = array_sum($b['cips_celkem']);
-		
+
 		if ($sumA == $sumB) {
-			if ($a['zavodu'] < $b['zavodu']) return -1;
-			else if ($a['zavodu'] > $b['zavodu']) return 1;
+			if ($a['zavodu'] < $b['zavodu'])
+				return -1;
+			else if ($a['zavodu'] > $b['zavodu'])
+				return 1;
 			else {
 				if ($sumCips1 > $sumCips2) {
 					return -1;

@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Presenters;
+
 /**
  * Homepage presenter.
  *
@@ -8,16 +10,22 @@
  */
 class HomepagePresenter extends BasePresenter {
 
+	/** @var \App\Model\Zebricek @inject */
+	public $zebricek;
+	
+	/** @var \App\Model\Zavody @inject */
+	public $zavody;
+	
 	public function actionExcelExport($rok = NULL) {
 		if ($rok === NULL) $rok = self::$defaultYear;
 
-		$zebricekCelkovy = $this->context->zebricek->getZebricek($rok, 'celkem' /* zadny konkretni typ */);
-		$zebricek = $this->context->zebricek->getZebricek($rok, 'excel');
-		$zebricekU23 = $this->context->zebricek->getZebricek($rok, 'u23');
-		$zebricekU18 = $this->context->zebricek->getZebricek($rok, 'u18');
-		$zebricekU14 = $this->context->zebricek->getZebricek($rok, 'u14');
-		$zebricekU12 = $this->context->zebricek->getZebricek($rok, 'u12');
-		$zebricekZeny = $this->context->zebricek->getZebricek($rok, 'zeny');
+		$zebricekCelkovy = $this->zebricek->getZebricek($rok, 'celkem' /* zadny konkretni typ */);
+		$zebricek = $this->zebricek->getZebricek($rok, 'excel');
+		$zebricekU23 = $this->zebricek->getZebricek($rok, 'u23');
+		$zebricekU18 = $this->zebricek->getZebricek($rok, 'u18');
+		$zebricekU14 = $this->zebricek->getZebricek($rok, 'u14');
+		$zebricekU12 = $this->zebricek->getZebricek($rok, 'u12');
+		$zebricekZeny = $this->zebricek->getZebricek($rok, 'zeny');
 		
 		$datumPlatnosti = $zebricekCelkovy['datum_platnosti_orig'];
 
@@ -133,13 +141,13 @@ class HomepagePresenter extends BasePresenter {
 
 		$this->template->zobrazitZavody = $show;
 
-		$zebricek = $this->context->zebricek->getZebricek($rok, $typ);
+		$zebricek = $this->zebricek->getZebricek($rok, $typ);
 		$this->template->rok = $rok;
 		$this->template->datum_platnosti = $zebricek['datum_platnosti'];
 		$this->template->zavody = $zebricek['zavody'];
 		$this->template->zavodnici = $zebricek['zavodnici'];
 		
-		$this->template->chybejiciVysledky = $this->context->zavody->getChybejiciVysledky();
+		$this->template->chybejiciVysledky = $this->zavody->getChybejiciVysledky();
 	}
 
 	private function addVysledky(&$sheet, $data, $nadpis, $datumPlatnosti, $dataFilterFunction, $dataFilterArg) {

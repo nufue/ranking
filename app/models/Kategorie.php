@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Model;
+
 class Kategorie extends Base {
 
 	public static $kategorie = array(

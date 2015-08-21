@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Model;
+
 class Suggest extends Base {
 
 	public function getSuggest($s) {

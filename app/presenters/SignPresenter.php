@@ -1,39 +1,30 @@
 <?php
 
-use Nette\Application\UI,
+namespace App\Presenters;
+
+use Nette\Application\UI\Form,
 	Nette\Security as NS;
 
-/**
- * Sign in/out presenters.
- *
- * @author     John Doe
- * @package    MyApplication
- */
-class SignPresenter extends BasePresenter {
+final class SignPresenter extends BasePresenter {
 
-	/**
-	 * Sign in form component factory.
-	 * @return Nette\Application\UI\Form
-	 */
 	protected function createComponentSignInForm() {
-		$form = new UI\Form;
+		$form = new Form;
 		$form->addText('username', 'Uživatelské jméno:')
-				->setRequired('Zadejte prosím uživatelské jméno.');
+			->setRequired('Zadejte prosím uživatelské jméno.');
 
 		$form->addPassword('password', 'Heslo:')
-				->setRequired('Zadejte prosím heslo.');
+			->setRequired('Zadejte prosím heslo.');
 
 		$form->addCheckbox('remember', 'Zapamatovat');
 
 		$form->addSubmit('send', 'Přihlásit');
 
-		$form->onSuccess[] = callback($this, 'signInFormSubmitted');
+		$form->onSuccess[] = $this->signInFormSuccess;
 		return $form;
 	}
 
-	public function signInFormSubmitted($form) {
+	public function signInFormSuccess(Form $form, $values) {
 		try {
-			$values = $form->getValues();
 			if ($values->remember) {
 				$this->getUser()->setExpiration('+ 14 days', FALSE);
 			} else {

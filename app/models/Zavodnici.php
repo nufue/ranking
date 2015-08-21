@@ -1,6 +1,16 @@
 <?php
 
+namespace App\Model;
+
 class Zavodnici extends Base {
+
+	/** @var \App\Model\Kategorie @inject */
+	private $kategorie;
+
+	public function __construct(\Nette\Database\Context $database, \App\Model\Kategorie $kategorie) {
+		parent::__construct($database);
+		$this->kategorie = $kategorie;
+	}
 
 	public function getZavodnici($idZavodu) {
 		$dbResult = $this->database->query("SELECT z.id `id_zavodnika`, `z`.`registrace`, `z`.`cele_jmeno`, `z`.`registrovany`, `zz`.`tym`, `zk`.`kategorie`, `zz`.`cips1`, zz.umisteni1, zz.cips2, zz.umisteni2 FROM `zavodnici` `z` JOIN `zavodnici_zavody` `zz` ON `z`.`id` = `zz`.`id_zavodnika` JOIN `zavodnici_kategorie` `zk` ON `z`.`id` = `zk`.`id_zavodnika` JOIN `zavody` ON `zavody`.`id` = `zz`.`id_zavodu` WHERE `zz`.`id_zavodu` = ? AND `zavody`.`rok` = `zk`.`rok` ORDER BY (IF(zz.umisteni1 IS NULL, 0, 1) + IF(zz.umisteni2 IS NULL, 0, 1)) DESC, (IFNULL(zz.umisteni1, 0) + IFNULL(zz.umisteni2, 0)), (IFNULL(zz.cips1, 0) + IFNULL(zz.cips2, 0)) DESC", $idZavodu);
@@ -50,7 +60,7 @@ class Zavodnici extends Base {
 	public function addZavodnik($registrace, $cele_jmeno, $kategorie, $rok) {
 		$row = $this->database->table('zavodnici')->insert(array('registrace' => $registrace, 'cele_jmeno' => $cele_jmeno));
 		$rowId = $row->id;
-		$this->context->kategorie->addZavodnikKategorie($rowId, $kategorie, $rok);
+		$this->kategorie->addZavodnikKategorie($rowId, $kategorie, $rok);
 		// TODO rok
 
 		return $rowId;
@@ -68,11 +78,11 @@ class Zavodnici extends Base {
 	public function addNeregistrovanyZavodnik($cele_jmeno, $kategorie, $rok) {
 		$result = $this->checkNeregistrovanyZavodnik($cele_jmeno);
 		if ($result !== NULL) {
-			$dbResult = $this->database->query("SELECT `kategorie` FROM `zavodnici_kategorie` WHERE `id_zavodnika` = ? AND `rok` = ?", (int)$result, $rok)->fetch();
+			$dbResult = $this->database->query("SELECT `kategorie` FROM `zavodnici_kategorie` WHERE `id_zavodnika` = ? AND `rok` = ?", (int) $result, $rok)->fetch();
 			if ($dbResult === FALSE) {
 				$this->database->table('zavodnici_kategorie')->insert(array('id_zavodnika' => $result, 'rok' => $rok, 'kategorie' => $kategorie));
 			} else if ($dbResult->kategorie == '') {
-				$this->database->exec('UPDATE `zavodnici_kategorie` SET `kategorie` = ? WHERE `id_zavodnika` = ? AND `rok` = ?', $kategorie, $result, $rok);
+				$this->database->query('UPDATE `zavodnici_kategorie` SET `kategorie` = ? WHERE `id_zavodnika` = ? AND `rok` = ?', $this->kategorieConvertToDB($kategorie), $result, $rok);
 			}
 			return $result;
 		} else {
@@ -86,9 +96,19 @@ class Zavodnici extends Base {
 
 			$row = $this->database->table('zavodnici')->insert(array('registrace' => $reg, 'cele_jmeno' => $cele_jmeno, 'registrovany' => 'N'));
 			$rowId = $row->id;
-			$this->context->kategorie->addZavodnikKategorie($rowId, $kategorie, $rok);
+			$this->kategorie->addZavodnikKategorie($rowId, $kategorie, $rok);
 			return $rowId;
 		}
+	}
+
+	private function kategorieConvertToDB($kategorie) {
+		if ($kategorie == 'U14Ž') return 'u14_zena';
+		else if ($kategorie == 'U18Ž') return 'u18_zena';
+		else if ($kategorie == 'U23Ž') return 'u23_zena';
+		else if ($kategorie == 'U10Ž') return 'u10_zena';
+		else if ($kategorie == 'U12Ž') return 'u12_zena';
+		else if ($kategorie == 'H') return 'hendikep';
+		else return $kategorie;
 	}
 
 }

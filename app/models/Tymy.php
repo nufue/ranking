@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Model;
+
 class Tymy extends Base {
 
 	public static $ligy = array('1' => '1. liga', '2a' => '2. liga, sk. A', '2b' => '2. liga, sk. B', '2c' => '2. liga, sk. C');

@@ -6,9 +6,16 @@
 {var $pocetRadku = 0}
 {form vysledkyParseForm}
 <table>
+<thead>
+	<th>Řádek</th>
+	{for $i = 0; $i < $pocetSloupcu; $i++}
+		<th>{input 'sloupec'.$i}</th>
+	{/for}
+</thead>
+
 	<tbody>
 		<tr n:foreach="$tabulka as $radek">
-			<td>{$form['prvni_radek']->getControl($pocetRadku)}</td>
+			<td>{$form['prvni_radek']->getControlPart($pocetRadku)} {$form['prvni_radek']->getLabelPart($pocetRadku)}</td>
 			<td n:foreach="$radek as $bunka">
 				{$bunka}
 			</td>
@@ -17,12 +24,6 @@
 		<tr>
 			<td colspan="3">{input send}</td></tr>
 	</tbody>
-<thead>
-<th>Řádek</th>
-	{for $i = 0; $i < $pocetSloupcu; $i++}
-<th>{input 'sloupec'.$i}</th>
-	{/for}
-</thead>
 </table>
 {/form}
 

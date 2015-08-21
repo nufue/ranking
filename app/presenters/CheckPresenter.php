@@ -1,13 +1,21 @@
 <?php
 
-class CheckPresenter extends BasePresenter {
+namespace App\Presenters;
+
+final class CheckPresenter extends BasePresenter {
+	
+	/** @var \App\Model\Tymy @inject */
+	public $tymy;
+	
+	/** @var \App\Model\Kategorie @inject */
+	public $kategorie;
 
 	public function renderTymy() {
-		$this->template->tymy = $this->context->tymy->getTymy();
+		$this->template->tymy = $this->tymy->getTymy();
 	}
 
 	public function renderKategorie() {
-		$this->template->kategorie = $this->context->kategorie->getKategorie();
+		$this->template->kategorie = $this->kategorie->getKategorie();
 		$this->template->kategoriePrevod = Kategorie::$kategorie;
 	}
 
