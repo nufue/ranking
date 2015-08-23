@@ -30,7 +30,7 @@ class HomepagePresenter extends BasePresenter {
 		$datumPlatnosti = $zebricekCelkovy['datum_platnosti_orig'];
 
 		
-		$objExcel = new PHPExcel;
+		$objExcel = new \PHPExcel;
 		$objExcel->getProperties()->setCreator("Jiří Hrazdil");
 		if ($datumPlatnosti !== NULL) {
 			$objExcel->getProperties()->setTitle('Průběžný žebříček LRU plavaná, aktuální k '.$datumPlatnosti->format('j. n. Y'));
@@ -76,7 +76,7 @@ class HomepagePresenter extends BasePresenter {
 		
 		$objExcel->setActiveSheetIndex(0);
 		
-		$objWriter = new PHPExcel_Writer_Excel2007($objExcel);
+		$objWriter = new \PHPExcel_Writer_Excel2007($objExcel);
 		$tempDir = __DIR__.'/../../temp/Excel';
 		if (!file_exists($tempDir)) {
 			mkdir($tempDir);
@@ -117,13 +117,13 @@ class HomepagePresenter extends BasePresenter {
 		if ($argument == 'zeny' && ($radek['kategorie'] == 'U14Ž' || $radek['kategorie'] == 'U18Ž' || $radek['kategorie'] == 'U23Ž' || $radek['kategorie'] == 'U10Ž' || $radek['kategorie'] == 'Ž' || $radek['kategorie'] == 'U12Ž')) return true;
 	}
 
-	public function actionDefault($rok = NULL, $typ = 'celkem', $show = false) {
+	public function actionDefault($rok = NULL, $typ = 'celkem', $show = FALSE) {
 		if ($rok === NULL) {
 			$this->redirect('Homepage:default', array('rok' => self::$defaultYear, 'typ' => $typ, 'show' => $show));
 		}
 	}
 
-	public function renderDefault($rok, $typ = 'celkem', $show = false) {
+	public function renderDefault($rok, $typ = 'celkem', $show = FALSE) {
 		$this->template->aktualniRok = Date("Y");
 		
 		if ($typ == 'celkem')
@@ -164,18 +164,18 @@ class HomepagePresenter extends BasePresenter {
 				'bold' => true,
 			),
 			'alignment' => array(
-				'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+				'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
 			),
 		);
 		$saRight = array(
 			'alignment' => array(
-				'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_RIGHT,
+				'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_RIGHT,
 			)
 		);
 
 		$sheet->SetCellValue('A' . $rowCnt, $nadpis);
 		$sheet->getStyle('A' . $rowCnt)->getFont()->setSize(14)->setBold(true);
-		$sheet->getStyle('A' . $rowCnt)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+		$sheet->getStyle('A' . $rowCnt)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 		$sheet->mergeCells('A' . $rowCnt . ':I' . $rowCnt);
 		
 		$rowCnt++;
@@ -183,14 +183,14 @@ class HomepagePresenter extends BasePresenter {
 			$sheet->SetCellValue('A' . $rowCnt, 'platný k '.$datumPlatnosti->format('j. n. Y'));
 		} 
 		$sheet->getStyle('A' . $rowCnt)->getFont()->setSize(12);
-		$sheet->getStyle('A' . $rowCnt)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+		$sheet->getStyle('A' . $rowCnt)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 		$sheet->mergeCells('A' . $rowCnt . ':I' . $rowCnt);
 
 		$rowCnt++;
 		$sheet->SetCellValue('A' . $rowCnt, 'Aktuální žebříček je dostupný na http://www.plavana.info/');
 		$sheet->getCell('A'.$rowCnt)->getHyperlink()->setUrl('http://www.plavana.info/'.(!empty($dataFilterArg) ? $dataFilterArg : '').'?utm_source=xls&utm_medium=link&utm_campaign=zebricek'.$datumPlatnosti->format('Ymd'));
 		$sheet->getStyle('A' . $rowCnt)->getFont()->setSize(12);
-		$sheet->getStyle('A' . $rowCnt)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+		$sheet->getStyle('A' . $rowCnt)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 		$sheet->mergeCells('A' . $rowCnt . ':I' . $rowCnt);
 
 
@@ -208,7 +208,7 @@ class HomepagePresenter extends BasePresenter {
 
 		$poradi = 1;
 		$sheet->getPageMargins()->setLeft(0.54)->setRight(0.54);
-		$sheet->getStyle('A' . $rowCnt . ':I' . $rowCnt)->getAlignment()->setWrapText(true)->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER)->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+		$sheet->getStyle('A' . $rowCnt . ':I' . $rowCnt)->getAlignment()->setWrapText(true)->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER)->setVertical(\PHPExcel_Style_Alignment::VERTICAL_CENTER);
 		$sheet->getStyle('A' . $rowCnt . ':I' . $rowCnt)->getFont()->setBold(true);
 
 		$sheet->getColumnDimension('A')->setWidth(4.57);
@@ -272,11 +272,11 @@ class HomepagePresenter extends BasePresenter {
 
 		$sheet->getStyle('A' . $firstDataRow . ':A' . $rowCnt)->applyFromArray($saBold);
 		$sheet->getStyle('B' . $firstDataRow . ':B' . $rowCnt)->applyFromArray($saRight);
-		$sheet->getStyle('F2:I' . $rowCnt)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+		$sheet->getStyle('F2:I' . $rowCnt)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 		$saBorder = array(
 			'borders' => array(
 				'allborders' => array(
-					'style' => PHPExcel_Style_Border::BORDER_THIN,
+					'style' => \PHPExcel_Style_Border::BORDER_THIN,
 					'color' => array('argb' => 'FF000000'),
 				),
 			),

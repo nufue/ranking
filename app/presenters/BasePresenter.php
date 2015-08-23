@@ -20,14 +20,13 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 		}
 
 		$this->template->backlink = '';
-		//\Nette\Diagnostics\Debugger::dump($bcStorage->breadcrumb);
 		$httpRequest = $this->getHttpRequest();
 		$absoluteUrl = $httpRequest->getUrl()->getAbsoluteUrl();
-		$deleted = false;
+		$deleted = FALSE;
 		if (isset($bcStorage->breadcrumb[1]) && $bcStorage->breadcrumb[1] == $absoluteUrl) {
 			unset($bcStorage->breadcrumb[0]);
 			unset($bcStorage->breadcrumb[1]);
-			$deleted = true;
+			$deleted = TRUE;
 		} else if (isset($bcStorage->breadcrumb[0]) && $bcStorage->breadcrumb[0] == $absoluteUrl) {
 			unset($bcStorage->breadcrumb[0]);
 		}
@@ -50,8 +49,6 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 			$bcStorage->breadcrumb = array_slice($bcStorage->breadcrumb, 0, 8);
 		}
 		$bcStorage->breadcrumb = array_values($bcStorage->breadcrumb);
-		//\Nette\Diagnostics\Debugger::dump($bcStorage->breadcrumb);
-		
 	}
 
 }
