@@ -5,7 +5,7 @@ require __DIR__ . '/../vendor/autoload.php';
 $configurator = new Nette\Configurator;
 
 $configurator->setDebugMode(['94.112.43.18', '62.168.39.34']);
-$configurator->enableDebugger(__DIR__ . '/../log');
+$configurator->enableDebugger(__DIR__ . '/../log', 'jiri+plavana@hrazdil.info');
 
 $configurator->setTempDirectory(__DIR__ . '/../temp');
 
