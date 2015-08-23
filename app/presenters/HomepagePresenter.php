@@ -77,10 +77,16 @@ class HomepagePresenter extends BasePresenter {
 		$objExcel->setActiveSheetIndex(0);
 		
 		$objWriter = new PHPExcel_Writer_Excel2007($objExcel);
-		$tempDir = WWW_DIR . '/../temp/Excel';
+		$tempDir = __DIR__.'/../../temp/Excel';
 		if (!file_exists($tempDir)) {
 			mkdir($tempDir);
 		}
+		$dir = opendir($tempDir);
+		while ($f = readdir($dir)) {
+		    if (is_file($tempDir.'/'.$f) && substr($f, 0, 7) === 'phpxls_' && filemtime($tempDir.'/'.$f) < Time() - 86400 * 10)
+			unlink($tempDir.'/'.$f);
+		}
+		closedir($dir);
 		$tn = tempnam($tempDir, 'phpxls_');
 		$objWriter->save($tn);
 		$response = $this->getHttpResponse();
