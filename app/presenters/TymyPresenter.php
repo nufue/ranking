@@ -2,7 +2,7 @@
 
 namespace App\Presenters;
 
-use \Nette\Application\UI\Form, \App\Model\Tymy;
+use Nette\Application\UI\Form, App\Model\Tymy, App\Model\Kategorie, Nette\Application\Responses;
 
 /**
  * Homepage presenter.
@@ -23,7 +23,7 @@ class TymyPresenter extends BasePresenter {
 	
 	public function renderDefault($rok = NULL) {
 		if ($rok === NULL) $rok = self::$defaultYear;
-		$this->template->ligy = \App\Model\Tymy::$ligy;
+		$this->template->ligy = Tymy::$ligy;
 		$this->template->rok = $rok;
 		$this->template->tymy = $this->tymy->getTymyRok($rok);
 	}
@@ -35,7 +35,7 @@ class TymyPresenter extends BasePresenter {
 		$this->template->detail = $detail['info'];
 		$this->template->zavodnici = $detail['zavodnici'];
 		$index = 1;
-		$defaults = array();
+		$defaults = [];
 		$defaults['id'] = $id;
 		foreach ($detail['zavodnici'] as $z) {
 			$defaults['zavodnik' . $index] = $z->cele_jmeno;
@@ -52,12 +52,11 @@ class TymyPresenter extends BasePresenter {
 
 		$form->addHidden('id');
 		$form->addSubmit('send', 'Uložit závodníky');
-		$form->onSuccess[] = callback($this, 'addFormSubmitted');
+		$form->onSuccess[] = $this->addFormSubmitted;
 		return $form;
 	}
 
-	public function addFormSubmitted(Form $form) {
-		$values = $form->getValues();
+	public function addFormSubmitted(Form $form, $values) {
 		$id = $values['id'];
 		if (!empty($id)) {
 			$this->tymy->removeZavodnici($id);
@@ -85,7 +84,7 @@ class TymyPresenter extends BasePresenter {
 
 	public function actionSuggest($typedText) {
 		$response = $this->suggest->getSuggest($typedText);
-		$this->sendResponse(new Nette\Application\Responses\JsonResponse(array('values' => $response)));
+		$this->sendResponse(new Nette\Application\Responses\JsonResponse(['values' => $response]));
 	}
 
 }

@@ -323,7 +323,10 @@ class ZavodyPresenter extends BasePresenter {
 				if ($zavodnik === NULL) {
 					$poznamka = 'p';
 				} else {
-					if ($zavodnik->cele_jmeno != $prijmeni) {
+					$fullName = trim(str_replace('dr.', '', str_replace('ml.', '', str_replace('ing.', '', mb_strtolower(str_replace('  ', ' ', $zavodnik->cele_jmeno))))));
+					$fullNameResults = trim(str_replace('dr.', '', str_replace('ml.', '', str_replace('ing.', '', mb_strtolower(str_replace('  ', ' ', $prijmeni))))));
+
+					if ($fullName !== $fullNameResults) {
 						$poznamka = 'r';
 						$prijmeniZebricek = $zavodnik->cele_jmeno;
 					}
