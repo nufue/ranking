@@ -89,20 +89,12 @@ class HomepagePresenter extends BasePresenter {
 		closedir($dir);
 		$tn = tempnam($tempDir, 'phpxls_');
 		$objWriter->save($tn);
-		$response = $this->getHttpResponse();
-		$response->setHeader('Content-Transfer-Encoding', "binary");
-		$response->setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-		$response->setHeader('Content-Description', "File Transfer");
 		if ($datumPlatnosti !== NULL) {
-			$response->setHeader('Content-Disposition', 'attachment; filename="zebricek-'.$datumPlatnosti->format('Ymd').'.xlsx"');
+			$name = "zebricek-'.$datumPlatnosti->format('Ymd').'.xlsx";
 		} else {
-			$response->setHeader('Content-Disposition', 'attachment; filename="zebricek-'.$rok.'.xlsx"');
+			$name = "zebricek-'.$rok.'.xlsx";
 		}
-		$response->setHeader('Expires', '0');
-		$response->setHeader('Cache-Control', 'must-revalidate');
-		$response->setHeader('Pragma', 'public');
-		$response->setHeader('Content-Length', filesize($tn));
-		readfile($tn);
+		$response = new \Nette\Application\Responses\FileResponse($tn, $name, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', TRUE);
 		$this->sendResponse($response);
 	}
 
