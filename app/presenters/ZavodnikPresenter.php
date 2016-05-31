@@ -2,13 +2,7 @@
 
 namespace App\Presenters;
 
-/**
- * Homepage presenter.
- *
- * @author     John Doe
- * @package    MyApplication
- */
-class ZavodnikPresenter extends BasePresenter {
+final class ZavodnikPresenter extends BasePresenter {
 
 	/** @var \App\Model\Zebricek @inject */
 	public $zebricek;
@@ -24,7 +18,7 @@ class ZavodnikPresenter extends BasePresenter {
 		$this->template->vysledkyCelkovy = $detail['vysledky_celkovy'];
 		$this->template->vysledkyDorost = $detail['vysledky_dorost'];
 		$this->template->vysledkyZeny = $detail['vysledky_zeny'];
-		$this->template->ligy = \App\Model\Tymy::$ligy;
+		$this->template->ligy = \App\Model\Tymy::$leagues;
 		$this->template->clenstvi = $this->tymy->getClenstvi($id, $rok)->fetchAll();
 	}
 

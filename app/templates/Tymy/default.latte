@@ -5,8 +5,14 @@
 
 {var $oldLiga = ""}
 <table id="ligovaTabulka">
+	<thead>
+	<tr>
+		<th>Liga</th>
+		<th>Název týmu</th>
+		<th>Závodníků</th>
+	</tr>
+	</thead>
 	<tbody>
-		
 	<tr n:foreach="$tymy as $t">
 		{var $zmena = ($oldLiga != "") && ($ligy[$t->liga] != $oldLiga)}
 		<td n:class="$zmena ? borderTop : ''">{$ligy[$t->liga]}</td>
@@ -15,10 +21,6 @@
 		{?$oldLiga = $ligy[$t->liga]}
 	</tr>
 	</tbody>
-	<thead>
-		<tr><th>Liga</th><th>Název týmu</th><th>Závodníků</th></tr>
-	</thead>
 </table>
 
-{if !empty($backlink)}<p><a href="{$backlink}">zpět</a></p>{else}
-<p><a n:href="Homepage:default">zpět na žebříček</a></p>{/if}
+{if !empty($backlink)}<p><a href="{$backlink}">zpět</a></p>{else}<p><a n:href="Homepage:">zpět na žebříček</a></p>{/if}

@@ -4,7 +4,8 @@ namespace App\Presenters;
 
 abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 
-	protected static $defaultYear = 2015;
+	/** @var int */
+	protected static $defaultYear = 2016;
 
 	public function startup() {
 		parent::startup();

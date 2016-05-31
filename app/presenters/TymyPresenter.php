@@ -4,12 +4,6 @@ namespace App\Presenters;
 
 use Nette\Application\UI\Form, App\Model\Tymy, App\Model\Kategorie, Nette\Application\Responses;
 
-/**
- * Homepage presenter.
- *
- * @author     John Doe
- * @package    MyApplication
- */
 class TymyPresenter extends BasePresenter {
 
 	/** @var \App\Model\Tymy @inject */
@@ -23,14 +17,15 @@ class TymyPresenter extends BasePresenter {
 	
 	public function renderDefault($rok = NULL) {
 		if ($rok === NULL) $rok = self::$defaultYear;
-		$this->template->ligy = Tymy::$ligy;
+		$this->template->ligy = Tymy::$leagues;
 		$this->template->rok = $rok;
 		$this->template->tymy = $this->tymy->getTymyRok($rok);
 	}
 
-	public function renderDetail($id, $rok) {
-		$this->template->ligy = Tymy::$ligy;
+	public function renderDetail($id) {
+		$this->template->ligy = Tymy::$leagues;
 		$detail = $this->tymy->getTym($id);
+		$this->template->rok = $detail['info']->rok;
 		$this->template->kategoriePrevod = Kategorie::$kategorie;
 		$this->template->detail = $detail['info'];
 		$this->template->zavodnici = $detail['zavodnici'];
@@ -52,7 +47,7 @@ class TymyPresenter extends BasePresenter {
 
 		$form->addHidden('id');
 		$form->addSubmit('send', 'Uložit závodníky');
-		$form->onSuccess[] = $this->addFormSubmitted;
+		$form->onSuccess[] = [$this, 'addFormSubmitted'];
 		return $form;
 	}
 
@@ -84,7 +79,7 @@ class TymyPresenter extends BasePresenter {
 
 	public function actionSuggest($typedText) {
 		$response = $this->suggest->getSuggest($typedText);
-		$this->sendResponse(new Nette\Application\Responses\JsonResponse(['values' => $response]));
+		$this->sendResponse(new Responses\JsonResponse(['values' => $response]));
 	}
 
 }

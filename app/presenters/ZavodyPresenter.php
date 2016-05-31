@@ -2,15 +2,11 @@
 
 namespace App\Presenters;
 
+use App\Model\Utils;
+use Nette\Application\BadRequestException;
 use \Nette\Application\UI\Form, \App\Model\Zebricek, \App\Model\Kategorie;
 
-/**
- * Homepage presenter.
- *
- * @author     John Doe
- * @package    MyApplication
- */
-class ZavodyPresenter extends BasePresenter {
+final class ZavodyPresenter extends BasePresenter {
 
 	private static $typySloupcu = array(
 		'registrace' => 'Registrace',
@@ -55,7 +51,7 @@ class ZavodyPresenter extends BasePresenter {
 					if (isset($bodovaciTabulka[$umisteni])) {
 						return $bodovaciTabulka[$umisteni];
 					} else {
-						return "-";
+						return '-';
 					}
 				});
 
@@ -70,30 +66,26 @@ class ZavodyPresenter extends BasePresenter {
 
 	public function renderDefault($rok = NULL) {
 		if ($rok === NULL) $rok = self::$defaultYear;
-		$this->template->zavody = $this->zavody->getZavody($rok, TRUE);
+		$this->template->zavody = $this->zavody->getAllRaces($rok);
 		$this->template->rok = $rok;
 		$this->template->typyZavodu = Zebricek::$typyZavodu;
 	}
 
 	public function actionEdit($id) {
-		$this->record = $this->zavody->getZavod($id);
-
-		if (!$this->record) {
-			throw new \Nette\Application\BadRequestException;
+		$this->record = $this->zavody->getCompetition($id);
+		if ($this->record === FALSE) {
+			throw new BadRequestException;
 		}
+		$this->template->rok = $this->record->rok;
 		$this->record->datum_od = $this->record->datum_od->format('j. n. Y');
 		$this->record->datum_do = $this->record->datum_do->format('j. n. Y');
-		if ($this->record->zobrazovat == 'ano')
-			$this->record->zobrazovat = true; else
-			$this->record->zobrazovat = false;
-		if ($this->record->vysledky == 'ano')
-			$this->record->vysledky = true; else
-			$this->record->vysledky = false;
+		$this->record->zobrazovat = ($this->record->zobrazovat === 'ano');
+		$this->record->vysledky = ($this->record->vysledky === 'ano');
 		$this['zavodForm']->setDefaults($this->record);
 	}
 
 	public function renderDetail($id, $rok = NULL) {
-		$this->template->zavod = $this->zavody->getZavod($id);
+		$this->template->zavod = $this->zavody->getCompetition($id);
 		if ($rok === NULL) $rok = $this->template->zavod->rok;
 		$this->template->rok = $rok;
 		$this->template->zavodnici = $this->zavodnici->getZavodnici($id);
@@ -112,24 +104,20 @@ class ZavodyPresenter extends BasePresenter {
 		$form->addCheckbox('vysledky', 'Jsou zadány výsledky');
 
 		$form->addSubmit('send', 'Uložit změny');
-		$form->onSuccess[] = $this->zavodFormSubmitted;
+		$form->onSuccess[] = [$this, 'zavodFormSubmitted'];
 		return $form;
 	}
 
 	public function zavodFormSubmitted(Form $form) {
 		if ($this->id && !$this->record) {
-			throw new \Nette\Application\BadRequestException;
+			throw new BadRequestException;
 		}
 
 		$values = $form->getValues();
-		$values['datum_od'] = \App\Model\Utils::convertDate($values['datum_od']);
-		$values['datum_do'] = \App\Model\Utils::convertDate($values['datum_do']);
-		if ($values['zobrazovat'])
-			$values['zobrazovat'] = 'ano'; else
-			$values['zobrazovat'] = 'ne';
-		if ($values['vysledky'])
-			$values['vysledky'] = 'ano'; else
-			$values['vysledky'] = 'ne';
+		$values['datum_od'] = Utils::convertDate($values['datum_od']);
+		$values['datum_do'] = Utils::convertDate($values['datum_do']);
+		$values['zobrazovat'] = $values['zobrazovat'] ? 'ano' : 'ne';
+		$values['vysledky'] = $values['vysledky'] ? 'ano' : 'ne';
 		if ($this->id) {
 			$this->zavody->updateZavod($this->record->id, $values);
 			$this->flashMessage("Informace o závodu byly upraveny.", "success");
@@ -272,7 +260,7 @@ class ZavodyPresenter extends BasePresenter {
 		$this['vysledkyParseForm']->setDefaults($defaults);
 	}
 
-	function createComponentVysledkyParseForm() {
+	public function createComponentVysledkyParseForm() {
 		$form = new Form;
 
 		for ($i = 0; $i < $this->pocetSloupcu; $i++) {
@@ -282,7 +270,7 @@ class ZavodyPresenter extends BasePresenter {
 		$form->addRadioList('prvni_radek', '', range(0, $this->pocetRadku));
 
 		$form->addSubmit('send', 'Přidat výsledky');
-		$form->onSuccess[] = $this->vysledkyParseFormSubmitted;
+		$form->onSuccess[] = [$this, 'vysledkyParseFormSubmitted'];
 		return $form;
 	}
 
@@ -314,7 +302,6 @@ class ZavodyPresenter extends BasePresenter {
 			$poznamka = '';
 			$prijmeniZebricek = '';
 			if (!preg_match('~^\d+$~', $registrace)) {
-				$poznamka = 'n';
 				$zavodnik = $this->zavodnici->checkNeregistrovanyZavodnik($prijmeni);
 				if ($zavodnik === NULL) $poznamka = 'n';
 				else $poznamka = 's';
@@ -372,7 +359,7 @@ class ZavodyPresenter extends BasePresenter {
 	public function createComponentConfirmResultsForm() {
 		$form = new Form;
 		$form->addSubmit('send', 'Uložit výsledky');
-		$form->onSuccess[] = $this->confirmResultsFormSubmitted;
+		$form->onSuccess[] = [$this, 'confirmResultsFormSubmitted'];
 		return $form;
 	}
 

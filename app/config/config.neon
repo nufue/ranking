@@ -35,6 +35,7 @@ services:
 	zavodnici: App\Model\Zavodnici
 	zebricek: App\Model\Zebricek
 	suggest: App\Model\Suggest
+	- App\Model\Competitors
 
 	authenticator:
 		class: Nette\Security\SimpleAuthenticator

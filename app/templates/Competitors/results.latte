@@ -1,0 +1,13 @@
+{block title}Registrovaní závodníci{/block}
+{block content}
+{include '../menu.latte'}
+<h1>Registrovaní závodníci</h1>
+
+<table>
+	<tr n:foreach="$results as $r">
+		<td>{$r->registrace}</td>
+		<td>{$r->cele_jmeno}</td>
+	</tr>
+</table>
+
+<p><a n:href="Homepage:">zpět na žebříček</a></p>

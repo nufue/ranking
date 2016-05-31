@@ -2,15 +2,17 @@
 
 namespace App\Model;
 
+use Nette\Database\Context;
+
 class Zebricek extends Base {
 
-	/** @var \App\Model\Zavody @inject */
+	/** @var Zavody @inject */
 	private $zavody;
 	
-	/** @var \App\Model\Zavodnici @inject */
+	/** @var Zavodnici @inject */
 	private $zavodnici;
 
-	public function __construct(\Nette\Database\Context $database, \App\Model\Zavody $zavody, \App\Model\Zavodnici $zavodnici) {
+	public function __construct(Context $database, Zavody $zavody, Zavodnici $zavodnici) {
 		parent::__construct($database);
 		$this->zavody = $zavody;
 		$this->zavodnici = $zavodnici;
@@ -75,12 +77,12 @@ class Zebricek extends Base {
 		$datumPlatnosti = $result->datum;
 		$datumPlatnostiOrig = $result->datum_platnosti;
 
-		$result = $this->zavody->getZavody($rok);
+		$result = $this->zavody->getVisibleRaces($rok);
 		foreach ($result as $row) {
 			$zavody[$row->id] = array('typ' => $row->typ, 'nazev' => $row->nazev, 'kategorie' => $row->kategorie);
 		}
 
-		$zavodnici = array();
+		$zavodnici = [];
 		$query = "SELECT `z`.`cele_jmeno`, `z`.`registrace`, `zz`.`id_zavodnika`, `zz`.`id_zavodu`, `zav`.`kategorie` `kategorie_zavodu`, `zz`.`tym`, `zk`.`kategorie`, `cips1`, `umisteni1`, `cips2`, `umisteni2` FROM `zavodnici_zavody` `zz` JOIN `zavodnici` `z` ON `zz`.`id_zavodnika` = `z`.`id` JOIN `zavody` `zav` ON `zz`.`id_zavodu` = `zav`.`id` JOIN `zavodnici_kategorie` `zk` ON `zz`.`id_zavodnika` = `zk`.`id_zavodnika` WHERE `zk`.`rok` = `zav`.`rok` AND `z`.`registrovany` = 'A' AND (`cips1` IS NOT NULL OR `cips2` IS NOT NULL) AND (`zav`.`zobrazovat` = 'ano') AND (`zav`.`vysledky` = 'ano') AND `zav`.`rok` = ? ";
 		if ($typ == 'u23')
 			$query .= " AND `zk`.`kategorie` IN ('u23', 'u23_zena') AND `zav`.`kategorie` != 'ženy'";
@@ -96,8 +98,6 @@ class Zebricek extends Base {
 			$query .= " AND `zk`.`kategorie` IN ('u12', 'u12_zena') AND `zav`.`kategorie` != 'ženy'";
 		else if ($typ == 'excel')
 			;
-//		else $query .= " AND (`zav`.`kategorie` = '')"; // do celkoveho zebricku se nepocitaji vysledky zavodu kategorii
-//		echo $query;
 
 		$result = $this->database->query($query . " ORDER BY `zav`.`datum_od`, `zav`.`nazev`", $rok);
 		foreach ($result as $row) {
@@ -118,7 +118,6 @@ class Zebricek extends Base {
 (select min(poradi) from `tymy_zavodnici` `tz2` WHERE `tz2`.`id_tymu` = `tz`.`id_tymu` AND `tz2`.`id_zavodnika` = `tz`.`id_zavodnika`) `pocet`,
 (select count(*) from `tymy_zavodnici` `tz2` WHERE `tz2`.`id_tymu` = `tz`.`id_tymu`) `procento`
 FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `tz`.`id_zavodnika` IN (?) AND `rok` = ? ORDER BY id_zavodnika, `pocet` / `procento` DESC", array_keys($zavodnici), $rok);
-//			$result = $this->context->database->query("SELECT `tz`.`id_zavodnika`, `t`.`nazev_tymu` FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `id_zavodnika` IN (?) AND `rok` = ?", array_keys($zavodnici), $rok);
 			foreach ($result as $row) {
 				$zavodnici[$row->id_zavodnika]['tym'] = $row->nazev_tymu;
 			}

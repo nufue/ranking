@@ -2,3 +2,6 @@ temp/*
 log/*
 nbproject/*
 vendor/*
+!vendor/bin/deploy.bat
+!vendor/bin/deployment-ec2.ini
+.idea/*

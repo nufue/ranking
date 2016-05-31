@@ -13,6 +13,10 @@
 	# prevents files starting with dot to be viewed by browser
 	RewriteRule /\.|^\. - [F]
 
+	Options +FollowSymlinks
+	RewriteCond %{HTTP_HOST} ^plavana.info [NC]
+	RewriteRule ^(.*)$ http://www.plavana.info/$1 [L,R=301]
+
 	# front controller
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_FILENAME} !-d

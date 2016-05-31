@@ -6,7 +6,7 @@ abstract class Base extends \Nette\Object {
 
 	public static $defaultYear = 2015;
 
-	/** @var \Nette\Database\Context @inject */
+	/** @var \Nette\Database\Context */
 	protected $database;
 	
 	public function __construct(\Nette\Database\Context $database) {

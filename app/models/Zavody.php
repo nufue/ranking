@@ -4,18 +4,16 @@ namespace App\Model;
 
 class Zavody extends Base {
 
-	public function getZavody($rok, $vsechny = false) {
-		if ($vsechny)
-			$dbResult = $this->database->query($query = "SELECT * FROM zavody WHERE `rok` = ? ORDER BY `datum_od`, `nazev`", $rok);
-		else
-			$dbResult = $this->database->query($query = "SELECT * FROM zavody WHERE `rok` = ? AND `zobrazovat` = 'ano' AND `vysledky` = 'ano' ORDER BY `datum_od`, `nazev`", $rok);
-
-		return $dbResult;
+	public function getAllRaces($year) {
+		return $this->database->query("SELECT * FROM zavody WHERE `rok` = ? ORDER BY `datum_od`, `nazev`", $year)->fetchAll();
 	}
 
-	public function getZavod($id) {
-		$dbResult = $this->database->query($query = "SELECT `id`, `nazev`, `typ`, `datum_od`, `datum_do`, `zobrazovat`, `vysledky`, `kategorie`, `rok` FROM `zavody` WHERE `id` = ?", $id)->fetch();
-		return $dbResult;
+	public function getVisibleRaces($year) {
+		return $this->database->query("SELECT * FROM zavody WHERE `rok` = ? AND `zobrazovat` = 'ano' AND `vysledky` = 'ano' ORDER BY `datum_od`, `nazev`", $year)->fetchAll();
+	}
+
+	public function getCompetition($id) {
+		return $this->database->query("SELECT `id`, `nazev`, `typ`, `datum_od`, `datum_do`, `zobrazovat`, `vysledky`, `kategorie`, `rok` FROM `zavody` WHERE `id` = ?", $id)->fetch();
 	}
 
 	public function updateZavod($id, $values) {
