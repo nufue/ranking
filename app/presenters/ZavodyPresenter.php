@@ -287,14 +287,15 @@ final class ZavodyPresenter extends BasePresenter {
 		$rok = $this->zavody->getRokZavodu($this->id);
 		$prvniRadek = $values['prvni_radek'];
 		$radku = 0;
-		$vysledky = array();
+		$vysledky = [];
 		foreach ($tabulka as $radek) {
 			if ($radku++ < $prvniRadek)
 				continue;
 			if (!isset($radek[$sloupce['prijmeni']]))
 				continue;
 			$prijmeni = trim($radek[$sloupce['prijmeni']]);
-			$registrace = trim($radek[$sloupce['registrace']]);
+
+			$registrace = $this->trimUnicode($radek[$sloupce['registrace']]);
 			$kategorie = trim($radek[$sloupce['kategorie']]);
 			if ($prijmeni == '')
 				continue;
@@ -310,14 +311,19 @@ final class ZavodyPresenter extends BasePresenter {
 				if ($zavodnik === NULL) {
 					$poznamka = 'p';
 				} else {
-					$fullName = trim(str_replace('dr.', '', str_replace('ml.', '', str_replace('ing.', '', mb_strtolower(str_replace('  ', ' ', $zavodnik->cele_jmeno))))));
-					$fullNameResults = trim(str_replace('dr.', '', str_replace('ml.', '', str_replace('ing.', '', mb_strtolower(str_replace('  ', ' ', $prijmeni))))));
+					$fullName = $this->trimUnicode(str_replace('dr.', '', str_replace('ml.', '', str_replace('ing.', '', mb_strtolower(str_replace('  ', ' ', $zavodnik->cele_jmeno))))));
+					$fullNameResults = $this->trimUnicode(str_replace('dr.', '', str_replace('ml.', '', str_replace('ing.', '', mb_strtolower(str_replace('  ', ' ', $prijmeni))))));
 
-					if ($fullName !== $fullNameResults) {
+					$eFullName = preg_split('~\s+~', $fullName);
+					$eFullNameResults = preg_split('~\s+~', $fullNameResults);
+
+					$diff = array_diff($eFullNameResults, $eFullName);
+					if (count($diff) > 0) {
 						$poznamka = 'r';
 						$prijmeniZebricek = $zavodnik->cele_jmeno;
+
 					}
-				}				
+				}
 			}
 
 			$tym = $radek[$sloupce['druzstvo']];
@@ -404,5 +410,8 @@ final class ZavodyPresenter extends BasePresenter {
 		}
 	}
 
+	private function trimUnicode($input) {
+		return preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $input);
+	}
 }
 
