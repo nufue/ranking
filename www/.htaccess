@@ -11,6 +11,7 @@
 	# RewriteBase /
 
 	# prevents files starting with dot to be viewed by browser
+	RewriteRule /^\.well\-known - [C]
 	RewriteRule /\.|^\. - [F]
 
 	Options +FollowSymlinks

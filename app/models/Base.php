@@ -2,14 +2,18 @@
 
 namespace App\Model;
 
-abstract class Base extends \Nette\Object {
+use Nette\Database\Context;
+use Nette\Object;
 
-	public static $defaultYear = 2015;
+abstract class Base extends Object {
 
-	/** @var \Nette\Database\Context */
+	/** @var int */
+	public static $defaultYear = 2016;
+
+	/** @var Context */
 	protected $database;
 	
-	public function __construct(\Nette\Database\Context $database) {
+	public function __construct(Context $database) {
 		$this->database = $database;
 	}
 }

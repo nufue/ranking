@@ -198,11 +198,11 @@ final class ZavodyPresenter extends BasePresenter {
 						$pravdepodobnyTyp = 'registrace';
 						break;
 					}
-					if ($radek[$i] == 'Příjmení, jméno' || $radek[$i] == 'Příjmení jméno') {
+					if ($radek[$i] == 'Příjmení, jméno' || $radek[$i] == 'Příjmení jméno' || $radek[$i] == 'Příjmení, Jméno') {
 						$pravdepodobnyTyp = 'prijmeni';
 						break;
 					}
-					if (mb_strtolower($radek[$i]) == 'kat') {
+					if (mb_strtolower($radek[$i]) == 'kat' || mb_strtolower($radek[$i]) == 'kat.') {
 						$pravdepodobnyTyp = 'kategorie';
 						break;
 					}
@@ -302,15 +302,20 @@ final class ZavodyPresenter extends BasePresenter {
 
 			$poznamka = '';
 			$prijmeniZebricek = '';
+			$kategorieDb = NULL;
 			if (!preg_match('~^\d+$~', $registrace)) {
-				$zavodnik = $this->zavodnici->checkNeregistrovanyZavodnik($prijmeni);
-				if ($zavodnik === NULL) $poznamka = 'n';
-				else $poznamka = 's';
+				$zavodnik = $this->zavodnici->isExistingUnregistered($prijmeni);
+				if ($zavodnik === FALSE) $poznamka = 'n';
+				else {
+					$kategorieDb = $this->zavodnici->getUnregisteredCategory($zavodnik, $rok);
+					$poznamka = 's';
+				}
 			} else {
 				$zavodnik = $this->zavodnici->getZavodnik($registrace, $rok);
 				if ($zavodnik === NULL) {
 					$poznamka = 'p';
 				} else {
+					$kategorieDb = $zavodnik->kategorie;
 					$fullName = $this->trimUnicode(str_replace('dr.', '', str_replace('ml.', '', str_replace('ing.', '', mb_strtolower(str_replace('  ', ' ', $zavodnik->cele_jmeno))))));
 					$fullNameResults = $this->trimUnicode(str_replace('dr.', '', str_replace('ml.', '', str_replace('ing.', '', mb_strtolower(str_replace('  ', ' ', $prijmeni))))));
 
@@ -350,7 +355,7 @@ final class ZavodyPresenter extends BasePresenter {
 				$umisteni2 = str_replace(',', '.', $umisteni2);
 			}
 
-			$vysledky[] = array('prijmeni' => $prijmeni, 'prijmeni_zebricek' => $prijmeniZebricek, 'registrace' => $registrace, 'kategorie' => $kategorie, 'tym' => $tym, 'cips1' => $cips1, 'umisteni1' => $umisteni1, 'cips2' => $cips2, 'umisteni2' => $umisteni2, 'poznamka' => $poznamka);
+			$vysledky[] = ['prijmeni' => $prijmeni, 'prijmeni_zebricek' => $prijmeniZebricek, 'registrace' => $registrace, 'kategorie' => $kategorie, 'tym' => $tym, 'cips1' => $cips1, 'umisteni1' => $umisteni1, 'cips2' => $cips2, 'umisteni2' => $umisteni2, 'poznamka' => $poznamka, 'kategorieDb' => $kategorieDb];
 		}
 		$this->getSession('vysledky')->vysledkyParsed = $vysledky;
 		$this->redirect('pridatVysledky3', $this->id);
@@ -381,15 +386,15 @@ final class ZavodyPresenter extends BasePresenter {
 		foreach ($vysledky as $v) {
 			if (!preg_match('~^\d+$~', $v['registrace'])) {
 				// nepujde do zebricku, zaregistrujeme pod fiktivnim cislem
-				$idZavodnika = $this->zavodnici->addNeregistrovanyZavodnik($v['prijmeni'], $v['kategorie'], $rok);
+				$idZavodnika = $this->zavodnici->addUnregistered($v['prijmeni'], $v['kategorie'], $rok);
 			} else {
 				$zavodnik = $this->zavodnici->getZavodnik($v['registrace'], $rok);
 				if ($zavodnik === NULL) {
-					$idZavodnika = $this->zavodnici->addZavodnik($v['registrace'], $v['prijmeni'], $v['kategorie'], $rok);
+					$idZavodnika = $this->zavodnici->addCompetitor($v['registrace'], $v['prijmeni'], $v['kategorie'], $rok);
 				} else {
 					$idZavodnika = $zavodnik->id;
 					if (empty($zavodnik->kategorie)) {
-						$this->kategorie->addZavodnikKategorie($idZavodnika, $v['kategorie'], $rok);
+						$this->kategorie->addCompetitorToCategory($idZavodnika, $v['kategorie'], $rok);
 						// TODO rok
 					}
 				}

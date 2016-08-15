@@ -40,11 +40,9 @@ class Kategorie extends Base {
 		'u12_zena' => 'U12Ž',
 	);
 
-	public function getKategorie($rok = NULL) {
-		if ($rok === NULL) $rok = self::$defaultYear;
-		$query = "SELECT `id_zavodnika`, `z`.`cele_jmeno`, `kategorie` FROM `zavodnici_kategorie` `zk` JOIN `zavodnici` `z` ON `zk`.`id_zavodnika` = `z`.`id` WHERE `zk`.`rok` = ? ORDER BY `id_zavodnika`";
-		$dbResult = $this->database->query($query, $rok)->fetchAll();
-		return $dbResult;
+	public function getCategories($year = NULL) {
+		if ($year === NULL) $year = self::$defaultYear;
+		return $this->database->query("SELECT `id_zavodnika`, `z`.`cele_jmeno`, `kategorie` FROM `zavodnici_kategorie` `zk` JOIN `zavodnici` `z` ON `zk`.`id_zavodnika` = `z`.`id` WHERE `zk`.`rok` = ? ORDER BY `id_zavodnika`", $year)->fetchAll();
 	}
 
 	public static function getKategorieForSoupisky($kategorie) {
@@ -84,12 +82,12 @@ class Kategorie extends Base {
 		return $result;
 	}
 
-	public function addZavodnikKategorie($idZavodnika, $kategorie, $rok = NULL) {
-		if ($rok === NULL) $rok = self::$defaultYear;
+	public function addCompetitorToCategory($idZavodnika, $kategorie, $year = NULL) {
+		if ($year === NULL) $year = self::$defaultYear;
 		$kategorie = $this->getKategorieFromString($kategorie);
 		
 		try {
-			$this->database->table('zavodnici_kategorie')->insert(array('id_zavodnika' => $idZavodnika, 'kategorie' => $kategorie, 'rok' => $rok));
+			$this->database->table('zavodnici_kategorie')->insert(['id_zavodnika' => $idZavodnika, 'kategorie' => $kategorie, 'rok' => $year]);
 		} catch (PDOException $exc) {
 			// ignorujeme - kategorie bude zrejme stejna
 			// TODO kontrola

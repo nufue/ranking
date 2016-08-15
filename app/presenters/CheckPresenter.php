@@ -15,7 +15,7 @@ final class CheckPresenter extends BasePresenter {
 	}
 
 	public function renderKategorie() {
-		$this->template->kategorie = $this->kategorie->getKategorie();
+		$this->template->kategorie = $this->kategorie->getCategories();
 		$this->template->kategoriePrevod = Kategorie::$kategorie;
 	}
 
