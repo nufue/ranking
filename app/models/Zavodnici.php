@@ -2,7 +2,6 @@
 
 namespace App\Model;
 
-use App\Model\Kategorie;
 use Nette\Database\Context;
 
 class Zavodnici extends Base

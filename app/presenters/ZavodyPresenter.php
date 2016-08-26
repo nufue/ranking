@@ -47,7 +47,7 @@ final class ZavodyPresenter extends BasePresenter {
 		parent::startup();
 		$this->template->registerHelper('umisteni', function($umisteni, $typZavodu) {
 					$umisteni = (int) $umisteni;
-					$bodovaciTabulka = Zebricek::$bodovaci_tabulky[Zebricek::$bodovani_zavodu[$typZavodu]];
+					$bodovaciTabulka = Zebricek::$scoringTables[Zebricek::$competitionScoringType[$typZavodu]];
 					if (isset($bodovaciTabulka[$umisteni])) {
 						return $bodovaciTabulka[$umisteni];
 					} else {
@@ -68,7 +68,7 @@ final class ZavodyPresenter extends BasePresenter {
 		if ($rok === NULL) $rok = self::$defaultYear;
 		$this->template->zavody = $this->zavody->getAllRaces($rok);
 		$this->template->rok = $rok;
-		$this->template->typyZavodu = Zebricek::$typyZavodu;
+		$this->template->typyZavodu = Zebricek::$competitionTypes;
 	}
 
 	public function actionEdit($id) {
@@ -89,7 +89,7 @@ final class ZavodyPresenter extends BasePresenter {
 		if ($rok === NULL) $rok = $this->template->zavod->rok;
 		$this->template->rok = $rok;
 		$this->template->zavodnici = $this->zavodnici->getZavodnici($id);
-		$this->template->typyZavodu = Zebricek::$typyZavodu;
+		$this->template->typyZavodu = Zebricek::$competitionTypes;
 		$this->template->kategoriePrevod = Kategorie::$kategorie;
 	}
 
@@ -97,7 +97,7 @@ final class ZavodyPresenter extends BasePresenter {
 		$form = new Form;
 		$form->addText('nazev', 'Název závodu', 50);
 		$form->addText('kategorie', 'Věková kategorie závodu', 30);
-		$form->addSelect('typ', 'Typ závodu', Zebricek::$typyZavodu);
+		$form->addSelect('typ', 'Typ závodu', Zebricek::$competitionTypes);
 		$form->addText('datum_od', 'Datum od', 10);
 		$form->addText('datum_do', 'Datum do', 10);
 		$form->addCheckbox('zobrazovat', 'Zobrazovat závod');

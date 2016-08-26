@@ -17,13 +17,13 @@ final class HomepagePresenter extends BasePresenter
 	{
 		if ($rok === NULL) $rok = self::$defaultYear;
 
-		$zebricekCelkovy = $this->zebricek->getZebricek($rok, 'celkem' /* zadny konkretni typ */);
-		$zebricek = $this->zebricek->getZebricek($rok, 'excel');
-		$zebricekU23 = $this->zebricek->getZebricek($rok, 'u23');
-		$zebricekU18 = $this->zebricek->getZebricek($rok, 'u18');
-		$zebricekU14 = $this->zebricek->getZebricek($rok, 'u14');
-		$zebricekU12 = $this->zebricek->getZebricek($rok, 'u12');
-		$zebricekZeny = $this->zebricek->getZebricek($rok, 'zeny');
+		$zebricekCelkovy = $this->zebricek->getRanking($rok, 'celkem' /* zadny konkretni typ */);
+		$zebricek = $this->zebricek->getRanking($rok, 'excel');
+		$zebricekU23 = $this->zebricek->getRanking($rok, 'u23');
+		$zebricekU18 = $this->zebricek->getRanking($rok, 'u18');
+		$zebricekU14 = $this->zebricek->getRanking($rok, 'u14');
+		$zebricekU12 = $this->zebricek->getRanking($rok, 'u12');
+		$zebricekZeny = $this->zebricek->getRanking($rok, 'zeny');
 
 		$datumPlatnosti = $zebricekCelkovy['datum_platnosti_orig'];
 
@@ -141,7 +141,7 @@ final class HomepagePresenter extends BasePresenter
 
 		$this->template->zobrazitZavody = $show;
 
-		$zebricek = $this->zebricek->getZebricek($rok, $typ);
+		$zebricek = $this->zebricek->getRanking($rok, $typ);
 		$this->template->rok = $rok;
 		$this->template->datum_platnosti = $zebricek['datum_platnosti'];
 		$this->template->zavody = $zebricek['zavody'];
