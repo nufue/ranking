@@ -2,7 +2,6 @@
 {block content}
 <h1>Přidat výsledky k závodu</h1>
 
-{dump $tabulka}
 {var $pocetRadku = 0}
 {form vysledkyParseForm}
 <table>
@@ -19,7 +18,7 @@
 			<td n:foreach="$radek as $bunka">
 				{$bunka}
 			</td>
-			{?$pocetRadku++}
+			{php $pocetRadku++}
 		</tr>
 		<tr>
 			<td colspan="3">{input send}</td></tr>

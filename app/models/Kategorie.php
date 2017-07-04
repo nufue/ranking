@@ -2,9 +2,14 @@
 
 namespace App\Model;
 
-class Kategorie extends Base {
+use Nette\Database\Context;
 
-	public static $kategorie = array(
+final class Kategorie extends Base {
+
+	/** @var DefaultYear */
+	private $defaultYear;
+
+	public static $kategorie = [
 		'muz' => 'muži',
 		'u14' => 'U14',
 		'u18' => 'U18',
@@ -20,9 +25,15 @@ class Kategorie extends Base {
 		'u10_zena' => 'U10 dívky',
 		'u12' => 'U12',
 		'u12_zena' => 'U12 dívky',
-	);
+		'u15' => 'U15',
+		'u15_zena' => 'U15 dívky',
+		'u20' => 'U20',
+		'u20_zena' => 'U20 ženy',
+		'u25' => 'U25',
+		'u25_zena' => 'U25 ženy',
+	];
 
-	public static $kategorieSoupisky = array(
+	public static $kategorieSoupisky = [
 		'muz' => 'M',
 		'u14' => 'U14',
 		'u18' => 'U18',
@@ -38,10 +49,22 @@ class Kategorie extends Base {
 		'u10_zena' => 'U10Ž',
 		'u12' => 'U12',
 		'u12_zena' => 'U12Ž',
-	);
+		'u15' => 'U15',
+		'u15_zena' => 'U15Ž',
+		'u20' => 'U20',
+		'u20_zena' => 'U20Ž',
+		'u25' => 'U25',
+		'u25_zena' => 'U25Ž',
+	];
+
+	public function __construct(Context $database, DefaultYear $defaultYear)
+	{
+		parent::__construct($database);
+		$this->defaultYear = $defaultYear;
+	}
 
 	public function getCategories($year = NULL) {
-		if ($year === NULL) $year = self::$defaultYear;
+		if ($year === NULL) $year = $this->defaultYear->getDefaultYear();
 		return $this->database->query("SELECT `id_zavodnika`, `z`.`cele_jmeno`, `kategorie` FROM `zavodnici_kategorie` `zk` JOIN `zavodnici` `z` ON `zk`.`id_zavodnika` = `z`.`id` WHERE `zk`.`rok` = ? ORDER BY `id_zavodnika`", $year)->fetchAll();
 	}
 
@@ -77,13 +100,25 @@ class Kategorie extends Base {
 			$result = 'u12';
 		else if ($kategorie == 'U12Ž' || $kategorie == 'U12 Ž') 
 			$result = 'u12_zena';
+		else if ($kategorie == 'U15' || $kategorie == 'U 15')
+			$result = 'u15';
+		else if ($kategorie == 'U15Ž' || $kategorie == 'U15 Ž')
+			$result = 'u15_zena';
+		else if ($kategorie == 'U20' || $kategorie == 'U 20')
+			$result = 'u20';
+		else if ($kategorie == 'U20Ž' || $kategorie == 'U20 Ž')
+			$result = 'u20_zena';
+		else if ($kategorie == 'U25' || $kategorie == 'U 25')
+			$result = 'u25';
+		else if ($kategorie == 'U25Ž' || $kategorie == 'U25 Ž')
+			$result = 'u25_zena';
 		else $result = 'fail';
 
 		return $result;
 	}
 
 	public function addCompetitorToCategory($idZavodnika, $kategorie, $year = NULL) {
-		if ($year === NULL) $year = self::$defaultYear;
+		if ($year === NULL) $year = $this->defaultYear->getDefaultYear();
 		$kategorie = $this->getKategorieFromString($kategorie);
 		
 		try {

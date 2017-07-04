@@ -7,20 +7,23 @@ use Nette\Application\Responses\FileResponse;
 final class HomepagePresenter extends BasePresenter
 {
 
-	/** @var \App\Model\Zebricek @inject */
+	/** @var \App\Model\Ranking @inject */
 	public $zebricek;
 
-	/** @var \App\Model\Zavody @inject */
+	/** @var \App\Model\Competitions @inject */
 	public $zavody;
 
 	public function handleExcelExport($rok = NULL)
 	{
-		if ($rok === NULL) $rok = self::$defaultYear;
+		if ($rok === NULL) $rok = $this->defaultYear->getDefaultYear();
 
 		$zebricekCelkovy = $this->zebricek->getRanking($rok, 'celkem' /* zadny konkretni typ */);
 		$zebricek = $this->zebricek->getRanking($rok, 'excel');
+		$zebricekU25 = $this->zebricek->getRanking($rok, 'u25');
 		$zebricekU23 = $this->zebricek->getRanking($rok, 'u23');
+		$zebricekU20 = $this->zebricek->getRanking($rok, 'u20');
 		$zebricekU18 = $this->zebricek->getRanking($rok, 'u18');
+		$zebricekU15 = $this->zebricek->getRanking($rok, 'u15');
 		$zebricekU14 = $this->zebricek->getRanking($rok, 'u14');
 		$zebricekU12 = $this->zebricek->getRanking($rok, 'u12');
 		$zebricekZeny = $this->zebricek->getRanking($rok, 'zeny');
@@ -35,24 +38,38 @@ final class HomepagePresenter extends BasePresenter
 			$objExcel->getProperties()->setTitle('Průběžný žebříček LRU plavaná, rok ' . $rok);
 		}
 		if ($datumPlatnosti === NULL) $datumPlatnosti = new DateTime('1.1.' . $rok);
-		$objExcel->getProperties()->setDescription('Aktuální žebříček LRU plavaná je k dispozici na http://www.plavana.info/');
+		$objExcel->getProperties()->setDescription('Aktuální žebříček LRU plavaná je k dispozici na https://www.plavana.info/');
 		$objExcel->setActiveSheetIndex(0);
 		$sheet = $objExcel->getActiveSheet();
 		$sheet->setTitle('Celkový');
 		$this->addVysledky($sheet, $zebricekCelkovy['zavodnici'], 'Průběžný žebříček LRU plavaná - celkem', $datumPlatnosti, 'filterVysledky', '');
 
+		if ($rok >= 2017) {
+			$sheet = $objExcel->createSheet();
+			$sheet->setTitle('U25');
+			$this->addVysledky($sheet, $zebricekU25['zavodnici'], 'Průběžný žebříček LRU plavaná - U25', $datumPlatnosti, 'filterVysledky', 'u25');
 
-		$sheet = $objExcel->createSheet();
-		$sheet->setTitle('U23');
-		$this->addVysledky($sheet, $zebricekU23['zavodnici'], 'Průběžný žebříček LRU plavaná - U23', $datumPlatnosti, 'filterVysledky', 'u23');
+			$sheet = $objExcel->createSheet();
+			$sheet->setTitle('U20');
+			$this->addVysledky($sheet, $zebricekU20['zavodnici'], 'Průběžný žebříček LRU plavaná - U20', $datumPlatnosti, 'filterVysledky', 'u20');
 
-		$sheet = $objExcel->createSheet();
-		$sheet->setTitle('U18');
-		$this->addVysledky($sheet, $zebricekU18['zavodnici'], 'Průběžný žebříček LRU plavaná - U18', $datumPlatnosti, 'filterVysledky', 'u18');
+			$sheet = $objExcel->createSheet();
+			$sheet->setTitle('U15');
+			$this->addVysledky($sheet, $zebricekU15['zavodnici'], 'Průběžný žebříček LRU plavaná - U15', $datumPlatnosti, 'filterVysledky', 'u15');
+		}
+		if ($rok <= 2016) {
+			$sheet = $objExcel->createSheet();
+			$sheet->setTitle('U23');
+			$this->addVysledky($sheet, $zebricekU23['zavodnici'], 'Průběžný žebříček LRU plavaná - U23', $datumPlatnosti, 'filterVysledky', 'u23');
 
-		$sheet = $objExcel->createSheet();
-		$sheet->setTitle('U14');
-		$this->addVysledky($sheet, $zebricekU14['zavodnici'], 'Průběžný žebříček LRU plavaná - U14', $datumPlatnosti, 'filterVysledky', 'u14');
+			$sheet = $objExcel->createSheet();
+			$sheet->setTitle('U18');
+			$this->addVysledky($sheet, $zebricekU18['zavodnici'], 'Průběžný žebříček LRU plavaná - U18', $datumPlatnosti, 'filterVysledky', 'u18');
+
+			$sheet = $objExcel->createSheet();
+			$sheet->setTitle('U14');
+			$this->addVysledky($sheet, $zebricekU14['zavodnici'], 'Průběžný žebříček LRU plavaná - U14', $datumPlatnosti, 'filterVysledky', 'u14');
+		}
 
 		if ($rok >= 2013) {
 			$sheet = $objExcel->createSheet();
@@ -107,14 +124,17 @@ final class HomepagePresenter extends BasePresenter
 		if ($argument == 'u18' && ($radek['kategorie'] == 'U18' || $radek['kategorie'] == 'U18Ž')) return TRUE;
 		if ($argument == 'u14' && ($radek['kategorie'] == 'U14' || $radek['kategorie'] == 'U14Ž')) return TRUE;
 		if ($argument == 'u10' && ($radek['kategorie'] == 'U10' || $radek['kategorie'] == 'U10Ž')) return TRUE;
+		if ($argument == 'u15' && ($radek['kategorie'] == 'U15' || $radek['kategorie'] == 'U15 dívky')) return TRUE;
+		if ($argument == 'u20' && ($radek['kategorie'] == 'U20' || $radek['kategorie'] == 'U20 ženy')) return TRUE;
+		if ($argument == 'u25' && ($radek['kategorie'] == 'U25' || $radek['kategorie'] == 'U25 ženy')) return TRUE;
 		if ($argument == 'u12' && ($radek['kategorie'] == 'U12' || $radek['kategorie'] == 'U12Ž')) return TRUE;
-		if ($argument == 'zeny' && ($radek['kategorie'] == 'U14Ž' || $radek['kategorie'] == 'U18Ž' || $radek['kategorie'] == 'U23Ž' || $radek['kategorie'] == 'U10Ž' || $radek['kategorie'] == 'Ž' || $radek['kategorie'] == 'U12Ž')) return TRUE;
+		if ($argument == 'zeny' && ($radek['kategorie'] == 'U14Ž' || $radek['kategorie'] == 'U18Ž' || $radek['kategorie'] == 'U23Ž' || $radek['kategorie'] == 'U10Ž' || $radek['kategorie'] == 'Ž' || $radek['kategorie'] == 'U12Ž' || $radek['kategorie'] == 'U15 dívky' || $radek['kategorie'] == 'U20 ženy' || $radek['kategorie'] == 'U25 ženy')) return TRUE;
 	}
 
 	public function actionDefault($rok = NULL, $typ = 'celkem', $show = FALSE)
 	{
 		if ($rok === NULL) {
-			$this->redirect('Homepage:', ['rok' => self::$defaultYear, 'typ' => $typ, 'show' => $show]);
+			$this->redirect('Homepage:', ['rok' => $this->defaultYear->getDefaultYear(), 'typ' => $typ, 'show' => $show]);
 		}
 	}
 
@@ -132,8 +152,40 @@ final class HomepagePresenter extends BasePresenter
 			$typZebricku = 'kadeti U10';
 		else if ($typ == 'u12')
 			$typZebricku = 'kadeti U12';
+		else if ($typ == 'u15')
+			$typZebricku = 'kadeti U15';
+		else if ($typ == 'u20')
+			$typZebricku = 'junioři U20';
+		else if ($typ == 'u25')
+			$typZebricku = 'junioři U25';
 		else if ($typ == 'zeny')
 			$typZebricku = 'ženy';
+		else if ($typ == 'hendikepovani')
+			$typZebricku = 'hendikepovaní';
+
+		$rankings = [];
+		$rankings['celkem'] = 'celkový žebříček';
+		if ($rok >= 2017) {
+			$rankings['u25'] = 'žebříček U25';
+			$rankings['u20'] = 'žebříček U20';
+			$rankings['u15'] = 'žebříček U15';
+		}
+		if ($rok <= 2016) {
+			$rankings['u23'] = 'žebříček U23';
+			$rankings['u18'] = 'žebříček U18';
+			$rankings['u14'] = 'žebříček U14';
+		}
+		if ($rok > 2012 && $rok <= 2016) {
+			$rankings['u12'] = 'žebříček U12';
+		}
+		if ($rok <= 2012) {
+			$rankings['u10'] = 'žebříček U10';
+		}
+		$rankings['zeny'] = 'žebříček žen';
+		if ($rok >= 2017)
+			$rankings['hendikepovani'] = 'žebříček hendikepovaných';
+
+		$this->getTemplate()->rankings = $rankings;
 
 		$this->template->typ = $typ;
 
@@ -238,6 +290,12 @@ final class HomepagePresenter extends BasePresenter
 				$k = 'U10Ž';
 			else if ($row['kategorie'] == 'U12 dívky')
 				$k = 'U12Ž';
+			else if ($row['kategorie'] == 'U15 dívky')
+				$k = 'U15Ž';
+			else if ($row['kategorie'] == 'U20 ženy')
+				$k = 'U20Ž';
+			else if ($row['kategorie'] == 'U25 ženy')
+				$k = 'U25Ž';
 			else
 				$k = $row['kategorie'];
 			$row['kategorie'] = $k;

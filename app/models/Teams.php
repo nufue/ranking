@@ -2,80 +2,80 @@
 
 namespace App\Model;
 
-class Tymy extends Base {
+final class Teams extends Base {
 
-	public static $leagues = ['1' => '1. liga', '2a' => '2. liga, sk. A', '2b' => '2. liga, sk. B', '2c' => '2. liga, sk. C'];
-	
 	public function getTymy() {
 		$query = "SELECT `zz`.`id_zavodnika`, `zz`.`id_zavodu`, `z`.`cele_jmeno`, `zz`.`tym` FROM `zavodnici` `z` JOIN `zavodnici_zavody` `zz` ON `z`.`id` = `zz`.`id_zavodnika` WHERE `id_zavodnika` IN (SELECT DISTINCT `id_zavodnika` FROM `zavodnici_zavody` GROUP BY `id_zavodnika` HAVING COUNT(`id_zavodnika`) > 1) ORDER BY `id_zavodnika`";
 		$dbResult = $this->database->query($query)->fetchAll();
-		$result = array();
+		$result = [];
 		foreach ($dbResult as $row) {
 			if (!isset($result[$row->id_zavodnika])) {
-				$result[$row->id_zavodnika] = array('jmeno' => $row->cele_jmeno, 'zavody' => array(array('id' => $row->id_zavodu, 'tym' => $row->tym)));
+				$result[$row->id_zavodnika] = ['jmeno' => $row->cele_jmeno, 'zavody' => [['id' => $row->id_zavodu, 'tym' => $row->tym]]];
 			} else {
-				$found = false;
+				$found = FALSE;
 				foreach ($result[$row->id_zavodnika]['zavody'] as $v) {
 					if ($v['tym'] == $row->tym) {
-						$found = true;
+						$found = TRUE;
 						break;
 					}
 				}
 				if (!$found) {
-					$result[$row->id_zavodnika]['zavody'][] = array('id' => $row->id_zavodu, 'tym' => $row->tym);
+					$result[$row->id_zavodnika]['zavody'][] = ['id' => $row->id_zavodu, 'tym' => $row->tym];
 				}
 			}
 		}
 		foreach ($result as $k => $v) {
-			if (count($v['zavody']) == 1)
+			if (count($v['zavody']) === 1)
 				unset($result[$k]);
 		}
 		return $result;
 	}
 
-	public function getTymyRok($rok) {
+	public function loadTeamsByYear($rok) {
 		return $this->database->query("SELECT t.*, count(tz.id_zavodnika) `pocet_zavodniku` FROM tymy t LEFT JOIN tymy_zavodnici tz ON t.id = tz.id_tymu WHERE rok = ? GROUP BY `id` ORDER BY `liga`, `kod`", $rok);
 	}
 
-	public function getTym($id) {
+	public function getById($id) {
 		$info = $this->database->query("SELECT * FROM tymy WHERE id = ?", $id)->fetch();
 		$zavodnici = $this->database->query("SELECT `z`.`id`, `z`.`cele_jmeno`, `z`.`registrace`, `zk`.`kategorie` FROM `zavodnici` `z` LEFT JOIN `zavodnici_kategorie` `zk` ON `z`.`id` = `zk`.`id_zavodnika` JOIN `tymy_zavodnici` `tz` ON `tz`.`id_zavodnika` = `z`.`id` WHERE `tz`.`id_tymu` = ? AND `zk`.`rok` = ?", $id, $info->rok)->fetchAll();
 		return ['info' => $info, 'zavodnici' => $zavodnici];
 	}
 
-	public function removeZavodnici($idTymu) {
-		$this->database->query("DELETE FROM tymy_zavodnici WHERE id_tymu = ?", $idTymu);
+	public function removeAllMemberFromTeam($teamId): void {
+		$this->database->query("DELETE FROM tymy_zavodnici WHERE id_tymu = ?", $teamId);
 	}
 
-	public function addZavodnik($idTymu, $idZavodnika) {
-		$dbResult = $this->database->query("SELECT (MAX(`poradi`) + 1) `poradi` FROM `tymy_zavodnici` WHERE `id_tymu` = ?", (int)$idTymu)->fetch();
+	public function addTeamMember($teamId, $memberId): void {
+		$dbResult = $this->database->query("SELECT (MAX(`poradi`) + 1) `poradi` FROM `tymy_zavodnici` WHERE `id_tymu` = ?", (int)$teamId)->fetch();
 		if ($dbResult) {
-			$poradi = $dbResult->poradi;
-			if ($poradi === NULL) $poradi = 1;
-			$this->database->query("INSERT INTO `tymy_zavodnici`(`id_tymu`, `id_zavodnika`, `poradi`) VALUES (?, ?, ?)", $idTymu, $idZavodnika, $poradi);
+			$order = $dbResult->poradi;
+			if ($order === NULL) $order = 1;
+			$this->database->query("INSERT INTO `tymy_zavodnici`(`id_tymu`, `id_zavodnika`, `poradi`) VALUES (?, ?, ?)", $teamId, $memberId, $order);
 		}
 	}
 
-	public function getSoupiskaLiga($rok, $liga) {
-		$result = array();
+	public function loadRoasterForLeague($rok, $liga): array {
+		$result = [];
 		$dbResult = $this->database->query("SELECT * FROM `tymy` WHERE `rok` = ? AND `liga` = ? ORDER BY `kod`", (int)$rok, $liga)->fetchAll();
 
 		foreach ($dbResult as $row) {
-			$result[$row->id] = array('nazev' => $row->nazev_tymu, 'clenove' => array());
+			$result[$row->id] = array('nazev' => $row->nazev_tymu, 'clenove' => []);
 		}
 
 		$dbResult = $this->database->query("SELECT z.*, tz.id_tymu FROM zavodnici z JOIN tymy_zavodnici tz ON z.id = tz.id_zavodnika WHERE tz.id_tymu IN (?)", array_keys($result));
 
-		$idZavodnici = array();
+		$idZavodnici = [];
 		foreach ($dbResult as $row) {
-			$result[$row->id_tymu]['clenove'][$row->id] = array('registrace' => $row->registrace, 'jmeno' => $row->cele_jmeno, 'kategorie' => NULL);
+			$result[$row->id_tymu]['clenove'][$row->id] = ['registrace' => $row->registrace, 'jmeno' => $row->cele_jmeno, 'kategorie' => NULL];
 			$idZavodnici[$row->id] = NULL;
 		}
 
-		$dbResult = $this->database->query("SELECT `id_zavodnika`, `kategorie` FROM `zavodnici_kategorie` WHERE `id_zavodnika` IN (?) AND `rok` = ?", array_keys($idZavodnici), (int)$rok);
+		if (count($idZavodnici) > 0) {
+			$dbResult = $this->database->query("SELECT `id_zavodnika`, `kategorie` FROM `zavodnici_kategorie` WHERE `id_zavodnika` IN (?) AND `rok` = ?", array_keys($idZavodnici), (int)$rok);
 
-		foreach ($dbResult as $row) {
-			$idZavodnici[$row->id_zavodnika] = $row->kategorie;
+			foreach ($dbResult as $row) {
+				$idZavodnici[$row->id_zavodnika] = $row->kategorie;
+			}
 		}
 
 		foreach ($result as $idTymu => $tym) {
@@ -89,8 +89,8 @@ class Tymy extends Base {
 		return $result;
 	}
 	
-	public function getClenstvi($idZavodnika, $rok) {
-		return $this->database->query("SELECT t.id, t.liga, t.nazev_tymu FROM tymy t JOIN tymy_zavodnici tz ON t.id = tz.id_tymu WHERE t.rok = ? AND tz.id_zavodnika = ?", $rok, $idZavodnika);
+	public function loadTeamMembership($idZavodnika, $rok) {
+		return $this->database->query("SELECT t.id, t.liga, t.nazev_tymu FROM tymy t JOIN tymy_zavodnici tz ON t.id = tz.id_tymu WHERE t.rok = ? AND tz.id_zavodnika = ?", $rok, $idZavodnika)->fetchAll();
 	}
 
 }

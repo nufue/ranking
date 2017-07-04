@@ -18,7 +18,7 @@
 		<td n:class="$zmena ? borderTop : ''">{$ligy[$t->liga]}</td>
 		<td n:class="vlevo, $zmena ? borderTop : ''"><a n:href="detail $t->id">{$t->nazev_tymu}</a></td>
 		<td n:class="$zmena ? borderTop : ''">{$t->pocet_zavodniku}</td>
-		{?$oldLiga = $ligy[$t->liga]}
+		{php $oldLiga = $ligy[$t->liga]}
 	</tr>
 	</tbody>
 </table>

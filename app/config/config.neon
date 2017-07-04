@@ -26,15 +26,18 @@ database:
 	user: %db.user%
 	password: %db.password%
 
+extensions:
+	- App\Extensions\DefaultYearExtension
 
 services:
 	router: App\RouterFactory::createRouter
-	tymy: App\Model\Tymy
-	kategorie: App\Model\Kategorie
-	zavody: App\Model\Zavody
-	zavodnici: App\Model\Zavodnici
-	zebricek: App\Model\Zebricek
-	suggest: App\Model\Suggest
+	- App\Model\Teams
+	- App\Model\Kategorie
+	- App\Model\Competitions
+	- App\Model\Zavodnici
+	- App\Model\Ranking
+	- App\Model\Suggest
+	- App\Model\Leagues
 	- App\Model\Competitors
 
 	authenticator:

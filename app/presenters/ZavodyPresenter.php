@@ -4,7 +4,7 @@ namespace App\Presenters;
 
 use App\Model\Utils;
 use Nette\Application\BadRequestException;
-use \Nette\Application\UI\Form, \App\Model\Zebricek, \App\Model\Kategorie;
+use \Nette\Application\UI\Form, \App\Model\Ranking, \App\Model\Kategorie;
 
 final class ZavodyPresenter extends BasePresenter {
 
@@ -34,7 +34,7 @@ final class ZavodyPresenter extends BasePresenter {
 	/** @var object */
 	private $vysledky;
 	
-	/** @var \App\Model\Zavody @inject */
+	/** @var \App\Model\Competitions @inject */
 	public $zavody;
 	
 	/** @var \App\Model\Zavodnici @inject */
@@ -45,9 +45,9 @@ final class ZavodyPresenter extends BasePresenter {
 
 	public function startup() {
 		parent::startup();
-		$this->template->registerHelper('umisteni', function($umisteni, $typZavodu) {
+		$this->getTemplate()->getLatte()->addFilter('umisteni', function($umisteni, $typZavodu) {
 					$umisteni = (int) $umisteni;
-					$bodovaciTabulka = Zebricek::$scoringTables[Zebricek::$competitionScoringType[$typZavodu]];
+					$bodovaciTabulka = Ranking::$scoringTables[Ranking::$competitionScoringType[$typZavodu]];
 					if (isset($bodovaciTabulka[$umisteni])) {
 						return $bodovaciTabulka[$umisteni];
 					} else {
@@ -65,10 +65,10 @@ final class ZavodyPresenter extends BasePresenter {
 	}
 
 	public function renderDefault($rok = NULL) {
-		if ($rok === NULL) $rok = self::$defaultYear;
-		$this->template->zavody = $this->zavody->getAllRaces($rok);
+		if ($rok === NULL) $rok = $this->defaultYear->getDefaultYear();
+		$this->template->zavody = $this->zavody->loadAllCompetitions($rok);
 		$this->template->rok = $rok;
-		$this->template->typyZavodu = Zebricek::$competitionTypes;
+		$this->template->typyZavodu = Ranking::$competitionTypes;
 	}
 
 	public function actionEdit($id) {
@@ -89,7 +89,7 @@ final class ZavodyPresenter extends BasePresenter {
 		if ($rok === NULL) $rok = $this->template->zavod->rok;
 		$this->template->rok = $rok;
 		$this->template->zavodnici = $this->zavodnici->getZavodnici($id);
-		$this->template->typyZavodu = Zebricek::$competitionTypes;
+		$this->template->typyZavodu = Ranking::$competitionTypes;
 		$this->template->kategoriePrevod = Kategorie::$kategorie;
 	}
 
@@ -97,7 +97,7 @@ final class ZavodyPresenter extends BasePresenter {
 		$form = new Form;
 		$form->addText('nazev', 'Název závodu', 50);
 		$form->addText('kategorie', 'Věková kategorie závodu', 30);
-		$form->addSelect('typ', 'Typ závodu', Zebricek::$competitionTypes);
+		$form->addSelect('typ', 'Typ závodu', Ranking::$competitionTypes);
 		$form->addText('datum_od', 'Datum od', 10);
 		$form->addText('datum_do', 'Datum do', 10);
 		$form->addCheckbox('zobrazovat', 'Zobrazovat závod');
@@ -108,22 +108,21 @@ final class ZavodyPresenter extends BasePresenter {
 		return $form;
 	}
 
-	public function zavodFormSubmitted(Form $form) {
+	public function zavodFormSubmitted(Form $form, $values) {
 		if ($this->id && !$this->record) {
 			throw new BadRequestException;
 		}
 
-		$values = $form->getValues();
 		$values['datum_od'] = Utils::convertDate($values['datum_od']);
 		$values['datum_do'] = Utils::convertDate($values['datum_do']);
 		$values['zobrazovat'] = $values['zobrazovat'] ? 'ano' : 'ne';
 		$values['vysledky'] = $values['vysledky'] ? 'ano' : 'ne';
 		if ($this->id) {
-			$this->zavody->updateZavod($this->record->id, $values);
+			$this->zavody->updateCompetition($this->record->id, $values);
 			$this->flashMessage("Informace o závodu byly upraveny.", "success");
 			$this->redirect("default");
 		} else {
-			$this->zavody->addZavod($values);
+			$this->zavody->addCompetition($values);
 			$this->flashMessage("Závod byl přidán.", "success");
 			$this->redirect("default", array('rok' => $values['datum_od']->format('Y')));
 		}
@@ -142,7 +141,7 @@ final class ZavodyPresenter extends BasePresenter {
 		$form->addTextArea('vysledky', 'Výsledky', 80, 25)
 				->addRule(Form::FILLED, 'Vyplňte prosím pole s výsledky');
 		$form->addSubmit('send', 'Odeslat');
-		$form->onSuccess[] = $this->vysledkyFormSubmitted;
+		$form->onSuccess[] = [$this, 'vysledkyFormSubmitted'];
 		return $form;
 	}
 

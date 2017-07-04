@@ -4,7 +4,7 @@ namespace App\Model;
 
 use Nette\Database\Context;
 
-class Zavodnici extends Base
+final class Zavodnici extends Base
 {
 
 	/** @var Kategorie */
@@ -39,7 +39,7 @@ class Zavodnici extends Base
 
 	public function getZavodnikByJmeno($name)
 	{
-		$dbResult = $this->database->query("SELECT `id`, `cele_jmeno` FROM `zavodnici` WHERE `cele_jmeno` = ? AND `registrovany` = 'A'", $name);
+		$dbResult = $this->database->query("SELECT `id`, `cele_jmeno`, `registrace` FROM `zavodnici` WHERE `cele_jmeno` = ? AND `registrovany` = 'A'", $name);
 		if ($result = $dbResult->fetch()) {
 			return $result;
 		} else
@@ -48,7 +48,7 @@ class Zavodnici extends Base
 
 	public function getZavodnikByRegistrace($registrace)
 	{
-		$dbResult = $this->database->query("SELECT `id`, `cele_jmeno` FROM `zavodnici` WHERE `registrace` = ? AND `registrovany` = 'A'", $registrace);
+		$dbResult = $this->database->query("SELECT `id`, `cele_jmeno`, `registrace` FROM `zavodnici` WHERE `registrace` = ? AND `registrovany` = 'A'", $registrace);
 		if ($result = $dbResult->fetch()) {
 			return $result;
 		} else
@@ -105,7 +105,7 @@ class Zavodnici extends Base
 		}
 	}
 
-	private function kategorieConvertToDB($kategorie)
+	private function kategorieConvertToDB($kategorie): string
 	{
 		$kategorie = str_replace(' ', '', $kategorie);
 		if ($kategorie == 'U14Ž') return 'u14_zena';
@@ -121,7 +121,27 @@ class Zavodnici extends Base
 		else if ($kategorie == 'U23') return 'u23';
 		else if ($kategorie == 'U10') return 'u10';
 		else if ($kategorie == 'U12') return 'u12';
+		else if ($kategorie == 'U15') return 'u15';
+		else if ($kategorie == 'U20') return 'u20';
+		else if ($kategorie == 'U25') return 'u25';
+		else if ($kategorie == 'U15Ž') return 'u15_zena';
+		else if ($kategorie == 'U20Ž') return 'u20_zena';
+		else if ($kategorie == 'U25Ž') return 'u25_zena';
 		else return $kategorie;
+	}
+
+	public function loadCompetitorsWithoutCategory()
+	{
+		$result = [];
+		$dbResult = $this->database->query("select tz.id_zavodnika, (select kategorie from zavodnici_kategorie zk where zk.rok = 2017 and zk.id_zavodnika = tz.id_zavodnika) kategorie from tymy_zavodnici tz join tymy t on tz.id_tymu = t.id where t.rok = 2017 having kategorie IS NULL")->fetchAll();
+		foreach ($dbResult as $r)
+			$result[] = $r->id_zavodnika;
+		return $result;
+	}
+
+	public function loadAllCompetitors()
+	{
+		return $this->database->query("select tz.id_zavodnika, (select kategorie from zavodnici_kategorie zk where zk.rok = 2017 and zk.id_zavodnika = tz.id_zavodnika) kategorie from tymy_zavodnici tz join tymy t on tz.id_tymu = t.id where t.rok = 2017")->fetchAll();
 	}
 
 }

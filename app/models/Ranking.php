@@ -4,17 +4,17 @@ namespace App\Model;
 
 use Nette\Database\Context;
 
-class Zebricek extends Base {
+final class Ranking extends Base {
 
-	/** @var Zavody */
-	private $zavody;
+	/** @var Competitions */
+	private $competitions;
 	
 	/** @var Zavodnici */
 	private $zavodnici;
 
-	public function __construct(Context $database, Zavody $zavody, Zavodnici $zavodnici) {
+	public function __construct(Context $database, Competitions $competitions, Zavodnici $zavodnici) {
 		parent::__construct($database);
-		$this->zavody = $zavody;
+		$this->competitions = $competitions;
 		$this->zavodnici = $zavodnici;
 	}
 
@@ -34,18 +34,30 @@ class Zebricek extends Base {
 		'divize' => 'Divize',
 		'micr_zeny' => 'MiČR žen',
 		'micr_u14' => 'MiČR U14',
+		'micr_u15' => 'MiČR U15',
 		'micr_u18' => 'MiČR U18',
+		'micr_u20' => 'MiČR U20',
 		'micr_u22' => 'MiČR U23',
+		'micr_u25' => 'MiČR U25',
+		'micr_hendikepovani' => 'MiČR hendikepovaných',
 		'zavod_zeny' => 'Závod žen',
+		'zavod_u10' => 'Závod U10',
 		'zavod_u14' => 'Závod U14',
+		'zavod_u15' => 'Závod U15',
 		'zavod_u18' => 'Závod U18',
+		'zavod_u20' => 'Závod U20',
 		'zavod_u22' => 'Závod U23',
-		'prebor_u14' => 'Územní přebor U14',
-		'prebor_u18' => 'Územní přebor U18',
-		'prebor_u22' => 'Územní přebor U23',
+		'zavod_u25' => 'Závod U25',
 		'prebor_u10' => 'Územní přebor U10',
 		'prebor_u12' => 'Územní přebor U12',
-		'zavod_u10' => 'Závod U10',
+		'prebor_u14' => 'Územní přebor U14',
+		'prebor_u15' => 'Územní přebor U15',
+		'prebor_u18' => 'Územní přebor U18',
+		'prebor_u20' => 'Územní přebor U20',
+		'prebor_u22' => 'Územní přebor U23',
+		'prebor_u25' => 'Územní přebor U25',
+
+
 	];
 	public static $competitionScoringType = [
 		'memi_senioru' => 1,
@@ -54,20 +66,31 @@ class Zebricek extends Base {
 		'bodovany_pohar' => 3,
 		'micr_zeny' => 3,
 		'micr_u14' => 3,
+		'micr_u15' => 3,
 		'micr_u18' => 3,
+		'micr_u20' => 3,
 		'micr_u22' => 3,
+		'micr_u25' => 3,
+		'micr_hendikepovani' => 3,
 		'uzemni_prebor' => 4,
 		'zavod_zeny' => 4,
-		'zavod_u14' => 4,
-		'zavod_u18' => 4,
-		'zavod_u22' => 4,
 		'zavod_u10' => 4,
+		'zavod_u14' => 4,
+		'zavod_u15' => 4,
+		'zavod_u18' => 4,
+		'zavod_u20' => 4,
+		'zavod_u22' => 4,
+		'zavod_u25' => 4,
+
 		'divize' => 5,
-		'prebor_u14' => 5,
-		'prebor_u18' => 5,
-		'prebor_u22' => 5,
 		'prebor_u10' => 5,
 		'prebor_u12' => 5,
+		'prebor_u14' => 5,
+		'prebor_u15' => 5,
+		'prebor_u18' => 5,
+		'prebor_u20' => 5,
+		'prebor_u22' => 5,
+		'prebor_u25' => 5,
 	];
 
 	public function getRanking($year, $type) {
@@ -77,9 +100,9 @@ class Zebricek extends Base {
 		$datumPlatnosti = $result->datum;
 		$datumPlatnostiOrig = $result->datum_platnosti;
 
-		$result = $this->zavody->getVisibleRaces($year);
+		$result = $this->competitions->loadVisibleCompetitions($year);
 		foreach ($result as $row) {
-			$competitions[$row->id] = array('typ' => $row->typ, 'nazev' => $row->nazev, 'kategorie' => $row->kategorie);
+			$competitions[$row->id] = ['typ' => $row->typ, 'nazev' => $row->nazev, 'kategorie' => $row->kategorie];
 		}
 
 		$competitors = [];
@@ -93,9 +116,17 @@ class Zebricek extends Base {
 		else if ($type == 'u10')
 			$query .= " AND `zk`.`kategorie` IN ('u10', 'u10_zena') AND `zav`.`kategorie` != 'ženy'";
 		else if ($type == 'zeny')
-			$query .= " AND `zk`.`kategorie` IN ('u10_zena', 'u14_zena', 'u18_zena', 'u23_zena', 'zena', 'u12_zena') AND (`zav`.`kategorie` = '' OR `zav`.`kategorie` = 'ženy')";
+			$query .= " AND `zk`.`kategorie` IN ('u10_zena', 'u14_zena', 'u18_zena', 'u23_zena', 'zena', 'u12_zena', 'u15_zena', 'u20_zena', 'u25_zena') AND (`zav`.`kategorie` = '' OR `zav`.`kategorie` = 'ženy')";
 		else if ($type == 'u12')
 			$query .= " AND `zk`.`kategorie` IN ('u12', 'u12_zena') AND `zav`.`kategorie` != 'ženy'";
+		else if ($type == 'u15')
+			$query .= " AND `zk`.`kategorie` IN ('u15', 'u15_zena') AND `zav`.`kategorie` != 'ženy'";
+		else if ($type == 'u20')
+			$query .= " AND `zk`.`kategorie` IN ('u20', 'u20_zena') AND `zav`.`kategorie` != 'ženy'";
+		else if ($type == 'u25')
+			$query .= " AND `zk`.`kategorie` IN ('u25', 'u25_zena') AND `zav`.`kategorie` != 'ženy'";
+		else if ($type == 'hendikepovani')
+			$query .= " AND `zk`.`kategorie` IN ('hendikep') AND `zav`.`kategorie` != 'ženy'";
 		else if ($type == 'excel')
 			;
 
@@ -103,9 +134,11 @@ class Zebricek extends Base {
 		foreach ($result as $row) {
 			$id = $row->id_zavodnika;
 			if (!isset($competitors[$id]))
-				$competitors[$id] = array('jmeno' => $row->cele_jmeno, 'min_body_zebricek' => 0, 'zavodu' => 0, 'registrace' => $row->registrace, 'tym' => $row->tym, 'kategorie' => Kategorie::$kategorie[$row->kategorie], 'body_celkem' => array(), 'body_zebricek' => array(), 'cips_celkem' => array(), 'vysledky' => array($row->id_zavodu => array('zavod' => $row->id_zavodu, 'kategorie_zavodu' => $row->kategorie_zavodu, 'cips1' => $row->cips1, 'cips2' => $row->cips2, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2, 'body' => 0)));
+				$competitors[$id] = ['jmeno' => $row->cele_jmeno, 'min_body_zebricek' => 0, 'zavodu' => 0, 'registrace' => $row->registrace, 'tym' => $row->tym, 'kategorie' => Kategorie::$kategorie[$row->kategorie], 'body_celkem' => [], 'body_zebricek' => [], 'cips_celkem' => [], 'vysledky' => array($row->id_zavodu => array('zavod' => $row->id_zavodu, 'kategorie_zavodu' => $row->kategorie_zavodu, 'cips1' => $row->cips1, 'cips2' => $row->cips2, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2, 'body' => 0))];
 			else {
-				$competitors[$id]['vysledky'][$row->id_zavodu] = array('zavod' => $row->id_zavodu, 'kategorie_zavodu' => $row->kategorie_zavodu, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2, 'cips1' => $row->cips1, 'cips2' => $row->cips2, 'body' => 0);
+				$competitors[$id]['vysledky'][$row->id_zavodu] = ['zavod' => $row->id_zavodu, 'kategorie_zavodu' => $row->kategorie_zavodu, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2, 'cips1' => $row->cips1, 'cips2' => $row->cips2, 'body' => 0];
+				if (empty($competitors[$id]['tym']))
+					$competitors[$id]['tym'] = $row->tym;
 			}
 			if ($row->umisteni1 !== NULL)
 				$competitors[$id]['zavodu'] ++;
@@ -122,6 +155,9 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 				$competitors[$row->id_zavodnika]['tym'] = $row->nazev_tymu;
 			}
 		}
+		// ruční výjimky z názvů týmu
+		if ($year == 2017 && isset($competitors[469]))
+			$competitors[469]['tym'] = 'ČRS Rybářský sportovní klub Pardubice COLMIC';
 
 		foreach ($competitors as $id => $z) {
 			foreach ($z['vysledky'] as $k => $v) {
@@ -193,7 +229,7 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 		}
 
 		uasort($competitors, array($this, 'bodySort'));
-		return array('zavody' => $competitions, 'zavodnici' => $competitors, 'datum_platnosti' => $datumPlatnosti, 'datum_platnosti_orig' => $datumPlatnostiOrig);
+		return ['zavody' => $competitions, 'zavodnici' => $competitors, 'datum_platnosti' => $datumPlatnosti, 'datum_platnosti_orig' => $datumPlatnostiOrig];
 	}
 
 	private function getPoints($competitionType, $position) {
@@ -227,7 +263,7 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 		if ($omezeni === NULL)
 			$query .= " AND `zav`.`kategorie` = ''";
 		if ($omezeni == 'ženy')
-			$query .= " AND `zk`.`kategorie` IN ('u10_zena', 'u14_zena', 'u18_zena', 'u23_zena', 'zena', 'u12_zena') AND (`zav`.`kategorie` = '' OR `zav`.`kategorie` = 'ženy')";
+			$query .= " AND `zk`.`kategorie` IN ('u10_zena', 'u14_zena', 'u18_zena', 'u23_zena', 'zena', 'u12_zena', 'u15_zena', 'u20_zena', 'u25_zena') AND (`zav`.`kategorie` = '' OR `zav`.`kategorie` = 'ženy')";
 		if ($omezeni[0] == 'u')
 			$query .= " AND `zk`.`kategorie` IN ('" . $omezeni . "', '" . $omezeni . "_zena') AND `zav`.`kategorie` != 'ženy'";
 
@@ -237,7 +273,7 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 
 		foreach ($result as $row) {
 			if (!$headerSet) {
-				$zavodnik = array('zavodu' => 0, 'registrovany' => ($row->registrovany == 'A'), 'body_celkem' => array(), 'vysledky' => array($row->id_zavodu => array('nazev_zavodu' => $row->nazev_zavodu, 'tym' => $row['tym'], 'typ_zavodu' => $row->typ, 'kategorie_zavodu' => $row->kategorie_zavodu, 'id_zavodu' => $row->id_zavodu, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2, 'cips1' => $row->cips1, 'cips2' => $row->cips2)));
+				$zavodnik = array('zavodu' => 0, 'registrovany' => ($row->registrovany == 'A'), 'body_celkem' => [], 'vysledky' => array($row->id_zavodu => array('nazev_zavodu' => $row->nazev_zavodu, 'tym' => $row['tym'], 'typ_zavodu' => $row->typ, 'kategorie_zavodu' => $row->kategorie_zavodu, 'id_zavodu' => $row->id_zavodu, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2, 'cips1' => $row->cips1, 'cips2' => $row->cips2)));
 				$headerSet = true;
 			} else {
 				$zavodnik['vysledky'][$row->id_zavodu] = array('nazev_zavodu' => $row->nazev_zavodu, 'tym' => $row['tym'], 'typ_zavodu' => $row->typ, 'kategorie_zavodu' => $row->kategorie_zavodu, 'id_zavodu' => $row->id_zavodu, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2, 'cips1' => $row->cips1, 'cips2' => $row->cips2);

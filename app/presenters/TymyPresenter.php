@@ -2,11 +2,11 @@
 
 namespace App\Presenters;
 
-use Nette\Application\UI\Form, App\Model\Tymy, App\Model\Kategorie, Nette\Application\Responses;
+use Nette\Application\UI\Form, App\Model\Teams, App\Model\Kategorie, Nette\Application\Responses;
 
-class TymyPresenter extends BasePresenter {
+final class TymyPresenter extends BasePresenter {
 
-	/** @var \App\Model\Tymy @inject */
+	/** @var \App\Model\Teams @inject */
 	public $tymy;
 	
 	/** @var \App\Model\Zavodnici @inject */
@@ -14,18 +14,29 @@ class TymyPresenter extends BasePresenter {
 	
 	/** @var \App\Model\Suggest @inject */
 	public $suggest;
+
+	/** @var \App\Model\Leagues @inject */
+	public $leagues;
+
+	/** @var \App\Model\Competitors @inject */
+	public $competitors;
+
+	/** @var int */
+	private $year;
 	
-	public function renderDefault($rok = NULL) {
-		if ($rok === NULL) $rok = self::$defaultYear;
-		$this->template->ligy = Tymy::$leagues;
+	public function actionDefault($rok = NULL) {
+		if ($rok === NULL) $rok = $this->defaultYear->getDefaultYear();
+		$this->year = (int)$rok;
+		$this->template->ligy = $this->leagues->getLeagues();
 		$this->template->rok = $rok;
-		$this->template->tymy = $this->tymy->getTymyRok($rok);
+		$this->template->tymy = $this->tymy->loadTeamsByYear($rok);
 	}
 
-	public function renderDetail($id) {
-		$this->template->ligy = Tymy::$leagues;
-		$detail = $this->tymy->getTym($id);
+	public function actionDetail($id) {
+		$this->template->ligy = $this->leagues->getLeagues();
+		$detail = $this->tymy->getById($id);
 		$this->template->rok = $detail['info']->rok;
+		$this->year = (int)($detail['info']->rok);
 		$this->template->kategoriePrevod = Kategorie::$kategorie;
 		$this->template->detail = $detail['info'];
 		$this->template->zavodnici = $detail['zavodnici'];
@@ -41,7 +52,7 @@ class TymyPresenter extends BasePresenter {
 
 	public function createComponentAddForm() {
 		$form = new Form;
-		for ($i = 1; $i <= 15; $i++) {
+		for ($i = 1; $i <= 13; $i++) {
 			$form->addText('zavodnik' . $i, $i, 40)->getControlPrototype()->addClass('naseptavac');
 		}
 
@@ -54,7 +65,7 @@ class TymyPresenter extends BasePresenter {
 	public function addFormSubmitted(Form $form, $values) {
 		$id = $values['id'];
 		if (!empty($id)) {
-			$this->tymy->removeZavodnici($id);
+			$this->tymy->removeAllMemberFromTeam($id);
 			foreach ($values as $k => $v) {
 				if (mb_substr($k, 0, 8) != 'zavodnik') {
 					continue;
@@ -67,7 +78,10 @@ class TymyPresenter extends BasePresenter {
 					$zavodnik = $this->zavodnici->getZavodnikByJmeno($v);
 				}
 				if ($zavodnik !== NULL) {
-					$this->tymy->addZavodnik($id, $zavodnik->id);
+					$this->tymy->addTeamMember($id, $zavodnik->id);
+					$category = $this->competitors->getCompetitorCategory($this->year, (int)$zavodnik->registrace);
+					$this->competitors->setCompetitorCategory($this->year, (int)$zavodnik->registrace, $category);
+
 					$this->flashMessage('Závodník ' . $v . ' byl přidán do týmu ID = ' . $id);
 				} else {
 					$this->flashMessage('Závodníka ' . $v . ' se nepodařilo vyhledat.', 'error');

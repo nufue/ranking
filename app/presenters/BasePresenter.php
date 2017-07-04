@@ -2,16 +2,18 @@
 
 namespace App\Presenters;
 
-abstract class BasePresenter extends \Nette\Application\UI\Presenter {
+use Nette\Application\UI\Presenter;
 
-	/** @var int */
-	protected static $defaultYear = 2016;
+abstract class BasePresenter extends Presenter {
+
+	/** @var \App\Model\DefaultYear @inject */
+	public $defaultYear;
 
 	public function startup() {
 		parent::startup();
 		$this->template->isLoggedIn = $this->getUser()->isLoggedIn();
 		$userName = '';
-		if ($this->getUser()->getIdentity() !== null) $userName = $this->getUser()->getIdentity()->getId(); 
+		if ($this->getUser()->getIdentity() !== NULL) $userName = $this->getUser()->getIdentity()->getId();
 		
 		$this->template->userName = $userName;
 
@@ -21,14 +23,13 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter {
 		}
 
 		$this->template->backlink = '';
-		$httpRequest = $this->getHttpRequest();
-		$absoluteUrl = $httpRequest->getUrl()->getAbsoluteUrl();
+		$absoluteUrl = $this->getHttpRequest()->getUrl()->getAbsoluteUrl();
 		$deleted = FALSE;
-		if (isset($bcStorage->breadcrumb[1]) && $bcStorage->breadcrumb[1] == $absoluteUrl) {
+		if (isset($bcStorage->breadcrumb[1]) && $bcStorage->breadcrumb[1] === $absoluteUrl) {
 			unset($bcStorage->breadcrumb[0]);
 			unset($bcStorage->breadcrumb[1]);
 			$deleted = TRUE;
-		} else if (isset($bcStorage->breadcrumb[0]) && $bcStorage->breadcrumb[0] == $absoluteUrl) {
+		} else if (isset($bcStorage->breadcrumb[0]) && $bcStorage->breadcrumb[0] === $absoluteUrl) {
 			unset($bcStorage->breadcrumb[0]);
 		}
 

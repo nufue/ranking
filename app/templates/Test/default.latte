@@ -1,0 +1,12 @@
+{block content}
+
+<h1>Výpis nových kategorií</h1>
+
+<table>
+	<tr n:foreach="$competitors as $c">
+		<td>{$c['registration']->getRegistration()}</td>
+		<td>{$c['registration']->getLastName()} {$c['registration']->getFirstName()}</td>
+		<td>{$c['registration']->getBirthYear()}</td>
+		<td>{$c['category']->getCategory()}</td>
+	</tr>
+</table>

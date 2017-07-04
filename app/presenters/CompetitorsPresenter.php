@@ -10,12 +10,12 @@ final class CompetitorsPresenter extends BasePresenter {
 	public $competitors;
 
 	public function renderDefault() {
-		$this->template->rok = self::$defaultYear;
+		$this->template->rok = $this->defaultYear->getDefaultYear();
 	}
 
 	public function renderResults($term) {
 		$this->template->results = $this->competitors->search($term);
-		$this->template->rok = self::$defaultYear;
+		$this->template->rok = $this->defaultYear->getDefaultYear();
 	}
 
 	public function createComponentSearchForm() {

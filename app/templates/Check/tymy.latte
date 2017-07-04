@@ -1,9 +1,0 @@
-{block content}
-{dump $tymy}
-
-<table>
-    <tr n:foreach="$tymy as $t">
-	<td>{$t['jmeno']}</td>
-	<td n:foreach="$t['zavody'] as $z">{$z['tym']}</td>
-    </tr>
-</table>

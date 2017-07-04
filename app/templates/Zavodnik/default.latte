@@ -40,11 +40,11 @@
 		<td>{if $v['umisteni2'] !== NULL}{$v['cips2']}{/if}</td>
         <td>{if $v['umisteni2'] !== NULL}{if $v['umisteni2'] == (int)$v['umisteni2']}{(int)$v['umisteni2']}{else}{$v['umisteni2']|number:1:',':' '}{/if}{/if}</td>
         <td>{if isset($vysledkyCelkovy['vysledky'][$k]['body2_zebricek']) && $vysledkyCelkovy['vysledky'][$k]['body2_zebricek']}<span class="zebricek">{/if}{$v['body2']}{if isset($vysledkyCelkovy['vysledky'][$k]['body2_zebricek']) && $vysledkyCelkovy['vysledky'][$k]['body2_zebricek']}</span>{/if}</td>        
-		{?$bodyCelkem += $v['body1'] + $v['body2']}
-		{if isset($vysledkyCelkovy['vysledky'][$k])}{?$bodyZebricekCelkovy += ($vysledkyCelkovy['vysledky'][$k]['body1_zebricek'] ? $vysledkyCelkovy['vysledky'][$k]['body1'] : 0) + ($vysledkyCelkovy['vysledky'][$k]['body2_zebricek'] ? $vysledkyCelkovy['vysledky'][$k]['body2'] : 0)}{/if}
-		{if isset($vysledkyDorost['vysledky'][$k])}{?$bodyZebricekDorost += ($vysledkyDorost['vysledky'][$k]['body1_zebricek'] ? $vysledkyDorost['vysledky'][$k]['body1'] : 0) + ($vysledkyDorost['vysledky'][$k]['body2_zebricek'] ? $vysledkyDorost['vysledky'][$k]['body2'] : 0)}{/if}
-		{if isset($vysledkyZeny['vysledky'][$k])}{?$bodyZebricekZeny += ($vysledkyZeny['vysledky'][$k]['body1_zebricek'] ? $vysledkyZeny['vysledky'][$k]['body1'] : 0) + ($vysledkyZeny['vysledky'][$k]['body2_zebricek'] ? $vysledkyZeny['vysledky'][$k]['body2'] : 0)}{/if}
-		{?$cipsCelkem += $v['cips1'] + $v['cips2']}
+		{php $bodyCelkem += $v['body1'] + $v['body2']}
+		{if isset($vysledkyCelkovy['vysledky'][$k])}{php $bodyZebricekCelkovy += ($vysledkyCelkovy['vysledky'][$k]['body1_zebricek'] ? $vysledkyCelkovy['vysledky'][$k]['body1'] : 0) + ($vysledkyCelkovy['vysledky'][$k]['body2_zebricek'] ? $vysledkyCelkovy['vysledky'][$k]['body2'] : 0)}{/if}
+		{if isset($vysledkyDorost['vysledky'][$k])}{php $bodyZebricekDorost += ($vysledkyDorost['vysledky'][$k]['body1_zebricek'] ? $vysledkyDorost['vysledky'][$k]['body1'] : 0) + ($vysledkyDorost['vysledky'][$k]['body2_zebricek'] ? $vysledkyDorost['vysledky'][$k]['body2'] : 0)}{/if}
+		{if isset($vysledkyZeny['vysledky'][$k])}{php $bodyZebricekZeny += ($vysledkyZeny['vysledky'][$k]['body1_zebricek'] ? $vysledkyZeny['vysledky'][$k]['body1'] : 0) + ($vysledkyZeny['vysledky'][$k]['body2_zebricek'] ? $vysledkyZeny['vysledky'][$k]['body2'] : 0)}{/if}
+		{php $cipsCelkem += $v['cips1'] + $v['cips2']}
 		
     </tr>
     </tbody>

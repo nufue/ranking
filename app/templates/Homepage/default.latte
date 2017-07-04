@@ -16,22 +16,12 @@
 	</ul>
 </div>
 
-<p class='noprint'>{if $zobrazitZavody}<a n:href="Homepage:default $rok, $typ, false">nezobrazovat jednotlivé
-		závody</a>{else}<a n:href="Homepage:default $rok, $typ, true">zobrazit i jednotlivé závody</a>{/if}</p>
+<p class='noprint'>{if $zobrazitZavody}<a n:href="Homepage:default $rok, $typ, FALSE">nezobrazovat jednotlivé
+		závody</a>{else}<a n:href="Homepage:default $rok, $typ, TRUE">zobrazit i jednotlivé závody</a>{/if}</p>
 
-<p class='noprint'>{ifCurrent default $rok, 'celkem'}celkový žebříček{else}
-	<a n:href="default $rok, 'celkem', $zobrazitZavody">celkový žebříček</a>{/ifCurrent} |
-	{ifCurrent default $rok, 'u23'}žebříček U23{else}<a n:href="default $rok, 'u23', $zobrazitZavody">žebříček
-		U23</a>{/ifCurrent} |
-	{ifCurrent default $rok, 'u18'}žebříček U18{else}<a n:href="default $rok, 'u18', $zobrazitZavody">žebříček
-		U18</a>{/ifCurrent} |
-	{ifCurrent default $rok, 'u14'}žebříček U14{else}<a n:href="default $rok, 'u14', $zobrazitZavody">žebříček
-		U14</a>{/ifCurrent} |
-	{if $rok <= 2012}{ifCurrent default $rok, 'u10'}žebříček U10{else}<a n:href="default $rok, 'u10', $zobrazitZavody">
-			žebříček U10</a>{/ifCurrent} |{else}{ifCurrent default $rok, 'u12'}žebříček U12{else}
-	<a n:href="default $rok, 'u12', $zobrazitZavody">žebříček U12</a>{/ifCurrent} |{/if}
-	{ifCurrent default $rok, 'zeny'}žebříček žen{else}<a n:href="default $rok, 'zeny', $zobrazitZavody">žebříček
-		žen</a>{/ifCurrent}
+<p class='noprint' n:inner-foreach="$rankings as $rankingType => $rankingName">
+	{ifCurrent default $rok, $rankingType}{$rankingName}{else}
+		<a n:href="default $rok, $rankingType, $zobrazitZavody">{$rankingName}</a>{/ifCurrent}{sep} | {/sep}
 </p>
 
 <table id="zebricek">

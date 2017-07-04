@@ -2,7 +2,7 @@
 
 namespace App\Presenters;
 
-class ErrorPresenter extends BasePresenter {
+final class ErrorPresenter extends BasePresenter {
 
 	/**
 	 * @param  Exception

@@ -2,7 +2,7 @@
 
 namespace App\Model;
 
-class Utils {
+final class Utils {
 
     public static function convertDate($date) {
         $date = str_replace(". ", ".", $date);

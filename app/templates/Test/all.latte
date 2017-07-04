@@ -1,0 +1,19 @@
+{block content}
+
+<h1>Výpis nových kategorií</h1>
+
+<table>
+	<tr n:foreach="$competitors as $c" n:if="!($c['original'] instanceof \App\Model\Category && $c['category'] instanceof \App\Model\Category && $c['original']->getCategory() === $c['category']->getCategory())">
+		<td>{$c['registration']->getRegistration()}</td>
+		<td>{$c['registration']->getLastName()} {$c['registration']->getFirstName()}</td>
+		<td>{$c['registration']->getBirthYear()}</td>
+		<td>{if $c['original'] instanceof \App\Model\Category}{$c['original']->getCategory()}{else}&nbsp;{/if}</td>
+		<td>{$c['category']->getCategory()}</td>
+	</tr>
+</table>
+
+{foreach $competitors as $id => $c}
+	{if !($c['original'] instanceof \App\Model\Category && $c['category'] instanceof \App\Model\Category && $c['original']->getCategory() === $c['category']->getCategory())}
+	INSERT INTO `zavodnici_kategorie`(`id_zavodnika`, `rok`, `kategorie`) VALUES ({$id}, 2017, '{$c['category']->getDbCategory()}') ON DUPLICATE KEY UPDATE `kategorie` = '{$c['category']->getDbCategory()}';
+	{else}{php continue}{/if}{sep}<br>{/sep}
+{/foreach}
