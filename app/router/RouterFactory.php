@@ -22,7 +22,7 @@ final class RouterFactory
 		$router[] = new Route('<rok [0-9]{4}>/zavody/add', 'Zavody:add');
 		$router[] = new Route('<rok [0-9]{4}>/zavody/<id>', 'Zavody:detail');
 		$router[] = new Route('<rok [0-9]{4}>/<typ u23|u18|u14|zeny|u10|u15|u20|u25>[/<show>]', ['presenter' => 'Homepage', 'action' => 'default']);
-		$router[] = new Route('<rok [0-9]{4}>/soupisky/<liga>', array('presenter' => 'Soupisky', 'action' => 'detail'));
+		$router[] = new Route('<rok [0-9]{4}>/soupisky/<liga>', ['presenter' => 'Soupisky', 'action' => 'detail']);
 		$router[] = new Route('<rok [0-9]{4}>/<presenter>/<action>[/<id>]', 'Homepage:default');
 		$router[] = new Route('<rok [0-9]{4}>/excel-export', 'Homepage:excelExport');
 

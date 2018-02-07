@@ -11,7 +11,7 @@ use \Nette\Application\UI\Form, \App\Model\Ranking, \App\Model\Kategorie;
 final class ZavodyPresenter extends BasePresenter
 {
 
-	private static $typySloupcu = array(
+	private static $typySloupcu = [
 		'registrace' => 'Registrace',
 		'prijmeni' => 'Příjmení, jméno',
 		'kategorie' => 'Kategorie',
@@ -24,7 +24,7 @@ final class ZavodyPresenter extends BasePresenter
 		'cips_celkem' => 'CIPS celkem',
 		'body_celkem' => 'Součet umístění',
 		'umisteni_celkem' => 'Celkové umístění',
-	);
+	];
 	private $pocetSloupcu = 0;
 	private $pocetRadku = 0;
 
@@ -144,7 +144,7 @@ final class ZavodyPresenter extends BasePresenter
 		} else {
 			$this->zavody->addCompetition($values);
 			$this->flashMessage("Závod byl přidán.", "success");
-			$this->redirect("default", array('rok' => $values['datum_od']->format('Y')));
+			$this->redirect("default", ['rok' => $values['datum_od']->format('Y')]);
 		}
 	}
 
@@ -213,7 +213,7 @@ final class ZavodyPresenter extends BasePresenter
 
 		$cipsFound = 0;
 		$umisteniFound = 0;
-		$defaults = array();
+		$defaults = [];
 		for ($i = 0; $i < $pocetSloupcu; $i++) {
 			$pravdepodobnyTyp = '';
 

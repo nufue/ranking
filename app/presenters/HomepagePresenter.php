@@ -215,19 +215,19 @@ final class HomepagePresenter extends BasePresenter
 	{
 		$rowCnt = 1;
 
-		$saBold = array(
-			'font' => array(
+		$saBold = [
+			'font' => [
 				'bold' => TRUE,
-			),
-			'alignment' => array(
+			],
+			'alignment' => [
 				'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-			),
-		);
-		$saRight = array(
-			'alignment' => array(
+			],
+		];
+		$saRight = [
+			'alignment' => [
 				'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_RIGHT,
-			),
-		);
+			],
+		];
 
 		$sheet->SetCellValue('A' . $rowCnt, $nadpis);
 		$sheet->getStyle('A' . $rowCnt)->getFont()->setSize(14)->setBold(TRUE);
@@ -335,14 +335,14 @@ final class HomepagePresenter extends BasePresenter
 		$sheet->getStyle('A' . $firstDataRow . ':A' . $rowCnt)->applyFromArray($saBold);
 		$sheet->getStyle('B' . $firstDataRow . ':B' . $rowCnt)->applyFromArray($saRight);
 		$sheet->getStyle('F2:I' . $rowCnt)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-		$saBorder = array(
-			'borders' => array(
-				'allborders' => array(
+		$saBorder = [
+			'borders' => [
+				'allborders' => [
 					'style' => \PHPExcel_Style_Border::BORDER_THIN,
-					'color' => array('argb' => 'FF000000'),
-				),
-			),
-		);
+					'color' => ['argb' => 'FF000000'],
+				],
+			],
+		];
 
 		$sheet->getStyle('A1:I' . $rowCnt)->applyFromArray($saBorder);
 	}

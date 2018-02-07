@@ -59,7 +59,7 @@ final class Teams extends Base {
 		$dbResult = $this->database->query("SELECT * FROM `tymy` WHERE `rok` = ? AND `liga` = ? ORDER BY `kod`", (int)$rok, $liga)->fetchAll();
 
 		foreach ($dbResult as $row) {
-			$result[$row->id] = array('nazev' => $row->nazev_tymu, 'clenove' => []);
+			$result[$row->id] = ['nazev' => $row->nazev_tymu, 'clenove' => []];
 		}
 
 		$dbResult = $this->database->query("SELECT z.*, tz.id_tymu FROM zavodnici z JOIN tymy_zavodnici tz ON z.id = tz.id_zavodnika WHERE tz.id_tymu IN (?)", array_keys($result));

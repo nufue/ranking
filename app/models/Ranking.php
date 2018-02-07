@@ -134,7 +134,7 @@ final class Ranking extends Base {
 		foreach ($result as $row) {
 			$id = $row->id_zavodnika;
 			if (!isset($competitors[$id]))
-				$competitors[$id] = ['jmeno' => $row->cele_jmeno, 'min_body_zebricek' => 0, 'zavodu' => 0, 'registrace' => $row->registrace, 'tym' => $row->tym, 'kategorie' => Kategorie::$kategorie[$row->kategorie], 'body_celkem' => [], 'body_zebricek' => [], 'cips_celkem' => [], 'vysledky' => array($row->id_zavodu => array('zavod' => $row->id_zavodu, 'kategorie_zavodu' => $row->kategorie_zavodu, 'cips1' => $row->cips1, 'cips2' => $row->cips2, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2, 'body' => 0))];
+				$competitors[$id] = ['jmeno' => $row->cele_jmeno, 'min_body_zebricek' => 0, 'zavodu' => 0, 'registrace' => $row->registrace, 'tym' => $row->tym, 'kategorie' => Kategorie::$kategorie[$row->kategorie], 'body_celkem' => [], 'body_zebricek' => [], 'cips_celkem' => [], 'vysledky' => [$row->id_zavodu => ['zavod' => $row->id_zavodu, 'kategorie_zavodu' => $row->kategorie_zavodu, 'cips1' => $row->cips1, 'cips2' => $row->cips2, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2, 'body' => 0]]];
 			else {
 				$competitors[$id]['vysledky'][$row->id_zavodu] = ['zavod' => $row->id_zavodu, 'kategorie_zavodu' => $row->kategorie_zavodu, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2, 'cips1' => $row->cips1, 'cips2' => $row->cips2, 'body' => 0];
 				if (empty($competitors[$id]['tym']))
@@ -228,7 +228,7 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 			}
 		}
 
-		uasort($competitors, array($this, 'bodySort'));
+		uasort($competitors, [$this, 'bodySort']);
 		return ['zavody' => $competitions, 'zavodnici' => $competitors, 'datum_platnosti' => $datumPlatnosti, 'datum_platnosti_orig' => $datumPlatnostiOrig];
 	}
 
@@ -273,10 +273,10 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 
 		foreach ($result as $row) {
 			if (!$headerSet) {
-				$zavodnik = array('zavodu' => 0, 'registrovany' => ($row->registrovany == 'A'), 'body_celkem' => [], 'vysledky' => array($row->id_zavodu => array('nazev_zavodu' => $row->nazev_zavodu, 'tym' => $row['tym'], 'typ_zavodu' => $row->typ, 'kategorie_zavodu' => $row->kategorie_zavodu, 'id_zavodu' => $row->id_zavodu, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2, 'cips1' => $row->cips1, 'cips2' => $row->cips2)));
+				$zavodnik = ['zavodu' => 0, 'registrovany' => ($row->registrovany == 'A'), 'body_celkem' => [], 'vysledky' => [$row->id_zavodu => ['nazev_zavodu' => $row->nazev_zavodu, 'tym' => $row['tym'], 'typ_zavodu' => $row->typ, 'kategorie_zavodu' => $row->kategorie_zavodu, 'id_zavodu' => $row->id_zavodu, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2, 'cips1' => $row->cips1, 'cips2' => $row->cips2]]];
 				$headerSet = true;
 			} else {
-				$zavodnik['vysledky'][$row->id_zavodu] = array('nazev_zavodu' => $row->nazev_zavodu, 'tym' => $row['tym'], 'typ_zavodu' => $row->typ, 'kategorie_zavodu' => $row->kategorie_zavodu, 'id_zavodu' => $row->id_zavodu, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2, 'cips1' => $row->cips1, 'cips2' => $row->cips2);
+				$zavodnik['vysledky'][$row->id_zavodu] = ['nazev_zavodu' => $row->nazev_zavodu, 'tym' => $row['tym'], 'typ_zavodu' => $row->typ, 'kategorie_zavodu' => $row->kategorie_zavodu, 'id_zavodu' => $row->id_zavodu, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2, 'cips1' => $row->cips1, 'cips2' => $row->cips2];
 			}
 			if ($row->umisteni1 !== NULL)
 				$zavodnik['zavodu'] ++;
@@ -358,7 +358,7 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 			$vysledkyDorost = $this->getVysledkyZavodu($idZavodnika, $rok, substr($zavodnik->kategorie_original, 0, 3));
 		}
 
-		return array('zavodnik' => $zavodnik, 'vysledky' => (isset($vysledky['vysledky']) ? $vysledky['vysledky'] : NULL), 'vysledky_celkovy' => $vysledkyCelkovy, 'vysledky_zeny' => $vysledkyZeny, 'vysledky_dorost' => $vysledkyDorost);
+		return ['zavodnik' => $zavodnik, 'vysledky' => (isset($vysledky['vysledky']) ? $vysledky['vysledky'] : NULL), 'vysledky_celkovy' => $vysledkyCelkovy, 'vysledky_zeny' => $vysledkyZeny, 'vysledky_dorost' => $vysledkyDorost];
 	}
 
 	private function bodySort($a, $b) {
