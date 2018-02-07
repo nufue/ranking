@@ -4,15 +4,17 @@ namespace App\Model;
 
 use Nette\Database\Context;
 
-final class Ranking extends Base {
+final class Ranking extends Base
+{
 
 	/** @var Competitions */
 	private $competitions;
-	
+
 	/** @var Zavodnici */
 	private $zavodnici;
 
-	public function __construct(Context $database, Competitions $competitions, Zavodnici $zavodnici) {
+	public function __construct(Context $database, Competitions $competitions, Zavodnici $zavodnici)
+	{
 		parent::__construct($database);
 		$this->competitions = $competitions;
 		$this->zavodnici = $zavodnici;
@@ -93,7 +95,8 @@ final class Ranking extends Base {
 		'prebor_u25' => 5,
 	];
 
-	public function getRanking($year, $type) {
+	public function getRanking($year, $type)
+	{
 		$competitions = [];
 
 		$result = $this->database->query("SELECT DATE_FORMAT(MAX(`datum_do`), '%e. %c. %Y') `datum`, MAX(`datum_do`) `datum_platnosti` FROM `zavody` WHERE `rok` = ? AND zobrazovat = 'ano' AND vysledky = 'ano'", $year)->fetch();
@@ -140,10 +143,10 @@ final class Ranking extends Base {
 				if (empty($competitors[$id]['tym']))
 					$competitors[$id]['tym'] = $row->tym;
 			}
-			if ($row->umisteni1 !== NULL)
-				$competitors[$id]['zavodu'] ++;
-			if ($row->umisteni2 !== NULL)
-				$competitors[$id]['zavodu'] ++;
+			if ($row->umisteni1 !== null)
+				$competitors[$id]['zavodu']++;
+			if ($row->umisteni2 !== null)
+				$competitors[$id]['zavodu']++;
 		}
 
 		if (count($competitors) > 0) {
@@ -170,27 +173,27 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 				$cips1 = $v['cips1'];
 				$cips2 = $v['cips2'];
 
-				if ($v['umisteni1'] !== NULL) {
+				if ($v['umisteni1'] !== null) {
 					$competitors[$id]['vysledky'][$k]['body1'] = $body1;
-					$competitors[$id]['vysledky'][$k]['body1_zebricek'] = FALSE;
+					$competitors[$id]['vysledky'][$k]['body1_zebricek'] = false;
 					$competitors[$id]['body_celkem'][] = $body1;
 					if ($type != 'celkem' || $kategorieZavodu == '')
 						$competitors[$id]['body_zebricek'][] = $body1;
 					$competitors[$id]['cips_celkem'][] = $cips1;
 				} else {
-					$competitors[$id]['vysledky'][$k]['body1'] = NULL;
-					$competitors[$id]['vysledky'][$k]['body1_zebricek'] = FALSE;
+					$competitors[$id]['vysledky'][$k]['body1'] = null;
+					$competitors[$id]['vysledky'][$k]['body1_zebricek'] = false;
 				}
-				if ($v['umisteni2'] !== NULL) {
+				if ($v['umisteni2'] !== null) {
 					$competitors[$id]['vysledky'][$k]['body2'] = $body2;
-					$competitors[$id]['vysledky'][$k]['body2_zebricek'] = FALSE;
+					$competitors[$id]['vysledky'][$k]['body2_zebricek'] = false;
 					$competitors[$id]['body_celkem'][] = $body2;
 					if ($type != 'celkem' || $kategorieZavodu == '')
 						$competitors[$id]['body_zebricek'][] = $body2;
 					$competitors[$id]['cips_celkem'][] = $cips2;
 				} else {
-					$competitors[$id]['vysledky'][$k]['body2'] = NULL;
-					$competitors[$id]['vysledky'][$k]['body2_zebricek'] = FALSE;
+					$competitors[$id]['vysledky'][$k]['body2'] = null;
+					$competitors[$id]['vysledky'][$k]['body2_zebricek'] = false;
 				}
 			}
 		}
@@ -210,33 +213,36 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 			$bodyZebricekKopie = $competitors[$id]['body_zebricek'];
 			foreach ($z['vysledky'] as $k => $v) {
 				$body1 = $competitors[$id]['vysledky'][$k]['body1'];
-				if ($body1 !== NULL) {
+				if ($body1 !== null) {
 					$ind = array_search($body1, $bodyZebricekKopie);
-					if ($ind !== FALSE) {
-						$competitors[$id]['vysledky'][$k]['body1_zebricek'] = TRUE;
+					if ($ind !== false) {
+						$competitors[$id]['vysledky'][$k]['body1_zebricek'] = true;
 						unset($bodyZebricekKopie[$ind]);
 					}
 				}
 				$body2 = $competitors[$id]['vysledky'][$k]['body2'];
-				if ($body2 !== NULL) {
+				if ($body2 !== null) {
 					$ind = array_search($body2, $bodyZebricekKopie);
-					if ($ind !== FALSE) {
-						$competitors[$id]['vysledky'][$k]['body2_zebricek'] = TRUE;
+					if ($ind !== false) {
+						$competitors[$id]['vysledky'][$k]['body2_zebricek'] = true;
 						unset($bodyZebricekKopie[$ind]);
 					}
 				}
 			}
 		}
 
-		uasort($competitors, [$this, 'bodySort']);
+		uasort($competitors, function ($a, $b) {
+			return $this->bodySort($a, $b);
+		});
 		return ['zavody' => $competitions, 'zavodnici' => $competitors, 'datum_platnosti' => $datumPlatnosti, 'datum_platnosti_orig' => $datumPlatnostiOrig];
 	}
 
-	private function getPoints($competitionType, $position) {
+	private function getPoints($competitionType, $position)
+	{
 		$bodovaciTabulka = self::$scoringTables[self::$competitionScoringType[$competitionType]];
-		if ($position === NULL)
-			return NULL;
-		$position = (int) $position;
+		if ($position === null)
+			return null;
+		$position = (int)$position;
 		if (isset($bodovaciTabulka[$position]))
 			$body = $bodovaciTabulka[$position];
 		else
@@ -244,9 +250,10 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 		return $body;
 	}
 
-	public function getVysledkyZavodu($idZavodnika, $rok, $omezeni = NULL) {
+	public function getVysledkyZavodu($idZavodnika, $rok, $omezeni = null)
+	{
 		$zavodnik = [];
-		$headerSet = FALSE;
+		$headerSet = false;
 
 		$query = "SELECT
 					`zav`.`id` `id_zavodu`, `zav`.`nazev` `nazev_zavodu`, `zav`.`typ` `typ`, `zav`.`kategorie` `kategorie_zavodu`, `zz`.`tym`, `zk`.`kategorie`, `cips1`, `umisteni1`, `cips2`, `umisteni2`, `z`.`registrovany`
@@ -260,7 +267,7 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 					AND (`zav`.`vysledky` = 'ano')
 					AND `z`.`id` = ? AND `zav`.`rok` = ?";
 
-		if ($omezeni === NULL)
+		if ($omezeni === null)
 			$query .= " AND `zav`.`kategorie` = ''";
 		if ($omezeni == 'ženy')
 			$query .= " AND `zk`.`kategorie` IN ('u10_zena', 'u14_zena', 'u18_zena', 'u23_zena', 'zena', 'u12_zena', 'u15_zena', 'u20_zena', 'u25_zena') AND (`zav`.`kategorie` = '' OR `zav`.`kategorie` = 'ženy')";
@@ -278,10 +285,10 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 			} else {
 				$zavodnik['vysledky'][$row->id_zavodu] = ['nazev_zavodu' => $row->nazev_zavodu, 'tym' => $row['tym'], 'typ_zavodu' => $row->typ, 'kategorie_zavodu' => $row->kategorie_zavodu, 'id_zavodu' => $row->id_zavodu, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2, 'cips1' => $row->cips1, 'cips2' => $row->cips2];
 			}
-			if ($row->umisteni1 !== NULL)
-				$zavodnik['zavodu'] ++;
-			if ($row->umisteni2 !== NULL)
-				$zavodnik['zavodu'] ++;
+			if ($row->umisteni1 !== null)
+				$zavodnik['zavodu']++;
+			if ($row->umisteni2 !== null)
+				$zavodnik['zavodu']++;
 		}
 
 		if (isset($zavodnik['vysledky'])) {
@@ -291,24 +298,24 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 				$body1 = $this->getPoints($typZavodu, $v['umisteni1']);
 				$body2 = $this->getPoints($typZavodu, $v['umisteni2']);
 
-				if ($v['umisteni1'] !== NULL) {
+				if ($v['umisteni1'] !== null) {
 					$zavodnik['vysledky'][$k]['body1'] = $body1;
 					$zavodnik['vysledky'][$k]['body1_zebricek'] = false;
 					$zavodnik['vysledky'][$k]['cips1'] = $v['cips1'];
 					$zavodnik['body_celkem'][] = $body1;
 					$zavodnik['cips_celkem'][] = $v['cips1'];
 				} else {
-					$zavodnik['vysledky'][$k]['body1'] = NULL;
+					$zavodnik['vysledky'][$k]['body1'] = null;
 					$zavodnik['vysledky'][$k]['body1_zebricek'] = false;
 				}
-				if ($v['umisteni2'] !== NULL) {
+				if ($v['umisteni2'] !== null) {
 					$zavodnik['vysledky'][$k]['body2'] = $body2;
 					$zavodnik['vysledky'][$k]['cips2'] = $v['cips2'];
 					$zavodnik['vysledky'][$k]['body2_zebricek'] = false;
 					$zavodnik['body_celkem'][] = $body2;
 					$zavodnik['cips_celkem'][] = $v['cips2'];
 				} else {
-					$zavodnik['vysledky'][$k]['body2'] = NULL;
+					$zavodnik['vysledky'][$k]['body2'] = null;
 					$zavodnik['vysledky'][$k]['body2_zebricek'] = false;
 				}
 			}
@@ -321,7 +328,7 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 			$bodyZebricekKopie = $zavodnik['body_zebricek'];
 			foreach ($zavodnik['vysledky'] as $k => $v) {
 				$body1 = $zavodnik['vysledky'][$k]['body1'];
-				if ($body1 !== NULL) {
+				if ($body1 !== null) {
 					$ind = array_search($body1, $bodyZebricekKopie);
 					if ($ind !== false) {
 						$zavodnik['vysledky'][$k]['body1_zebricek'] = true;
@@ -329,7 +336,7 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 					}
 				}
 				$body2 = $zavodnik['vysledky'][$k]['body2'];
-				if ($body2 !== NULL) {
+				if ($body2 !== null) {
 					$ind = array_search($body2, $bodyZebricekKopie);
 					if ($ind !== false) {
 						$zavodnik['vysledky'][$k]['body2_zebricek'] = true;
@@ -342,13 +349,14 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 		return $zavodnik;
 	}
 
-	public function getZavodnikRok($idZavodnika, $rok) {
+	public function getZavodnikRok($idZavodnika, $rok)
+	{
 		$zavodnik = $this->zavodnici->getZavodnikById($idZavodnika, $rok);
 		$vysledky = $this->getVysledkyZavodu($idZavodnika, $rok, 'všechny');
 
-		$vysledkyDorost = NULL;
-		$vysledkyZeny = NULL;
-		$vysledkyCelkovy = $this->getVysledkyZavodu($idZavodnika, $rok, NULL);
+		$vysledkyDorost = null;
+		$vysledkyZeny = null;
+		$vysledkyCelkovy = $this->getVysledkyZavodu($idZavodnika, $rok, null);
 
 		if (isset($zavodnik->kategorie_original) && (substr($zavodnik->kategorie_original, -5, 5) == '_zena' || $zavodnik->kategorie_original == 'zena')) {
 			$vysledkyZeny = $this->getVysledkyZavodu($idZavodnika, $rok, 'ženy');
@@ -358,10 +366,11 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 			$vysledkyDorost = $this->getVysledkyZavodu($idZavodnika, $rok, substr($zavodnik->kategorie_original, 0, 3));
 		}
 
-		return ['zavodnik' => $zavodnik, 'vysledky' => (isset($vysledky['vysledky']) ? $vysledky['vysledky'] : NULL), 'vysledky_celkovy' => $vysledkyCelkovy, 'vysledky_zeny' => $vysledkyZeny, 'vysledky_dorost' => $vysledkyDorost];
+		return ['zavodnik' => $zavodnik, 'vysledky' => (isset($vysledky['vysledky']) ? $vysledky['vysledky'] : null), 'vysledky_celkovy' => $vysledkyCelkovy, 'vysledky_zeny' => $vysledkyZeny, 'vysledky_dorost' => $vysledkyDorost];
 	}
 
-	private function bodySort($a, $b) {
+	private function bodySort($a, $b)
+	{
 		$sumA = array_sum($a['body_zebricek']);
 		$sumB = array_sum($b['body_zebricek']);
 		$sumCips1 = array_sum($a['cips_celkem']);
