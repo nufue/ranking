@@ -2,6 +2,8 @@
 
 namespace App\Model;
 
+use App\Exceptions\LeagueNotFoundException;
+
 final class Leagues
 {
 
@@ -16,7 +18,7 @@ final class Leagues
 	{
 		if (isset($this->leagues[$league]))
 			return $this->leagues[$league];
-		throw new LeagueNotFound();
+		throw new LeagueNotFoundException();
 	}
 
 }

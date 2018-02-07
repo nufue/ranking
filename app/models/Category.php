@@ -2,7 +2,7 @@
 
 namespace App\Model;
 
-use App\Exceptions\CategoriesForThisYearAreNotSet;
+use App\Exceptions\CategoriesForThisYearAreNotSetException;
 
 final class Category
 {
@@ -110,7 +110,7 @@ final class Category
 					return new Category(Category::WOMEN);
 			}
 		} else {
-			throw new CategoriesForThisYearAreNotSet('Kategorie pro tento rok nejsou nastaveny.');
+			throw new CategoriesForThisYearAreNotSetException('Kategorie pro tento rok nejsou nastaveny.');
 		}
 	}
 

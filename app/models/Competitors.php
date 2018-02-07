@@ -2,8 +2,8 @@
 
 namespace App\Model;
 
-use App\Exceptions\CompetitorNotFound;
-use App\Exceptions\RegistrationForCompetitorNotFound;
+use App\Exceptions\CompetitorNotFoundException;
+use App\Exceptions\RegistrationForCompetitorNotFoundException;
 
 final class Competitors extends Base
 {
@@ -20,10 +20,10 @@ final class Competitors extends Base
 			if ($row !== FALSE) {
 				return Competitor::createFromRow($row);
 			} else {
-				throw new RegistrationForCompetitorNotFound();
+				throw new RegistrationForCompetitorNotFoundException();
 			}
 		} else {
-			throw new CompetitorNotFound();
+			throw new CompetitorNotFoundException();
 		}
 	}
 
@@ -35,7 +35,7 @@ final class Competitors extends Base
 			if ($row !== FALSE) {
 				return Category::determine($year, (int)$row->rok_narozeni, Gender::fromString($row->pohlavi));
 			} else {
-				throw new RegistrationForCompetitorNotFound();
+				throw new RegistrationForCompetitorNotFoundException();
 			}
 		} else {
 			return Category::fromString($category);
