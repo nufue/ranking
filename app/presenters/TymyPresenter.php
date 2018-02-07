@@ -8,14 +8,15 @@ use App\Model\Suggest;
 use App\Model\Zavodnici;
 use Nette\Application\UI\Form, App\Model\Teams, App\Model\Kategorie, Nette\Application\Responses;
 
-final class TymyPresenter extends BasePresenter {
+final class TymyPresenter extends BasePresenter
+{
 
 	/** @var \App\Model\Teams */
 	private $tymy;
-	
+
 	/** @var \App\Model\Zavodnici */
 	private $zavodnici;
-	
+
 	/** @var \App\Model\Suggest */
 	private $suggest;
 
@@ -37,16 +38,18 @@ final class TymyPresenter extends BasePresenter {
 		$this->leagues = $leagues;
 		$this->competitors = $competitors;
 	}
-	
-	public function actionDefault($rok = NULL) {
-		if ($rok === NULL) $rok = $this->defaultYear->getDefaultYear();
+
+	public function actionDefault($rok = null)
+	{
+		if ($rok === null) $rok = $this->defaultYear->getDefaultYear();
 		$this->year = (int)$rok;
 		$this->template->ligy = $this->leagues->getLeagues();
 		$this->template->rok = $rok;
 		$this->template->tymy = $this->tymy->loadTeamsByYear($rok);
 	}
 
-	public function actionDetail($id) {
+	public function actionDetail($id)
+	{
 		$this->template->ligy = $this->leagues->getLeagues();
 		$detail = $this->tymy->getById($id);
 		$this->template->rok = $detail['info']->rok;
@@ -64,7 +67,8 @@ final class TymyPresenter extends BasePresenter {
 		$this['addForm']->setDefaults($defaults);
 	}
 
-	public function createComponentAddForm() {
+	public function createComponentAddForm()
+	{
 		$form = new Form;
 		for ($i = 1; $i <= 13; $i++) {
 			$form->addText('zavodnik' . $i, $i, 40)->getControlPrototype()->addClass('naseptavac');
@@ -72,11 +76,14 @@ final class TymyPresenter extends BasePresenter {
 
 		$form->addHidden('id');
 		$form->addSubmit('send', 'Uložit závodníky');
-		$form->onSuccess[] = [$this, 'addFormSubmitted'];
+		$form->onSuccess[] = function (Form $form, $values) {
+			$this->addFormSubmitted($form, $values);
+		};
 		return $form;
 	}
 
-	public function addFormSubmitted(Form $form, $values) {
+	public function addFormSubmitted(Form $form, $values)
+	{
 		$id = $values['id'];
 		if (!empty($id)) {
 			$this->tymy->removeAllMemberFromTeam($id);
@@ -91,7 +98,7 @@ final class TymyPresenter extends BasePresenter {
 				} else {
 					$zavodnik = $this->zavodnici->getZavodnikByJmeno($v);
 				}
-				if ($zavodnik !== NULL) {
+				if ($zavodnik !== null) {
 					$this->tymy->addTeamMember($id, $zavodnik->id);
 					$category = $this->competitors->getCompetitorCategory($this->year, (int)$zavodnik->registrace);
 					$this->competitors->setCompetitorCategory($this->year, (int)$zavodnik->registrace, $category);
@@ -105,7 +112,8 @@ final class TymyPresenter extends BasePresenter {
 		}
 	}
 
-	public function actionSuggest($typedText) {
+	public function actionSuggest($typedText)
+	{
 		$response = $this->suggest->getSuggest($typedText);
 		$this->sendResponse(new Responses\JsonResponse(['values' => $response]));
 	}

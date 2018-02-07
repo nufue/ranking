@@ -21,7 +21,9 @@ final class SignPresenter extends BasePresenter
 
 		$form->addSubmit('send', 'Přihlásit');
 
-		$form->onSuccess[] = [$this, 'signInFormSuccess'];
+		$form->onSuccess[] = function (Form $form, $values) {
+			$this->signInFormSuccess($form, $values);
+		};
 		return $form;
 	}
 
@@ -29,9 +31,9 @@ final class SignPresenter extends BasePresenter
 	{
 		try {
 			if ($values->remember) {
-				$this->getUser()->setExpiration('+ 14 days', FALSE);
+				$this->getUser()->setExpiration('+ 14 days', false);
 			} else {
-				$this->getUser()->setExpiration('+ 20 minutes', TRUE);
+				$this->getUser()->setExpiration('+ 20 minutes', true);
 			}
 			$this->getUser()->login($values->username, $values->password);
 			$this->redirect('Homepage:');

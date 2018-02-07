@@ -5,7 +5,8 @@ namespace App\Presenters;
 use App\Model\Competitors;
 use Nette\Application\UI\Form;
 
-final class CompetitorsPresenter extends BasePresenter {
+final class CompetitorsPresenter extends BasePresenter
+{
 
 	/** @var \App\Model\Competitors */
 	private $competitors;
@@ -16,24 +17,30 @@ final class CompetitorsPresenter extends BasePresenter {
 		$this->competitors = $competitors;
 	}
 
-	public function renderDefault() {
+	public function renderDefault()
+	{
 		$this->template->rok = $this->defaultYear->getDefaultYear();
 	}
 
-	public function renderResults($term) {
+	public function renderResults($term)
+	{
 		$this->template->results = $this->competitors->search($term);
 		$this->template->rok = $this->defaultYear->getDefaultYear();
 	}
 
-	public function createComponentSearchForm() {
+	public function createComponentSearchForm()
+	{
 		$form = new Form;
 		$form->addText('search', 'Jméno nebo číslo registrace')->setRequired('Zadejte jméno nebo číslo registrace');
 		$form->addSubmit('send', 'Hledat');
-		$form->onSuccess[] = [$this, 'searchFormSuccess'];
+		$form->onSuccess[] = function (Form $form, $values) {
+			$this->searchFormSuccess($form, $values);
+		};
 		return $form;
 	}
 
-	public function searchFormSuccess(Form $form, $values) {
+	public function searchFormSuccess(Form $form, $values)
+	{
 		$this->redirect('results', $values->search);
 	}
 }

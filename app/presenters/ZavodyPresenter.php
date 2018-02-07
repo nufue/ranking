@@ -8,7 +8,8 @@ use App\Model\Zavodnici;
 use Nette\Application\BadRequestException;
 use \Nette\Application\UI\Form, \App\Model\Ranking, \App\Model\Kategorie;
 
-final class ZavodyPresenter extends BasePresenter {
+final class ZavodyPresenter extends BasePresenter
+{
 
 	private static $typySloupcu = array(
 		'registrace' => 'Registrace',
@@ -35,10 +36,10 @@ final class ZavodyPresenter extends BasePresenter {
 
 	/** @var object */
 	private $vysledky;
-	
+
 	/** @var \App\Model\Competitions */
 	private $zavody;
-	
+
 	/** @var \App\Model\Zavodnici */
 	private $zavodnici;
 
@@ -53,37 +54,41 @@ final class ZavodyPresenter extends BasePresenter {
 		$this->kategorie = $kategorie;
 	}
 
-	public function startup() {
+	public function startup()
+	{
 		parent::startup();
-		$this->getTemplate()->getLatte()->addFilter('umisteni', function($umisteni, $typZavodu) {
-					$umisteni = (int) $umisteni;
-					$bodovaciTabulka = Ranking::$scoringTables[Ranking::$competitionScoringType[$typZavodu]];
-					if (isset($bodovaciTabulka[$umisteni])) {
-						return $bodovaciTabulka[$umisteni];
-					} else {
-						return '-';
-					}
-				});
+		$this->getTemplate()->getLatte()->addFilter('umisteni', function ($umisteni, $typZavodu) {
+			$umisteni = (int)$umisteni;
+			$bodovaciTabulka = Ranking::$scoringTables[Ranking::$competitionScoringType[$typZavodu]];
+			if (isset($bodovaciTabulka[$umisteni])) {
+				return $bodovaciTabulka[$umisteni];
+			} else {
+				return '-';
+			}
+		});
 
-		if ($this->getAction() != 'edit' && $this->getAction() != 'detail' && $this->getAction() != 'pridatVysledky3' && $this->getAction() != 'pridatVysledky' && $this->getAction() != 'pridatVysledky2' && $this->id !== NULL) {
-			$this->id = NULL;
+		if ($this->getAction() != 'edit' && $this->getAction() != 'detail' && $this->getAction() != 'pridatVysledky3' && $this->getAction() != 'pridatVysledky' && $this->getAction() != 'pridatVysledky2' && $this->id !== null) {
+			$this->id = null;
 		}
 	}
 
-	public function renderAdd($rok = NULL) {
+	public function renderAdd($rok = null)
+	{
 		$this->template->rok = $rok;
 	}
 
-	public function renderDefault($rok = NULL) {
-		if ($rok === NULL) $rok = $this->defaultYear->getDefaultYear();
+	public function renderDefault($rok = null)
+	{
+		if ($rok === null) $rok = $this->defaultYear->getDefaultYear();
 		$this->template->zavody = $this->zavody->loadAllCompetitions($rok);
 		$this->template->rok = $rok;
 		$this->template->typyZavodu = Ranking::$competitionTypes;
 	}
 
-	public function actionEdit($id) {
+	public function actionEdit($id)
+	{
 		$this->record = $this->zavody->getCompetition($id);
-		if ($this->record === FALSE) {
+		if ($this->record === false) {
 			throw new BadRequestException;
 		}
 		$this->template->rok = $this->record->rok;
@@ -94,16 +99,18 @@ final class ZavodyPresenter extends BasePresenter {
 		$this['zavodForm']->setDefaults($this->record);
 	}
 
-	public function renderDetail($id, $rok = NULL) {
+	public function renderDetail($id, $rok = null)
+	{
 		$this->template->zavod = $this->zavody->getCompetition($id);
-		if ($rok === NULL) $rok = $this->template->zavod->rok;
+		if ($rok === null) $rok = $this->template->zavod->rok;
 		$this->template->rok = $rok;
 		$this->template->zavodnici = $this->zavodnici->getZavodnici($id);
 		$this->template->typyZavodu = Ranking::$competitionTypes;
 		$this->template->kategoriePrevod = Kategorie::$kategorie;
 	}
 
-	public function createComponentZavodForm() {
+	public function createComponentZavodForm()
+	{
 		$form = new Form;
 		$form->addText('nazev', 'Název závodu', 50);
 		$form->addText('kategorie', 'Věková kategorie závodu', 30);
@@ -114,11 +121,14 @@ final class ZavodyPresenter extends BasePresenter {
 		$form->addCheckbox('vysledky', 'Jsou zadány výsledky');
 
 		$form->addSubmit('send', 'Uložit změny');
-		$form->onSuccess[] = [$this, 'zavodFormSubmitted'];
+		$form->onSuccess[] = function (Form $form, $values) {
+			$this->zavodFormSubmitted($form, $values);
+		};
 		return $form;
 	}
 
-	public function zavodFormSubmitted(Form $form, $values) {
+	public function zavodFormSubmitted(Form $form, $values)
+	{
 		if ($this->id && !$this->record) {
 			throw new BadRequestException;
 		}
@@ -138,7 +148,8 @@ final class ZavodyPresenter extends BasePresenter {
 		}
 	}
 
-	public function actionPridatVysledky($id) {
+	public function actionPridatVysledky($id)
+	{
 		$this->template->id = $id;
 		$session = $this->getSession();
 		if ($session->exists()) {
@@ -146,29 +157,34 @@ final class ZavodyPresenter extends BasePresenter {
 		}
 	}
 
-	public function createComponentVysledkyForm() {
+	public function createComponentVysledkyForm()
+	{
 		$form = new Form;
 		$form->addTextArea('vysledky', 'Výsledky', 80, 25)
-				->addRule(Form::FILLED, 'Vyplňte prosím pole s výsledky');
+			->addRule(Form::FILLED, 'Vyplňte prosím pole s výsledky');
 		$form->addSubmit('send', 'Odeslat');
-		$form->onSuccess[] = [$this, 'vysledkyFormSubmitted'];
+		$form->onSuccess[] = function (Form $form, $values) {
+			$this->vysledkyFormSubmitted($form, $values);
+		};
 		return $form;
 	}
 
-	public function vysledkyFormSubmitted(Form $form, $values) {
+	public function vysledkyFormSubmitted(Form $form, $values)
+	{
 		$vysledky = $values['vysledky'];
 		$section = $this->getSession('vysledky');
 		$section->vysledky = $vysledky;
 		$this->redirect('pridatVysledky2', $this->id);
 	}
 
-	public function actionPridatVysledky2($id) {
+	public function actionPridatVysledky2($id)
+	{
 		$this->template->id = $id;
 		$section = $this->getSession('vysledky');
 		$this->vysledky = $section->vysledky;
 
 		$lines = explode("\n", $this->vysledky);
-		$pocetSloupcu = NULL;
+		$pocetSloupcu = null;
 
 		$tabulka = [];
 		$radky = 0;
@@ -184,7 +200,7 @@ final class ZavodyPresenter extends BasePresenter {
 				$sloupcu++;
 			}
 			$tabulka[] = $radek;
-			if ($pocetSloupcu == NULL)
+			if ($pocetSloupcu == null)
 				$pocetSloupcu = $sloupcu;
 			if ($sloupcu > $pocetSloupcu)
 				$pocetSloupcu = $sloupcu;
@@ -269,7 +285,8 @@ final class ZavodyPresenter extends BasePresenter {
 		$this['vysledkyParseForm']->setDefaults($defaults);
 	}
 
-	public function createComponentVysledkyParseForm() {
+	public function createComponentVysledkyParseForm()
+	{
 		$form = new Form;
 
 		for ($i = 0; $i < $this->pocetSloupcu; $i++) {
@@ -279,16 +296,19 @@ final class ZavodyPresenter extends BasePresenter {
 		$form->addRadioList('prvni_radek', '', range(0, $this->pocetRadku));
 
 		$form->addSubmit('send', 'Přidat výsledky');
-		$form->onSuccess[] = [$this, 'vysledkyParseFormSubmitted'];
+		$form->onSuccess[] = function (Form $form, $values) {
+			$this->vysledkyParseFormSubmitted($form, $values);
+		};
 		return $form;
 	}
 
-	public function vysledkyParseFormSubmitted(Form $form, $values) {
+	public function vysledkyParseFormSubmitted(Form $form, $values)
+	{
 		$tabulka = $this->getSession('vysledky')->tabulka;
 		$sloupce = [];
 		foreach ($values as $k => $v) {
 			if (mb_substr($k, 0, 7) == 'sloupec') {
-				$cisloSloupce = (int) str_replace('sloupec', '', $k);
+				$cisloSloupce = (int)str_replace('sloupec', '', $k);
 				if (!empty($v))
 					$sloupce[$v] = $cisloSloupce;
 			}
@@ -311,17 +331,17 @@ final class ZavodyPresenter extends BasePresenter {
 
 			$poznamka = '';
 			$prijmeniZebricek = '';
-			$kategorieDb = NULL;
+			$kategorieDb = null;
 			if (!preg_match('~^\d+$~', $registrace)) {
 				$zavodnik = $this->zavodnici->isExistingUnregistered($prijmeni);
-				if ($zavodnik === FALSE) $poznamka = 'n';
+				if ($zavodnik === false) $poznamka = 'n';
 				else {
 					$kategorieDb = $this->zavodnici->getUnregisteredCategory($zavodnik, $rok);
 					$poznamka = 's';
 				}
 			} else {
 				$zavodnik = $this->zavodnici->getZavodnik($registrace, $rok);
-				if ($zavodnik === NULL) {
+				if ($zavodnik === null) {
 					$poznamka = 'p';
 				} else {
 					$kategorieDb = $zavodnik->kategorie;
@@ -345,22 +365,30 @@ final class ZavodyPresenter extends BasePresenter {
 			$cips1 = trim($radek[$sloupce['cips1']]);
 			$umisteni1 = trim($radek[$sloupce['umisteni1']]);
 
-			if (!isset($sloupce['cips2'])) { $cips2 = NULL; } else { $cips2 = trim($radek[$sloupce['cips2']]); }
-			if (!isset($sloupce['umisteni2'])) { $umisteni2 = NULL; } else { $umisteni2 = trim($radek[$sloupce['umisteni2']]); }
+			if (!isset($sloupce['cips2'])) {
+				$cips2 = null;
+			} else {
+				$cips2 = trim($radek[$sloupce['cips2']]);
+			}
+			if (!isset($sloupce['umisteni2'])) {
+				$umisteni2 = null;
+			} else {
+				$umisteni2 = trim($radek[$sloupce['umisteni2']]);
+			}
 
 			if ($cips1 === '')
-				$cips1 = NULL;
+				$cips1 = null;
 			if ($cips2 === '')
-				$cips2 = NULL;
+				$cips2 = null;
 			if ($umisteni1 === '')
-				$umisteni1 = NULL;
+				$umisteni1 = null;
 			if ($umisteni2 === '')
-				$umisteni2 = NULL;
+				$umisteni2 = null;
 
-			if ($umisteni1 !== NULL) {
+			if ($umisteni1 !== null) {
 				$umisteni1 = str_replace(',', '.', $umisteni1);
 			}
-			if ($umisteni2 !== NULL) {
+			if ($umisteni2 !== null) {
 				$umisteni2 = str_replace(',', '.', $umisteni2);
 			}
 
@@ -370,23 +398,28 @@ final class ZavodyPresenter extends BasePresenter {
 		$this->redirect('pridatVysledky3', $this->id);
 	}
 
-	public function actionPridatVysledky3($id) {
+	public function actionPridatVysledky3($id)
+	{
 		$this->template->id = $id;
 		$section = $this->getSession('vysledky');
 		$this->template->vysledky = $section->vysledkyParsed;
 	}
 
-	public function createComponentConfirmResultsForm() {
+	public function createComponentConfirmResultsForm()
+	{
 		$form = new Form;
 		$form->addSubmit('send', 'Uložit výsledky');
-		$form->onSuccess[] = [$this, 'confirmResultsFormSubmitted'];
+		$form->onSuccess[] = function (Form $form, $values) {
+			$this->confirmResultsFormSubmitted($form, $values);
+		};
 		return $form;
 	}
 
-	public function confirmResultsFormSubmitted(Form $form, $values) {
+	public function confirmResultsFormSubmitted(Form $form, $values)
+	{
 		$section = $this->getSession('vysledky');
 		$vysledky = $section->vysledkyParsed;
-		if ($this->id !== NULL) {
+		if ($this->id !== null) {
 			$this->zavody->deleteVysledky($this->id);
 		}
 		$rok = $this->zavody->getRokZavodu($this->id);
@@ -398,7 +431,7 @@ final class ZavodyPresenter extends BasePresenter {
 				$idZavodnika = $this->zavodnici->addUnregistered($v['prijmeni'], $v['kategorie'], $rok);
 			} else {
 				$zavodnik = $this->zavodnici->getZavodnik($v['registrace'], $rok);
-				if ($zavodnik === NULL) {
+				if ($zavodnik === null) {
 					$idZavodnika = $this->zavodnici->addCompetitor($v['registrace'], $v['prijmeni'], $v['kategorie'], $rok);
 				} else {
 					$idZavodnika = $zavodnik->id;
@@ -409,7 +442,7 @@ final class ZavodyPresenter extends BasePresenter {
 				}
 			}
 			if (!empty($idZavodnika)) {
-				$idZavodu = (int) $this->id;
+				$idZavodu = (int)$this->id;
 				$this->zavody->addVysledek($idZavodu, $idZavodnika, $v['tym'], $v['cips1'], $v['umisteni1'], $v['cips2'], $v['umisteni2']);
 				$countSuccess++;
 			}
@@ -424,7 +457,8 @@ final class ZavodyPresenter extends BasePresenter {
 		}
 	}
 
-	private function trimUnicode($input) {
+	private function trimUnicode($input)
+	{
 		return preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $input);
 	}
 }
