@@ -67,7 +67,7 @@ final class TymyPresenter extends BasePresenter
 		$this['addForm']->setDefaults($defaults);
 	}
 
-	public function createComponentAddForm()
+	public function createComponentAddForm(): Form
 	{
 		$form = new Form;
 		for ($i = 1; $i <= 13; $i++) {

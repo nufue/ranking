@@ -109,7 +109,7 @@ final class ZavodyPresenter extends BasePresenter
 		$this->template->kategoriePrevod = Kategorie::$kategorie;
 	}
 
-	public function createComponentZavodForm()
+	public function createComponentZavodForm(): Form
 	{
 		$form = new Form;
 		$form->addText('nazev', 'Název závodu', 50);
@@ -157,7 +157,7 @@ final class ZavodyPresenter extends BasePresenter
 		}
 	}
 
-	public function createComponentVysledkyForm()
+	public function createComponentVysledkyForm(): Form
 	{
 		$form = new Form;
 		$form->addTextArea('vysledky', 'Výsledky', 80, 25)
@@ -285,7 +285,7 @@ final class ZavodyPresenter extends BasePresenter
 		$this['vysledkyParseForm']->setDefaults($defaults);
 	}
 
-	public function createComponentVysledkyParseForm()
+	public function createComponentVysledkyParseForm(): Form
 	{
 		$form = new Form;
 
@@ -405,7 +405,7 @@ final class ZavodyPresenter extends BasePresenter
 		$this->template->vysledky = $section->vysledkyParsed;
 	}
 
-	public function createComponentConfirmResultsForm()
+	public function createComponentConfirmResultsForm(): Form
 	{
 		$form = new Form;
 		$form->addSubmit('send', 'Uložit výsledky');
