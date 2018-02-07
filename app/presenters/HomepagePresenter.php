@@ -2,16 +2,25 @@
 
 namespace App\Presenters;
 
+use App\Model\Competitions;
+use App\Model\Ranking;
 use Nette\Application\Responses\FileResponse;
 
 final class HomepagePresenter extends BasePresenter
 {
 
-	/** @var \App\Model\Ranking @inject */
-	public $zebricek;
+	/** @var \App\Model\Ranking */
+	private $zebricek;
 
-	/** @var \App\Model\Competitions @inject */
-	public $zavody;
+	/** @var \App\Model\Competitions */
+	private $zavody;
+
+	public function __construct(Ranking $ranking, Competitions $competitions)
+	{
+		parent::__construct();
+		$this->zebricek = $ranking;
+		$this->zavody = $competitions;
+	}
 
 	public function handleExcelExport($rok = NULL)
 	{

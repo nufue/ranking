@@ -2,16 +2,28 @@
 
 namespace App\Presenters;
 
+use App\Model\Leagues;
+use App\Model\Ranking;
+use App\Model\Teams;
+
 final class ZavodnikPresenter extends BasePresenter {
 
-	/** @var \App\Model\Ranking @inject */
-	public $zebricek;
+	/** @var \App\Model\Ranking */
+	private $zebricek;
 	
-	/** @var \App\Model\Teams @inject */
-	public $teams;
+	/** @var \App\Model\Teams */
+	private $teams;
 
-	/** @var \App\Model\Leagues @inject */
-	public $leagues;
+	/** @var \App\Model\Leagues */
+	private $leagues;
+
+	public function __construct(Ranking $ranking, Teams $teams, Leagues $leagues)
+	{
+		parent::__construct();
+		$this->zebricek = $ranking;
+		$this->teams = $teams;
+		$this->leagues = $leagues;
+	}
 	
 	public function renderDefault($id, $rok) {
 		$this->template->rok = $rok;

@@ -2,13 +2,23 @@
 
 namespace App\Presenters;
 
+use App\Model\Competitors;
+use App\Model\Zavodnici;
+
 final class TestPresenter extends BasePresenter {
 
-	/** @var \App\Model\Zavodnici @inject */
-	public $zavodnici;
+	/** @var \App\Model\Zavodnici */
+	private $zavodnici;
 
-	/** @var \App\Model\Competitors @inject */
-	public $competitors;
+	/** @var \App\Model\Competitors */
+	private $competitors;
+
+	public function __construct(Zavodnici $zavodnici, Competitors $competitors)
+	{
+		parent::__construct();
+		$this->zavodnici = $zavodnici;
+		$this->competitors = $competitors;
+	}
 
 	public function renderDefault() {
 

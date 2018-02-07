@@ -2,12 +2,19 @@
 
 namespace App\Presenters;
 
+use App\Model\Competitors;
 use Nette\Application\UI\Form;
 
 final class CompetitorsPresenter extends BasePresenter {
 
-	/** @var \App\Model\Competitors @inject */
-	public $competitors;
+	/** @var \App\Model\Competitors */
+	private $competitors;
+
+	public function __construct(Competitors $competitors)
+	{
+		parent::__construct();
+		$this->competitors = $competitors;
+	}
 
 	public function renderDefault() {
 		$this->template->rok = $this->defaultYear->getDefaultYear();

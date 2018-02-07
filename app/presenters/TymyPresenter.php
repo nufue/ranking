@@ -2,27 +2,41 @@
 
 namespace App\Presenters;
 
+use App\Model\Competitors;
+use App\Model\Leagues;
+use App\Model\Suggest;
+use App\Model\Zavodnici;
 use Nette\Application\UI\Form, App\Model\Teams, App\Model\Kategorie, Nette\Application\Responses;
 
 final class TymyPresenter extends BasePresenter {
 
-	/** @var \App\Model\Teams @inject */
-	public $tymy;
+	/** @var \App\Model\Teams */
+	private $tymy;
 	
-	/** @var \App\Model\Zavodnici @inject */
-	public $zavodnici;
+	/** @var \App\Model\Zavodnici */
+	private $zavodnici;
 	
-	/** @var \App\Model\Suggest @inject */
-	public $suggest;
+	/** @var \App\Model\Suggest */
+	private $suggest;
 
-	/** @var \App\Model\Leagues @inject */
-	public $leagues;
+	/** @var \App\Model\Leagues */
+	private $leagues;
 
-	/** @var \App\Model\Competitors @inject */
-	public $competitors;
+	/** @var \App\Model\Competitors */
+	private $competitors;
 
 	/** @var int */
 	private $year;
+
+	public function __construct(Teams $teams, Zavodnici $zavodnici, Suggest $suggest, Leagues $leagues, Competitors $competitors)
+	{
+		parent::__construct();
+		$this->tymy = $teams;
+		$this->zavodnici = $zavodnici;
+		$this->suggest = $suggest;
+		$this->leagues = $leagues;
+		$this->competitors = $competitors;
+	}
 	
 	public function actionDefault($rok = NULL) {
 		if ($rok === NULL) $rok = $this->defaultYear->getDefaultYear();

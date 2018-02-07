@@ -2,7 +2,9 @@
 
 namespace App\Presenters;
 
+use App\Model\Competitions;
 use App\Model\Utils;
+use App\Model\Zavodnici;
 use Nette\Application\BadRequestException;
 use \Nette\Application\UI\Form, \App\Model\Ranking, \App\Model\Kategorie;
 
@@ -34,14 +36,22 @@ final class ZavodyPresenter extends BasePresenter {
 	/** @var object */
 	private $vysledky;
 	
-	/** @var \App\Model\Competitions @inject */
-	public $zavody;
+	/** @var \App\Model\Competitions */
+	private $zavody;
 	
-	/** @var \App\Model\Zavodnici @inject */
-	public $zavodnici;
+	/** @var \App\Model\Zavodnici */
+	private $zavodnici;
 
-	/** @var \App\Model\Kategorie @inject */
-	public $kategorie;
+	/** @var \App\Model\Kategorie */
+	private $kategorie;
+
+	public function __construct(Competitions $competitions, Zavodnici $zavodnici, Kategorie $kategorie)
+	{
+		parent::__construct();
+		$this->zavody = $competitions;
+		$this->zavodnici = $zavodnici;
+		$this->kategorie = $kategorie;
+	}
 
 	public function startup() {
 		parent::startup();
