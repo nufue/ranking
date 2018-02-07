@@ -28,7 +28,7 @@ final class CompetitorsPresenter extends BasePresenter
 		$this->template->rok = $this->defaultYear->getDefaultYear();
 	}
 
-	public function createComponentSearchForm()
+	public function createComponentSearchForm(): Form
 	{
 		$form = new Form;
 		$form->addText('search', 'Jméno nebo číslo registrace')->setRequired('Zadejte jméno nebo číslo registrace');
