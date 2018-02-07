@@ -3,6 +3,7 @@
 namespace App\Extensions;
 
 use Nette\DI\CompilerExtension;
+use App\Model\DefaultYear;
 
 final class DefaultYearExtension extends CompilerExtension
 {
@@ -13,9 +14,8 @@ final class DefaultYearExtension extends CompilerExtension
 		$this->setConfig($config);
 
 		$this->getContainerBuilder()->addDefinition($this->prefix('config'))
-			->setClass('\App\Model\DefaultYear')
+			->setClass(DefaultYear::class)
 			->addSetup('setDefaultYear', [$config['defaultYear']]);
 	}
-
 
 }
