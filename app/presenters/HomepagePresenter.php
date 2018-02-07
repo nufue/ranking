@@ -10,32 +10,32 @@ final class HomepagePresenter extends BasePresenter
 {
 
 	/** @var \App\Model\Ranking */
-	private $zebricek;
+	private $ranking;
 
 	/** @var \App\Model\Competitions */
-	private $zavody;
+	private $competitions;
 
 	public function __construct(Ranking $ranking, Competitions $competitions)
 	{
 		parent::__construct();
-		$this->zebricek = $ranking;
-		$this->zavody = $competitions;
+		$this->ranking = $ranking;
+		$this->competitions = $competitions;
 	}
 
 	public function handleExcelExport($rok = NULL)
 	{
 		if ($rok === NULL) $rok = $this->defaultYear->getDefaultYear();
 
-		$zebricekCelkovy = $this->zebricek->getRanking($rok, 'celkem' /* zadny konkretni typ */);
-		$zebricek = $this->zebricek->getRanking($rok, 'excel');
-		$zebricekU25 = $this->zebricek->getRanking($rok, 'u25');
-		$zebricekU23 = $this->zebricek->getRanking($rok, 'u23');
-		$zebricekU20 = $this->zebricek->getRanking($rok, 'u20');
-		$zebricekU18 = $this->zebricek->getRanking($rok, 'u18');
-		$zebricekU15 = $this->zebricek->getRanking($rok, 'u15');
-		$zebricekU14 = $this->zebricek->getRanking($rok, 'u14');
-		$zebricekU12 = $this->zebricek->getRanking($rok, 'u12');
-		$zebricekZeny = $this->zebricek->getRanking($rok, 'zeny');
+		$zebricekCelkovy = $this->ranking->getRanking($rok, 'celkem' /* zadny konkretni typ */);
+		$zebricek = $this->ranking->getRanking($rok, 'excel');
+		$zebricekU25 = $this->ranking->getRanking($rok, 'u25');
+		$zebricekU23 = $this->ranking->getRanking($rok, 'u23');
+		$zebricekU20 = $this->ranking->getRanking($rok, 'u20');
+		$zebricekU18 = $this->ranking->getRanking($rok, 'u18');
+		$zebricekU15 = $this->ranking->getRanking($rok, 'u15');
+		$zebricekU14 = $this->ranking->getRanking($rok, 'u14');
+		$zebricekU12 = $this->ranking->getRanking($rok, 'u12');
+		$zebricekZeny = $this->ranking->getRanking($rok, 'zeny');
 
 		$datumPlatnosti = $zebricekCelkovy['datum_platnosti_orig'];
 
@@ -202,13 +202,13 @@ final class HomepagePresenter extends BasePresenter
 
 		$this->template->zobrazitZavody = $show;
 
-		$zebricek = $this->zebricek->getRanking($rok, $typ);
+		$zebricek = $this->ranking->getRanking($rok, $typ);
 		$this->template->rok = $rok;
 		$this->template->datum_platnosti = $zebricek['datum_platnosti'];
 		$this->template->zavody = $zebricek['zavody'];
 		$this->template->zavodnici = $zebricek['zavodnici'];
 
-		$this->template->chybejiciVysledky = $this->zavody->getChybejiciVysledky();
+		$this->template->chybejiciVysledky = $this->competitions->getChybejiciVysledky();
 	}
 
 	private function addVysledky(&$sheet, $data, $nadpis, $datumPlatnosti, $dataFilterFunction, $dataFilterArg)
