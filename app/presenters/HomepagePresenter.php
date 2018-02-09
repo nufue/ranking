@@ -133,11 +133,11 @@ final class HomepagePresenter extends BasePresenter
 		if ($argument == 'u18' && ($radek['kategorie'] == 'U18' || $radek['kategorie'] == 'U18Ž')) return TRUE;
 		if ($argument == 'u14' && ($radek['kategorie'] == 'U14' || $radek['kategorie'] == 'U14Ž')) return TRUE;
 		if ($argument == 'u10' && ($radek['kategorie'] == 'U10' || $radek['kategorie'] == 'U10Ž')) return TRUE;
-		if ($argument == 'u15' && ($radek['kategorie'] == 'U15' || $radek['kategorie'] == 'U15 dívky')) return TRUE;
-		if ($argument == 'u20' && ($radek['kategorie'] == 'U20' || $radek['kategorie'] == 'U20 ženy')) return TRUE;
-		if ($argument == 'u25' && ($radek['kategorie'] == 'U25' || $radek['kategorie'] == 'U25 ženy')) return TRUE;
+		if ($argument == 'u15' && ($radek['kategorie'] == 'U15' || $radek['kategorie'] == 'U15Ž')) return TRUE;
+		if ($argument == 'u20' && ($radek['kategorie'] == 'U20' || $radek['kategorie'] == 'U20Ž')) return TRUE;
+		if ($argument == 'u25' && ($radek['kategorie'] == 'U25' || $radek['kategorie'] == 'U25Ž')) return TRUE;
 		if ($argument == 'u12' && ($radek['kategorie'] == 'U12' || $radek['kategorie'] == 'U12Ž')) return TRUE;
-		if ($argument == 'zeny' && ($radek['kategorie'] == 'U14Ž' || $radek['kategorie'] == 'U18Ž' || $radek['kategorie'] == 'U23Ž' || $radek['kategorie'] == 'U10Ž' || $radek['kategorie'] == 'Ž' || $radek['kategorie'] == 'U12Ž' || $radek['kategorie'] == 'U15 dívky' || $radek['kategorie'] == 'U20 ženy' || $radek['kategorie'] == 'U25 ženy')) return TRUE;
+		if ($argument == 'zeny' && ($radek['kategorie'] == 'U14Ž' || $radek['kategorie'] == 'U18Ž' || $radek['kategorie'] == 'U23Ž' || $radek['kategorie'] == 'U10Ž' || $radek['kategorie'] == 'Ž' || $radek['kategorie'] == 'U12Ž' || $radek['kategorie'] == 'U15Ž' || $radek['kategorie'] == 'U20Ž' || $radek['kategorie'] == 'U25Ž')) return TRUE;
 	}
 
 	public function actionDefault($rok = NULL, $typ = 'celkem', $show = FALSE)
