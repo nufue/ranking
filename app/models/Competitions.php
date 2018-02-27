@@ -55,14 +55,22 @@ final class Competitions extends Base
 		$this->database->query("UPDATE `zavody` SET `vysledky` = 'ano' WHERE `id` = ?", $idZavodu);
 	}
 
-	public function getChybejiciVysledky()
+	/**
+	 * @return Competition[]
+	 */
+	public function loadWithMissingResults(): array
 	{
-		return $this->database->query('SELECT * FROM `zavody` WHERE `zobrazovat` = ? AND `vysledky` = ? AND `datum_do` < DATE_SUB(CURDATE(), INTERVAL 1 DAY) ORDER BY `datum_od`', 'ano', 'ne')->fetchAll();
+		$result = [];
+		$competitions = $this->database->query('SELECT * FROM `zavody` WHERE `zobrazovat` = ? AND `vysledky` = ? AND `datum_do` < DATE_SUB(CURDATE(), INTERVAL 1 DAY) ORDER BY `datum_od`', 'ano', 'ne')->fetchAll();
+		foreach ($competitions as $c) {
+			$result[] = Competition::fromRow($c);
+		}
+		return $result;
 	}
 
-	public function getRokZavodu($idZavodu)
+	public function getCompetitionYear(int $competitionId): int
 	{
-		return $this->database->query("SELECT `rok` FROM `zavody` WHERE `id` = ?", (int)$idZavodu)->fetchField();
+		return (int)$this->database->query("SELECT `rok` FROM `zavody` WHERE `id` = ?", $competitionId)->fetchField();
 	}
 
 }

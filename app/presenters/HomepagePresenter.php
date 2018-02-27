@@ -208,7 +208,7 @@ final class HomepagePresenter extends BasePresenter
 		$this->template->zavody = $zebricek['zavody'];
 		$this->template->zavodnici = $zebricek['zavodnici'];
 
-		$this->template->chybejiciVysledky = $this->competitions->getChybejiciVysledky();
+		$this->template->chybejiciVysledky = $this->competitions->loadWithMissingResults();
 	}
 
 	private function addVysledky(&$sheet, $data, $nadpis, $datumPlatnosti, $dataFilterArg): void

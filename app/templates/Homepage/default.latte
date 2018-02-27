@@ -8,11 +8,7 @@
 <div class='noprint' n:if="count($chybejiciVysledky) > 0">
 	<p>V žebříčku nejsou zahrnuty výsledky z těchto závodů:</p>
 	<ul n:inner-foreach="$chybejiciVysledky as $v">
-		<li>{$v->nazev}
-			(datum
-			konání {if $v->datum_od == $v->datum_do}{$v->datum_od|date:'j. n. Y'}{elseif $v->datum_od->format('n') == $v->datum_do->format('n')}{$v->datum_od|date:'j.'} - {$v->datum_do|date:'j. n. Y'}{else}{$v->datum_od|date:'j. n. Y'} - {$v->datum_do|date:'j. n. Y'}{/if}
-			)
-		</li>
+		<li>{$v->getTitle()} (datum konání {$v->getFormattedDates()})</li>
 	</ul>
 </div>
 

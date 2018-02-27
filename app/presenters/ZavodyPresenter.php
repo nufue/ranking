@@ -313,7 +313,7 @@ final class ZavodyPresenter extends BasePresenter
 					$sloupce[$v] = $cisloSloupce;
 			}
 		}
-		$rok = $this->zavody->getRokZavodu($this->id);
+		$rok = $this->zavody->getCompetitionYear((int)$this->id);
 		$prvniRadek = $values['prvni_radek'];
 		$radku = 0;
 		$vysledky = [];
@@ -422,7 +422,7 @@ final class ZavodyPresenter extends BasePresenter
 		if ($this->id !== null) {
 			$this->zavody->deleteVysledky($this->id);
 		}
-		$rok = $this->zavody->getRokZavodu($this->id);
+		$rok = $this->zavody->getCompetitionYear((int)$this->id);
 
 		$countSuccess = 0;
 		foreach ($vysledky as $v) {
