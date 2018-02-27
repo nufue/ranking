@@ -12,8 +12,8 @@
 	</ul>
 </div>
 
-<p class='noprint'>{if $zobrazitZavody}<a n:href="Homepage:default $rok, $typ, FALSE">nezobrazovat jednotlivé
-		závody</a>{else}<a n:href="Homepage:default $rok, $typ, TRUE">zobrazit i jednotlivé závody</a>{/if}</p>
+<p class='noprint'>{if $zobrazitZavody}<a n:href="Homepage: $rok, $typ, false">nezobrazovat jednotlivé
+		závody</a>{else}<a n:href="Homepage: $rok, $typ, true">zobrazit i jednotlivé závody</a>{/if}</p>
 
 <p class='noprint' n:inner-foreach="$rankings as $rankingType => $rankingName">
 	{ifCurrent default $rok, $rankingType}{$rankingName}{else}
