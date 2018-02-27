@@ -43,43 +43,43 @@ final class Category
 	public static function fromString(string $input): Category
 	{
 		$input = mb_strtolower($input);
-		if ($input == 'm' || $input == 'muz')
+		if ($input === 'm' || $input === 'muz')
 			return new Category(Category::MEN);
-		else if ($input == 'ž' || $input == 'z' || $input == 'zena')
+		else if ($input === 'ž' || $input === 'z' || $input === 'zena')
 			return new Category(Category::WOMEN);
-		else if ($input == 'u10' || $input == 'u 10')
+		else if ($input === 'u10' || $input === 'u 10')
 			return new Category(Category::U10_MEN);
-		else if ($input == 'u12' || $input == 'u 12')
+		else if ($input === 'u12' || $input === 'u 12')
 			return new Category(Category::U12_MEN);
-		else if ($input == 'u14' || $input == 'u 14')
+		else if ($input === 'u14' || $input === 'u 14')
 			return new Category(Category::U14_MEN);
-		else if ($input == 'u15' || $input == 'u 15')
+		else if ($input === 'u15' || $input === 'u 15')
 			return new Category(Category::U15_MEN);
-		else if ($input == 'u18' || $input == 'u 18')
+		else if ($input === 'u18' || $input === 'u 18')
 			return new Category(Category::U18_MEN);
-		else if ($input == 'u20' || $input == 'u 20')
+		else if ($input === 'u20' || $input === 'u 20')
 			return new Category(Category::U20_MEN);
-		else if ($input == 'u23' || $input == 'u 23')
+		else if ($input === 'u23' || $input === 'u 23')
 			return new Category(Category::U23_MEN);
-		else if ($input == 'u25' || $input == 'u 25')
+		else if ($input === 'u25' || $input === 'u 25')
 			return new Category(Category::U25_MEN);
-		else if ($input == 'u10ž' || $input == 'u10 ž' || $input == 'u10_zena')
+		else if ($input === 'u10ž' || $input === 'u10 ž' || $input === 'u10_zena')
 			return new Category(Category::U10_WOMEN);
-		else if ($input == 'u12ž' || $input == 'u12 ž' || $input == 'u12_zena')
+		else if ($input === 'u12ž' || $input === 'u12 ž' || $input === 'u12_zena')
 			return new Category(Category::U12_WOMEN);
-		else if ($input == 'u14ž' || $input == 'u14 ž' || $input == 'u14_zena')
+		else if ($input === 'u14ž' || $input === 'u14 ž' || $input === 'u14_zena')
 			return new Category(Category::U14_WOMEN);
-		else if ($input == 'u15ž' || $input == 'u15 ž' || $input == 'u15_zena')
+		else if ($input === 'u15ž' || $input === 'u15 ž' || $input === 'u15_zena')
 			return new Category(Category::U15_WOMEN);
-		else if ($input == 'u18ž' || $input == 'u18 ž' || $input == 'u18_zena')
+		else if ($input === 'u18ž' || $input === 'u18 ž' || $input === 'u18_zena')
 			return new Category(Category::U18_WOMEN);
-		else if ($input == 'u20ž' || $input == 'u20 ž' || $input == 'u20_zena')
+		else if ($input === 'u20ž' || $input === 'u20 ž' || $input === 'u20_zena')
 			return new Category(Category::U20_WOMEN);
-		else if ($input == 'u23ž' || $input == 'u23 ž' || $input == 'u23_zena')
+		else if ($input === 'u23ž' || $input === 'u23 ž' || $input === 'u23_zena')
 			return new Category(Category::U23_WOMEN);
-		else if ($input == 'u25ž' || $input == 'u25 ž' || $input == 'u25_zena')
+		else if ($input === 'u25ž' || $input === 'u25 ž' || $input === 'u25_zena')
 			return new Category(Category::U25_WOMEN);
-		else if ($input == 'h' || $input == 'hendikep')
+		else if ($input === 'h' || $input === 'hendikep')
 			return new Category(Category::HANDICAPPED);
 		else
 			throw new \LogicException('Neznámá hodnota kategorie.');
