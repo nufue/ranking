@@ -4,7 +4,8 @@ namespace App\Model;
 
 use Nette\Database\Context;
 
-final class Kategorie extends Base {
+final class Kategorie extends Base
+{
 
 	/** @var DefaultYear */
 	private $defaultYear;
@@ -63,17 +64,19 @@ final class Kategorie extends Base {
 		$this->defaultYear = $defaultYear;
 	}
 
-	public function getCategories($year = NULL) {
-		if ($year === NULL) $year = $this->defaultYear->getDefaultYear();
+	public function getCategories($year = null)
+	{
+		if ($year === null) $year = $this->defaultYear->getDefaultYear();
 		return $this->database->query("SELECT `id_zavodnika`, `z`.`cele_jmeno`, `kategorie` FROM `zavodnici_kategorie` `zk` JOIN `zavodnici` `z` ON `zk`.`id_zavodnika` = `z`.`id` WHERE `zk`.`rok` = ? ORDER BY `id_zavodnika`", $year)->fetchAll();
 	}
 
-	public static function getKategorieForSoupisky($kategorie) {
-		if (isset(self::$kategorieSoupisky[$kategorie])) return self::$kategorieSoupisky[$kategorie];
-		else return '';
+	public static function getKategorieForSoupisky($kategorie): string
+	{
+		return self::$kategorieSoupisky[$kategorie] ?? '';
 	}
 
-	public function getKategorieFromString($kategorie) {
+	public function getKategorieFromString($kategorie): string
+	{
 		if ($kategorie == 'M')
 			$result = 'muz';
 		else if ($kategorie == 'Ž' || $kategorie == 'Z')
@@ -92,13 +95,13 @@ final class Kategorie extends Base {
 			$result = 'u23_zena';
 		else if ($kategorie == 'H')
 			$result = 'hendikep';
-		else if ($kategorie == 'U10' || $kategorie == 'U 10') 
+		else if ($kategorie == 'U10' || $kategorie == 'U 10')
 			$result = 'u10';
-		else if ($kategorie == 'U10Ž' || $kategorie == 'U10 Ž') 
+		else if ($kategorie == 'U10Ž' || $kategorie == 'U10 Ž')
 			$result = 'u10_zena';
-		else if ($kategorie == 'U12') 
+		else if ($kategorie == 'U12')
 			$result = 'u12';
-		else if ($kategorie == 'U12Ž' || $kategorie == 'U12 Ž') 
+		else if ($kategorie == 'U12Ž' || $kategorie == 'U12 Ž')
 			$result = 'u12_zena';
 		else if ($kategorie == 'U15' || $kategorie == 'U 15')
 			$result = 'u15';
@@ -117,10 +120,11 @@ final class Kategorie extends Base {
 		return $result;
 	}
 
-	public function addCompetitorToCategory($idZavodnika, $kategorie, $year = NULL) {
-		if ($year === NULL) $year = $this->defaultYear->getDefaultYear();
+	public function addCompetitorToCategory($idZavodnika, $kategorie, $year = null): void
+	{
+		if ($year === null) $year = $this->defaultYear->getDefaultYear();
 		$kategorie = $this->getKategorieFromString($kategorie);
-		
+
 		try {
 			$this->database->table('zavodnici_kategorie')->insert(['id_zavodnika' => $idZavodnika, 'kategorie' => $kategorie, 'rok' => $year]);
 		} catch (PDOException $exc) {

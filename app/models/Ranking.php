@@ -95,7 +95,7 @@ final class Ranking extends Base
 		'prebor_u25' => 5,
 	];
 
-	public function getRanking($year, $type)
+	public function getRanking($year, $type): array
 	{
 		$competitions = [];
 
@@ -237,7 +237,7 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 		return ['zavody' => $competitions, 'zavodnici' => $competitors, 'datum_platnosti' => $datumPlatnosti, 'datum_platnosti_orig' => $datumPlatnostiOrig];
 	}
 
-	private function getPoints($competitionType, $position)
+	private function getPoints($competitionType, $position): ?int
 	{
 		$bodovaciTabulka = self::$scoringTables[self::$competitionScoringType[$competitionType]];
 		if ($position === null)
@@ -250,7 +250,7 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 		return $body;
 	}
 
-	public function getVysledkyZavodu($idZavodnika, $rok, $omezeni = null)
+	public function getVysledkyZavodu($idZavodnika, $rok, $omezeni = null): array
 	{
 		$zavodnik = [];
 		$headerSet = false;
@@ -349,7 +349,7 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 		return $zavodnik;
 	}
 
-	public function getZavodnikRok($idZavodnika, $rok)
+	public function getZavodnikRok($idZavodnika, $rok): array
 	{
 		$zavodnik = $this->zavodnici->getZavodnikById($idZavodnika, $rok);
 		$vysledky = $this->getVysledkyZavodu($idZavodnika, $rok, 'všechny');
@@ -369,7 +369,7 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 		return ['zavodnik' => $zavodnik, 'vysledky' => (isset($vysledky['vysledky']) ? $vysledky['vysledky'] : null), 'vysledky_celkovy' => $vysledkyCelkovy, 'vysledky_zeny' => $vysledkyZeny, 'vysledky_dorost' => $vysledkyDorost];
 	}
 
-	private function bodySort($a, $b)
+	private function bodySort($a, $b): int
 	{
 		$sumA = array_sum($a['body_zebricek']);
 		$sumB = array_sum($b['body_zebricek']);

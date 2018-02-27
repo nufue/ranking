@@ -5,7 +5,8 @@ namespace App\Presenters;
 use App\Model\Competitors;
 use App\Model\Zavodnici;
 
-final class TestPresenter extends BasePresenter {
+final class TestPresenter extends BasePresenter
+{
 
 	/** @var \App\Model\Zavodnici */
 	private $zavodnici;
@@ -20,7 +21,8 @@ final class TestPresenter extends BasePresenter {
 		$this->competitors = $competitors;
 	}
 
-	public function renderDefault() {
+	public function renderDefault(): void
+	{
 
 		$categories = [];
 
@@ -34,7 +36,8 @@ final class TestPresenter extends BasePresenter {
 		$this->getTemplate()->competitors = $categories;
 	}
 
-	public function renderAll() {
+	public function renderAll(): void
+	{
 		set_time_limit(0);
 		$categories = [];
 		$competitors = $this->zavodnici->loadAllCompetitors();

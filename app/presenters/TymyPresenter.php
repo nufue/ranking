@@ -39,7 +39,7 @@ final class TymyPresenter extends BasePresenter
 		$this->competitors = $competitors;
 	}
 
-	public function actionDefault($rok = null)
+	public function actionDefault($rok = null): void
 	{
 		if ($rok === null) $rok = $this->defaultYear->getDefaultYear();
 		$this->year = (int)$rok;
@@ -48,7 +48,7 @@ final class TymyPresenter extends BasePresenter
 		$this->template->tymy = $this->tymy->loadTeamsByYear($rok);
 	}
 
-	public function actionDetail($id)
+	public function actionDetail($id): void
 	{
 		$this->template->ligy = $this->leagues->getLeagues();
 		$detail = $this->tymy->getById($id);
@@ -82,7 +82,7 @@ final class TymyPresenter extends BasePresenter
 		return $form;
 	}
 
-	public function addFormSubmitted(Form $form, $values)
+	public function addFormSubmitted(Form $form, $values): void
 	{
 		$id = $values['id'];
 		if (!empty($id)) {
@@ -112,7 +112,7 @@ final class TymyPresenter extends BasePresenter
 		}
 	}
 
-	public function actionSuggest($typedText)
+	public function actionSuggest($typedText): void
 	{
 		$response = $this->suggest->getSuggest($typedText);
 		$this->sendResponse(new Responses\JsonResponse(['values' => $response]));

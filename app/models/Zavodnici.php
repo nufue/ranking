@@ -18,8 +18,7 @@ final class Zavodnici extends Base
 
 	public function getZavodnici($idCompetition)
 	{
-		$dbResult = $this->database->query("SELECT z.id `id_zavodnika`, `z`.`registrace`, `z`.`cele_jmeno`, `z`.`registrovany`, `zz`.`tym`, `zk`.`kategorie`, `zz`.`cips1`, zz.umisteni1, zz.cips2, zz.umisteni2 FROM `zavodnici` `z` JOIN `zavodnici_zavody` `zz` ON `z`.`id` = `zz`.`id_zavodnika` JOIN `zavodnici_kategorie` `zk` ON `z`.`id` = `zk`.`id_zavodnika` JOIN `zavody` ON `zavody`.`id` = `zz`.`id_zavodu` WHERE `zz`.`id_zavodu` = ? AND `zavody`.`rok` = `zk`.`rok` ORDER BY (IF(zz.umisteni1 IS NULL, 0, 1) + IF(zz.umisteni2 IS NULL, 0, 1)) DESC, (IFNULL(zz.umisteni1, 0) + IFNULL(zz.umisteni2, 0)), (IFNULL(zz.cips1, 0) + IFNULL(zz.cips2, 0)) DESC", $idCompetition);
-		return $dbResult;
+		return $this->database->query("SELECT z.id `id_zavodnika`, `z`.`registrace`, `z`.`cele_jmeno`, `z`.`registrovany`, `zz`.`tym`, `zk`.`kategorie`, `zz`.`cips1`, zz.umisteni1, zz.cips2, zz.umisteni2 FROM `zavodnici` `z` JOIN `zavodnici_zavody` `zz` ON `z`.`id` = `zz`.`id_zavodnika` JOIN `zavodnici_kategorie` `zk` ON `z`.`id` = `zk`.`id_zavodnika` JOIN `zavody` ON `zavody`.`id` = `zz`.`id_zavodu` WHERE `zz`.`id_zavodu` = ? AND `zavody`.`rok` = `zk`.`rok` ORDER BY (IF(zz.umisteni1 IS NULL, 0, 1) + IF(zz.umisteni2 IS NULL, 0, 1)) DESC, (IFNULL(zz.umisteni1, 0) + IFNULL(zz.umisteni2, 0)), (IFNULL(zz.cips1, 0) + IFNULL(zz.cips2, 0)) DESC", $idCompetition);
 	}
 
 	public function getZavodnik($registrace, $year)
@@ -30,11 +29,11 @@ final class Zavodnici extends Base
 			if ($result2 = $dbResult->fetch()) {
 				$result->kategorie = $result2->kategorie;
 			} else {
-				$result->kategorie = NULL;
+				$result->kategorie = null;
 			}
 			return $result;
 		} else
-			return NULL;
+			return null;
 	}
 
 	public function getZavodnikByJmeno($name)
@@ -43,7 +42,7 @@ final class Zavodnici extends Base
 		if ($result = $dbResult->fetch()) {
 			return $result;
 		} else
-			return NULL;
+			return null;
 	}
 
 	public function getZavodnikByRegistrace($registrace)
@@ -52,7 +51,7 @@ final class Zavodnici extends Base
 		if ($result = $dbResult->fetch()) {
 			return $result;
 		} else
-			return NULL;
+			return null;
 	}
 
 	public function getZavodnikById($id, $year)
@@ -63,7 +62,7 @@ final class Zavodnici extends Base
 			$result->kategorie = Kategorie::$kategorie[$result->kategorie];
 			return $result;
 		} else
-			return NULL;
+			return null;
 	}
 
 	public function addCompetitor($registrationNumber, $fullName, $category, $year)
@@ -88,9 +87,9 @@ final class Zavodnici extends Base
 	public function addUnregistered($fullName, $category, $year)
 	{
 		$result = $this->isExistingUnregistered($fullName);
-		if ($result !== FALSE) {
+		if ($result !== false) {
 			$dbCategory = $this->database->query("SELECT `kategorie` FROM `zavodnici_kategorie` WHERE `id_zavodnika` = ? AND `rok` = ?", (int)$result, $year)->fetch();
-			if ($dbCategory === FALSE) {
+			if ($dbCategory === false) {
 				$this->database->table('zavodnici_kategorie')->insert(['id_zavodnika' => $result, 'rok' => $year, 'kategorie' => $this->kategorieConvertToDB($category)]);
 			} else if ($dbCategory->kategorie == '') {
 				$this->database->query('UPDATE `zavodnici_kategorie` SET `kategorie` = ? WHERE `id_zavodnika` = ? AND `rok` = ?', $this->kategorieConvertToDB($category), $result, $year);

@@ -21,7 +21,7 @@ final class SoupiskyPresenter extends BasePresenter
 		$this->leagues = $leagues;
 	}
 
-	public function renderDefault($rok = null)
+	public function renderDefault($rok = null): void
 	{
 		if ($rok === null) {
 			$rok = $this->defaultYear->getDefaultYear();
@@ -30,7 +30,7 @@ final class SoupiskyPresenter extends BasePresenter
 		$this->template->rok = $rok;
 	}
 
-	public function renderDetail($rok, $liga)
+	public function renderDetail($rok, $liga): void
 	{
 		$this->template->nazevLigy = $this->leagues->getName($liga);
 		$this->template->rok = $rok;

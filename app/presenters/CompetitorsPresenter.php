@@ -17,12 +17,12 @@ final class CompetitorsPresenter extends BasePresenter
 		$this->competitors = $competitors;
 	}
 
-	public function renderDefault()
+	public function renderDefault(): void
 	{
 		$this->template->rok = $this->defaultYear->getDefaultYear();
 	}
 
-	public function renderResults($term)
+	public function renderResults($term): void
 	{
 		$this->template->results = $this->competitors->search($term);
 		$this->template->rok = $this->defaultYear->getDefaultYear();
@@ -39,7 +39,7 @@ final class CompetitorsPresenter extends BasePresenter
 		return $form;
 	}
 
-	public function searchFormSuccess(Form $form, $values)
+	public function searchFormSuccess(Form $form, $values): void
 	{
 		$this->redirect('results', $values->search);
 	}

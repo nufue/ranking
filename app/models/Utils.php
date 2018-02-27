@@ -2,12 +2,14 @@
 
 namespace App\Model;
 
-final class Utils {
+final class Utils
+{
 
-    public static function convertDate($date) {
-        $date = str_replace(". ", ".", $date);
-        $dt = strtotime($date);
-        return new \DateTime(Date("Y-m-d", $dt));
-    }
+	public static function convertDate($date): \DateTime
+	{
+		$date = str_replace(". ", ".", $date);
+		$dt = strtotime($date);
+		return new \DateTime(Date("Y-m-d", $dt));
+	}
 
 }

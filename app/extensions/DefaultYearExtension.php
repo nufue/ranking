@@ -14,7 +14,7 @@ final class DefaultYearExtension extends CompilerExtension
 		$this->setConfig($config);
 
 		$this->getContainerBuilder()->addDefinition($this->prefix('config'))
-			->setClass(DefaultYear::class)
+			->setType(DefaultYear::class)
 			->addSetup('setDefaultYear', [$config['defaultYear']]);
 	}
 

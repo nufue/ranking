@@ -6,11 +6,12 @@ use App\Model\Leagues;
 use App\Model\Ranking;
 use App\Model\Teams;
 
-final class ZavodnikPresenter extends BasePresenter {
+final class ZavodnikPresenter extends BasePresenter
+{
 
 	/** @var \App\Model\Ranking */
 	private $zebricek;
-	
+
 	/** @var \App\Model\Teams */
 	private $teams;
 
@@ -24,8 +25,9 @@ final class ZavodnikPresenter extends BasePresenter {
 		$this->teams = $teams;
 		$this->leagues = $leagues;
 	}
-	
-	public function renderDefault($id, $rok) {
+
+	public function renderDefault($id, $rok): void
+	{
 		$this->template->rok = $rok;
 		$detail = $this->zebricek->getZavodnikRok($id, $rok);
 		$this->template->zavodnik = $detail['zavodnik'];

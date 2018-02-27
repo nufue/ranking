@@ -22,9 +22,9 @@ final class HomepagePresenter extends BasePresenter
 		$this->competitions = $competitions;
 	}
 
-	public function handleExcelExport($rok = NULL)
+	public function handleExcelExport($rok = null): void
 	{
-		if ($rok === NULL) $rok = $this->defaultYear->getDefaultYear();
+		if ($rok === null) $rok = $this->defaultYear->getDefaultYear();
 
 		$zebricekCelkovy = $this->ranking->getRanking($rok, 'celkem' /* zadny konkretni typ */);
 		$zebricek = $this->ranking->getRanking($rok, 'excel');
@@ -41,12 +41,12 @@ final class HomepagePresenter extends BasePresenter
 
 		$objExcel = new \PHPExcel;
 		$objExcel->getProperties()->setCreator("Jiří Hrazdil");
-		if ($datumPlatnosti !== NULL) {
+		if ($datumPlatnosti !== null) {
 			$objExcel->getProperties()->setTitle('Průběžný žebříček LRU plavaná, aktuální k ' . $datumPlatnosti->format('j. n. Y'));
 		} else {
 			$objExcel->getProperties()->setTitle('Průběžný žebříček LRU plavaná, rok ' . $rok);
 		}
-		if ($datumPlatnosti === NULL) $datumPlatnosti = new DateTime('1.1.' . $rok);
+		if ($datumPlatnosti === null) $datumPlatnosti = new DateTime('1.1.' . $rok);
 		$objExcel->getProperties()->setDescription('Aktuální žebříček LRU plavaná je k dispozici na https://www.plavana.info/');
 		$objExcel->setActiveSheetIndex(0);
 		$sheet = $objExcel->getActiveSheet();
@@ -106,16 +106,16 @@ final class HomepagePresenter extends BasePresenter
 		$this->deleteOldTempFiles($tempDir);
 		$tn = tempnam($tempDir, 'phpxls_');
 		$objWriter->save($tn);
-		if ($datumPlatnosti !== NULL) {
+		if ($datumPlatnosti !== null) {
 			$name = "zebricek-" . $datumPlatnosti->format('Ymd') . ".xlsx";
 		} else {
 			$name = "zebricek-" . $rok . ".xlsx";
 		}
-		$response = new FileResponse($tn, $name, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', TRUE);
+		$response = new FileResponse($tn, $name, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', true);
 		$this->sendResponse($response);
 	}
 
-	private function deleteOldTempFiles($tempDir)
+	private function deleteOldTempFiles($tempDir): void
 	{
 		$dir = opendir($tempDir);
 		while ($f = readdir($dir)) {
@@ -125,51 +125,51 @@ final class HomepagePresenter extends BasePresenter
 		closedir($dir);
 	}
 
-	private function filterVysledky($radek, $argument)
+	private function filterVysledky($radek, $argument): bool
 	{
 		if (empty($argument))
-			return TRUE;
-		if ($argument == 'u23' && ($radek['kategorie'] == 'U23' || $radek['kategorie'] == 'U23Ž')) return TRUE;
-		if ($argument == 'u18' && ($radek['kategorie'] == 'U18' || $radek['kategorie'] == 'U18Ž')) return TRUE;
-		if ($argument == 'u14' && ($radek['kategorie'] == 'U14' || $radek['kategorie'] == 'U14Ž')) return TRUE;
-		if ($argument == 'u10' && ($radek['kategorie'] == 'U10' || $radek['kategorie'] == 'U10Ž')) return TRUE;
-		if ($argument == 'u15' && ($radek['kategorie'] == 'U15' || $radek['kategorie'] == 'U15Ž')) return TRUE;
-		if ($argument == 'u20' && ($radek['kategorie'] == 'U20' || $radek['kategorie'] == 'U20Ž')) return TRUE;
-		if ($argument == 'u25' && ($radek['kategorie'] == 'U25' || $radek['kategorie'] == 'U25Ž')) return TRUE;
-		if ($argument == 'u12' && ($radek['kategorie'] == 'U12' || $radek['kategorie'] == 'U12Ž')) return TRUE;
-		if ($argument == 'zeny' && ($radek['kategorie'] == 'U14Ž' || $radek['kategorie'] == 'U18Ž' || $radek['kategorie'] == 'U23Ž' || $radek['kategorie'] == 'U10Ž' || $radek['kategorie'] == 'Ž' || $radek['kategorie'] == 'U12Ž' || $radek['kategorie'] == 'U15Ž' || $radek['kategorie'] == 'U20Ž' || $radek['kategorie'] == 'U25Ž')) return TRUE;
+			return true;
+		if ($argument === 'u23' && ($radek['kategorie'] === 'U23' || $radek['kategorie'] === 'U23Ž')) return true;
+		if ($argument === 'u18' && ($radek['kategorie'] === 'U18' || $radek['kategorie'] === 'U18Ž')) return true;
+		if ($argument === 'u14' && ($radek['kategorie'] === 'U14' || $radek['kategorie'] === 'U14Ž')) return true;
+		if ($argument === 'u10' && ($radek['kategorie'] === 'U10' || $radek['kategorie'] === 'U10Ž')) return true;
+		if ($argument === 'u15' && ($radek['kategorie'] === 'U15' || $radek['kategorie'] === 'U15Ž')) return true;
+		if ($argument === 'u20' && ($radek['kategorie'] === 'U20' || $radek['kategorie'] === 'U20Ž')) return true;
+		if ($argument === 'u25' && ($radek['kategorie'] === 'U25' || $radek['kategorie'] === 'U25Ž')) return true;
+		if ($argument === 'u12' && ($radek['kategorie'] === 'U12' || $radek['kategorie'] === 'U12Ž')) return true;
+		if ($argument === 'zeny' && ($radek['kategorie'] === 'U14Ž' || $radek['kategorie'] === 'U18Ž' || $radek['kategorie'] === 'U23Ž' || $radek['kategorie'] === 'U10Ž' || $radek['kategorie'] === 'Ž' || $radek['kategorie'] === 'U12Ž' || $radek['kategorie'] === 'U15Ž' || $radek['kategorie'] === 'U20Ž' || $radek['kategorie'] === 'U25Ž')) return true;
 	}
 
-	public function actionDefault($rok = NULL, $typ = 'celkem', $show = FALSE)
+	public function actionDefault($rok = null, $typ = 'celkem', $show = false): void
 	{
-		if ($rok === NULL) {
+		if ($rok === null) {
 			$this->redirect('Homepage:', ['rok' => $this->defaultYear->getDefaultYear(), 'typ' => $typ, 'show' => $show]);
 		}
 	}
 
-	public function renderDefault($rok, $typ = 'celkem', $show = FALSE)
+	public function renderDefault($rok, $typ = 'celkem', $show = false): void
 	{
-		if ($typ == 'celkem')
+		if ($typ === 'celkem')
 			$typZebricku = 'celkem';
-		else if ($typ == 'u23')
+		else if ($typ === 'u23')
 			$typZebricku = 'junioři U23';
-		else if ($typ == 'u18')
+		else if ($typ === 'u18')
 			$typZebricku = 'junioři U18';
-		else if ($typ == 'u14')
+		else if ($typ === 'u14')
 			$typZebricku = 'kadeti U14';
-		else if ($typ == 'u10')
+		else if ($typ === 'u10')
 			$typZebricku = 'kadeti U10';
-		else if ($typ == 'u12')
+		else if ($typ === 'u12')
 			$typZebricku = 'kadeti U12';
-		else if ($typ == 'u15')
+		else if ($typ === 'u15')
 			$typZebricku = 'kadeti U15';
-		else if ($typ == 'u20')
+		else if ($typ === 'u20')
 			$typZebricku = 'junioři U20';
-		else if ($typ == 'u25')
+		else if ($typ === 'u25')
 			$typZebricku = 'junioři U25';
-		else if ($typ == 'zeny')
+		else if ($typ === 'zeny')
 			$typZebricku = 'ženy';
-		else if ($typ == 'hendikepovani')
+		else if ($typ === 'hendikepovani')
 			$typZebricku = 'hendikepovaní';
 
 		$rankings = [];
@@ -211,13 +211,13 @@ final class HomepagePresenter extends BasePresenter
 		$this->template->chybejiciVysledky = $this->competitions->getChybejiciVysledky();
 	}
 
-	private function addVysledky(&$sheet, $data, $nadpis, $datumPlatnosti, $dataFilterFunction, $dataFilterArg)
+	private function addVysledky(&$sheet, $data, $nadpis, $datumPlatnosti, $dataFilterArg): void
 	{
 		$rowCnt = 1;
 
 		$saBold = [
 			'font' => [
-				'bold' => TRUE,
+				'bold' => true,
 			],
 			'alignment' => [
 				'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
@@ -230,12 +230,12 @@ final class HomepagePresenter extends BasePresenter
 		];
 
 		$sheet->SetCellValue('A' . $rowCnt, $nadpis);
-		$sheet->getStyle('A' . $rowCnt)->getFont()->setSize(14)->setBold(TRUE);
+		$sheet->getStyle('A' . $rowCnt)->getFont()->setSize(14)->setBold(true);
 		$sheet->getStyle('A' . $rowCnt)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 		$sheet->mergeCells('A' . $rowCnt . ':I' . $rowCnt);
 
 		$rowCnt++;
-		if ($datumPlatnosti !== NULL) {
+		if ($datumPlatnosti !== null) {
 			$sheet->SetCellValue('A' . $rowCnt, 'platný k ' . $datumPlatnosti->format('j. n. Y'));
 		}
 		$sheet->getStyle('A' . $rowCnt)->getFont()->setSize(12);
@@ -264,8 +264,8 @@ final class HomepagePresenter extends BasePresenter
 
 		$poradi = 1;
 		$sheet->getPageMargins()->setLeft(0.54)->setRight(0.54);
-		$sheet->getStyle('A' . $rowCnt . ':I' . $rowCnt)->getAlignment()->setWrapText(TRUE)->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER)->setVertical(\PHPExcel_Style_Alignment::VERTICAL_CENTER);
-		$sheet->getStyle('A' . $rowCnt . ':I' . $rowCnt)->getFont()->setBold(TRUE);
+		$sheet->getStyle('A' . $rowCnt . ':I' . $rowCnt)->getAlignment()->setWrapText(true)->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER)->setVertical(\PHPExcel_Style_Alignment::VERTICAL_CENTER);
+		$sheet->getStyle('A' . $rowCnt . ':I' . $rowCnt)->getFont()->setBold(true);
 
 		$sheet->getColumnDimension('A')->setWidth(4.57);
 		$sheet->getColumnDimension('B')->setWidth(6);
@@ -283,33 +283,34 @@ final class HomepagePresenter extends BasePresenter
 			$sheet->SetCellValue('A' . ($rowCnt + 1), 'V tomto roce nebyly zatím přidány žádné závody, takže žebříček není možné sestavit.');
 		}
 		foreach ($data as $row) {
-			if ($row['kategorie'] == 'muži')
+			if ($row['kategorie'] === 'muži')
 				$k = 'M';
-			else if ($row['kategorie'] == 'ženy')
+			else if ($row['kategorie'] === 'ženy')
 				$k = 'Ž';
-			else if ($row['kategorie'] == 'hendikepovaní')
+			else if ($row['kategorie'] === 'hendikepovaní')
 				$k = 'H';
-			else if ($row['kategorie'] == 'U14 ženy')
+			else if ($row['kategorie'] === 'U14 ženy')
 				$k = 'U14Ž';
-			else if ($row['kategorie'] == 'U18 ženy')
+			else if ($row['kategorie'] === 'U18 ženy')
 				$k = 'U18Ž';
-			else if ($row['kategorie'] == 'U23 ženy')
+			else if ($row['kategorie'] === 'U23 ženy')
 				$k = 'U23Ž';
-			else if ($row['kategorie'] == 'U10 dívky')
+			else if ($row['kategorie'] === 'U10 dívky')
 				$k = 'U10Ž';
-			else if ($row['kategorie'] == 'U12 dívky')
+			else if ($row['kategorie'] === 'U12 dívky')
 				$k = 'U12Ž';
-			else if ($row['kategorie'] == 'U15 dívky')
+			else if ($row['kategorie'] === 'U15 dívky')
 				$k = 'U15Ž';
-			else if ($row['kategorie'] == 'U20 ženy')
+			else if ($row['kategorie'] === 'U20 ženy')
 				$k = 'U20Ž';
-			else if ($row['kategorie'] == 'U25 ženy')
+			else if ($row['kategorie'] === 'U25 ženy')
 				$k = 'U25Ž';
 			else
 				$k = $row['kategorie'];
 			$row['kategorie'] = $k;
-			if (!$this->$dataFilterFunction($row, $dataFilterArg))
+			if (!$this->filterVysledky($row, $dataFilterArg)) {
 				continue;
+			}
 			$rowCnt++;
 			$sheet->SetCellValue('A' . $rowCnt, $poradi);
 			$sheet->SetCellValue('B' . $rowCnt, $row['registrace']);

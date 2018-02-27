@@ -148,7 +148,7 @@ final class ZavodyPresenter extends BasePresenter
 		}
 	}
 
-	public function actionPridatVysledky($id)
+	public function actionPridatVysledky($id): void
 	{
 		$this->template->id = $id;
 		$session = $this->getSession();
@@ -169,7 +169,7 @@ final class ZavodyPresenter extends BasePresenter
 		return $form;
 	}
 
-	public function vysledkyFormSubmitted(Form $form, $values)
+	public function vysledkyFormSubmitted(Form $form, $values): void
 	{
 		$vysledky = $values['vysledky'];
 		$section = $this->getSession('vysledky');
@@ -177,7 +177,7 @@ final class ZavodyPresenter extends BasePresenter
 		$this->redirect('pridatVysledky2', $this->id);
 	}
 
-	public function actionPridatVysledky2($id)
+	public function actionPridatVysledky2($id): void
 	{
 		$this->template->id = $id;
 		$section = $this->getSession('vysledky');
@@ -302,7 +302,7 @@ final class ZavodyPresenter extends BasePresenter
 		return $form;
 	}
 
-	public function vysledkyParseFormSubmitted(Form $form, $values)
+	public function vysledkyParseFormSubmitted(Form $form, $values): void
 	{
 		$tabulka = $this->getSession('vysledky')->tabulka;
 		$sloupce = [];
@@ -398,7 +398,7 @@ final class ZavodyPresenter extends BasePresenter
 		$this->redirect('pridatVysledky3', $this->id);
 	}
 
-	public function actionPridatVysledky3($id)
+	public function actionPridatVysledky3($id): void
 	{
 		$this->template->id = $id;
 		$section = $this->getSession('vysledky');
@@ -415,7 +415,7 @@ final class ZavodyPresenter extends BasePresenter
 		return $form;
 	}
 
-	public function confirmResultsFormSubmitted(Form $form, $values)
+	public function confirmResultsFormSubmitted(Form $form, $values): void
 	{
 		$section = $this->getSession('vysledky');
 		$vysledky = $section->vysledkyParsed;
@@ -457,7 +457,7 @@ final class ZavodyPresenter extends BasePresenter
 		}
 	}
 
-	private function trimUnicode($input)
+	private function trimUnicode(string $input): string
 	{
 		return preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $input);
 	}

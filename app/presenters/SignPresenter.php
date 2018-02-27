@@ -27,7 +27,7 @@ final class SignPresenter extends BasePresenter
 		return $form;
 	}
 
-	public function signInFormSuccess(Form $form, $values)
+	public function signInFormSuccess(Form $form, $values): void
 	{
 		try {
 			if ($values->remember) {
@@ -42,7 +42,7 @@ final class SignPresenter extends BasePresenter
 		}
 	}
 
-	public function actionOut()
+	public function actionOut(): void
 	{
 		$this->getUser()->logout();
 		$this->flashMessage('Byl(a) jste odhlášen(a).');

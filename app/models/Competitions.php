@@ -31,7 +31,7 @@ final class Competitions extends Base
 		$this->database->query("INSERT INTO zavody(nazev, kategorie, typ, rok, datum_od, datum_do, zobrazovat, vysledky) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", $values['nazev'], $values['kategorie'], $values['typ'], $rok, $values['datum_od'], $values['datum_do'], $values['zobrazovat'], $values['vysledky']);
 	}
 
-	public function addVysledek($idZavodu, $idZavodnika, $tym, $cips1, $umisteni1, $cips2, $umisteni2)
+	public function addVysledek($idZavodu, $idZavodnika, $tym, $cips1, $umisteni1, $cips2, $umisteni2): void
 	{
 		$this->database->table('zavodnici_zavody')->insert([
 			'id_zavodu' => $idZavodu,
@@ -44,13 +44,13 @@ final class Competitions extends Base
 		]);
 	}
 
-	public function deleteVysledky($idZavodu)
+	public function deleteVysledky($idZavodu): void
 	{
 		$this->database->query('DELETE FROM zavodnici_zavody WHERE id_zavodu = ?', $idZavodu);
 		$this->database->query("UPDATE `zavody` SET `vysledky` = 'ne' WHERE `id` = ?", $idZavodu);
 	}
 
-	public function confirmAddVysledek($idZavodu)
+	public function confirmAddVysledek($idZavodu): void
 	{
 		$this->database->query("UPDATE `zavody` SET `vysledky` = 'ano' WHERE `id` = ?", $idZavodu);
 	}
