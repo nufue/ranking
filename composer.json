@@ -4,12 +4,12 @@
 	"type": "project",
 	"license": ["MIT", "BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
 	"require": {
-		"php": ">= 7.0.0",
+		"php": ">= 7.1.0",
 		"nette/nette": "^2.4",
-		"dg/ftp-deployment": "^2.0",
 		"phpoffice/phpexcel": "^1.8"
 	},
 	"require-dev": {
-		"nette/tester": "~1.4"
+		"dg/ftp-deployment": "^2.0",
+		"nette/tester": "~2.0"
 	}
 }
