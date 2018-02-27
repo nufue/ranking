@@ -44,15 +44,15 @@ final class Competitions extends Base
 		]);
 	}
 
-	public function deleteVysledky($idZavodu): void
+	public function deleteResults(int $competitionId): void
 	{
-		$this->database->query('DELETE FROM zavodnici_zavody WHERE id_zavodu = ?', $idZavodu);
-		$this->database->query("UPDATE `zavody` SET `vysledky` = 'ne' WHERE `id` = ?", $idZavodu);
+		$this->database->query('DELETE FROM zavodnici_zavody WHERE id_zavodu = ?', $competitionId);
+		$this->database->query("UPDATE `zavody` SET `vysledky` = 'ne' WHERE `id` = ?", $competitionId);
 	}
 
-	public function confirmAddVysledek($idZavodu): void
+	public function markResultsPresent(int $competitionId): void
 	{
-		$this->database->query("UPDATE `zavody` SET `vysledky` = 'ano' WHERE `id` = ?", $idZavodu);
+		$this->database->query("UPDATE `zavody` SET `vysledky` = 'ano' WHERE `id` = ?", $competitionId);
 	}
 
 	/**

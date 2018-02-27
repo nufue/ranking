@@ -7,18 +7,27 @@ use App\Exceptions\RegistrationForCompetitorNotFoundException;
 
 final class Competitors extends Base
 {
-	public function search($term)
+	/**
+	 * @param $term
+	 * @return Competitor[]
+	 */
+	public function search($term): array
 	{
-		return $this->database->query("SELECT * FROM `zavodnici` WHERE `registrace` = ? OR `cele_jmeno` LIKE ?", $term, '%' . $term . '%')->fetchAll();
+		$result = [];
+		$competitors = $this->database->query("SELECT * FROM `zavodnici` WHERE `registrace` = ? OR `cele_jmeno` LIKE ?", $term, '%' . $term . '%')->fetchAll();
+		foreach ($competitors as $c) {
+			$result[] = Competitor::fromRow($c);
+		}
+		return $result;
 	}
 
-	public function getById(int $id): Competitor
+	public function getById(int $id): Registration
 	{
 		$registration = $this->database->query("SELECT `registrace` FROM `zavodnici` WHERE `id` = ?", $id)->fetchField();
 		if ($registration !== false) {
 			$row = $this->database->query("SELECT * FROM `registrace` WHERE `registrace` = ?", $registration)->fetch();
 			if ($row !== false) {
-				return Competitor::createFromRow($row);
+				return Registration::createFromRow($row);
 			} else {
 				throw new RegistrationForCompetitorNotFoundException();
 			}

@@ -5,8 +5,8 @@
 
 <table>
 	<tr n:foreach="$results as $r">
-		<td>{$r->registrace}</td>
-		<td>{$r->cele_jmeno}</td>
+		<td>{$r->getRegistration()}</td>
+		<td>{$r->getFullName()}</td>
 	</tr>
 </table>
 

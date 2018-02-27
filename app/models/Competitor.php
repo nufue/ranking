@@ -2,65 +2,33 @@
 
 namespace App\Model;
 
+use Nette\Database\Row;
+
 final class Competitor
 {
 	/** @var int */
+	private $id;
+	/** @var string */
 	private $registration;
 	/** @var string */
-	private $lastName;
-	/** @var string */
-	private $firstName;
-	/** @var string */
-	private $suffix;
-	/** @var Gender */
-	private $gender;
-	/** @var int */
-	private $birthYear;
+	private $fullName;
+	/** @var bool */
+	private $registered;
 
 	private function __construct()
 	{
 	}
 
-	public static function createFromRow(\Nette\Database\IRow $row): Competitor
+	public static function fromRow(Row $row): Competitor
 	{
-		$competitor = new Competitor();
-		$competitor->registration = $row->registrace;
-		$competitor->lastName = $row->prijmeni;
-		$competitor->firstName = $row->jmeno;
-		$competitor->suffix = $row->titul;
-		$competitor->gender = Gender::fromString($row->pohlavi);
-		$competitor->birthYear = $row->rok_narozeni;
-		return $competitor;
+		$c = new Competitor();
+		$c->id = $row->id;
+		$c->registration = $row->registrace;
+		$c->fullName = $row->cele_jmeno;
+		$c->registered = $row->registrovany === 'A';
+		return $c;
 	}
 
-	public function getRegistration(): int
-	{
-		return $this->registration;
-	}
 
-	public function getLastName(): string
-	{
-		return $this->lastName;
-	}
-
-	public function getFirstName(): string
-	{
-		return $this->firstName;
-	}
-
-	public function getSuffix(): string
-	{
-		return $this->suffix;
-	}
-
-	public function getGender(): Gender
-	{
-		return $this->gender;
-	}
-
-	public function getBirthYear(): int
-	{
-		return $this->birthYear;
-	}
 
 }

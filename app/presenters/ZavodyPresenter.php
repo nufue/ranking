@@ -420,7 +420,7 @@ final class ZavodyPresenter extends BasePresenter
 		$section = $this->getSession('vysledky');
 		$vysledky = $section->vysledkyParsed;
 		if ($this->id !== null) {
-			$this->zavody->deleteVysledky($this->id);
+			$this->zavody->deleteResults((int)$this->id);
 		}
 		$rok = $this->zavody->getCompetitionYear((int)$this->id);
 
@@ -449,7 +449,7 @@ final class ZavodyPresenter extends BasePresenter
 		}
 		if ($countSuccess > 0) {
 			$this->flashMessage('Do závodu bylo přidáno ' . $countSuccess . ' závodníků.');
-			$this->zavody->confirmAddVysledek($this->id);
+			$this->zavody->markResultsPresent((int)$this->id);
 			$this->redirect('detail', $this->id);
 		} else {
 			$this->flashMessage('Do závodu se nepodařilo přidat žádného závodníka.');
