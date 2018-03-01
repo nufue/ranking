@@ -1,6 +1,5 @@
 {block title}Žebříček LRU plavaná - {$typZebricku} - rok {$rok}{/block}
 {block content}
-{include '../menu.latte'}
 <h1>Průběžný žebříček LRU plavaná - {$typZebricku} - rok {$rok}</h1>
 <h2 n:if="$datum_platnosti !== NULL">{if count($chybejiciVysledky) > 0}neúplný{else}aktuální{/if}
 	k {$datum_platnosti}</h2>

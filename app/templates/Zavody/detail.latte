@@ -1,7 +1,6 @@
 {block title}{$zavod->nazev}{if !empty($zavod->kategorie)} {$zavod->kategorie}{/if} - detail závodu{/block}
 {block content}
-{include '../menu.latte'}
-<h1>{$zavod->nazev}{if !empty($zavod->kategorie)} {$zavod->kategorie}{/if} - {$rok}</h1>
+<h1>{$zavod->getTitleWithCategory()} - {$rok}</h1>
 
 
 <table id="hlavickaZavodu">
