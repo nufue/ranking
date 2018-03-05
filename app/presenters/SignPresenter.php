@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Presenters;
 
@@ -7,7 +8,6 @@ use Nette\Security\AuthenticationException;
 
 final class SignPresenter extends BasePresenter
 {
-
 	protected function createComponentSignInForm(): Form
 	{
 		$form = new Form;
