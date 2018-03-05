@@ -1,0 +1,35 @@
+{block content}
+<h1>Přidat výsledky k závodu {$c->getTitleWithCategory()}</h1>
+
+<p>Na této stránce v prvním sloupci označte řádek, na kterém se nachází první záznamy s výsledkem konkrétního závodníka
+	(obvykle vítěze závodu). Následně v první řádku vyberte, co se ve kterém sloupci nachází. Pokud obsah sloupce není v
+	nabídce uveden, ponechte výchozí hodnotu (-).</p>
+
+{var $pocetRadku = 0}
+{form selectColumnsForm}
+	<ul n:if="$form->hasErrors()" n:inner-foreach="$form->getErrors() as $e">
+		<li class="text-danger">{$e}</li>
+	</ul>
+	<table>
+		<thead>
+		<th>Řádek</th>
+		{for $i = 0; $i < $pocetSloupcu; $i++}
+			<th>{input 'sloupec'.$i}</th>
+		{/for}
+		</thead>
+		<tbody>
+		<tr n:foreach="$tabulka as $radek">
+			<td>{$form['prvni_radek']->getControlPart($pocetRadku)} {$form['prvni_radek']->getLabelPart($pocetRadku)}</td>
+			<td n:foreach="$radek as $bunka">
+				{$bunka}
+			</td>
+			{php $pocetRadku++}
+		</tr>
+		<tr>
+			<td colspan="3">{input send}</td>
+		</tr>
+		</tbody>
+	</table>
+{/form}
+
+<p><a n:href="add $id">zpět</a></p>

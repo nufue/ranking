@@ -1,0 +1,46 @@
+{form competitionForm}
+	<ul n:if="$form->hasErrors()" n:inner-foreach="$form->getErrors() as $e">
+		<li class="text-danger">{$e}</li>
+	</ul>
+	<table>
+		<tr>
+			<th>{label nazev /}</th>
+			<td>{input nazev}</td>
+		</tr>
+
+		<tr>
+			<th>{label kategorie /}</th>
+			<td>{input kategorie}</td>
+		</tr>
+
+		<tr>
+			<th>{label typ /}</th>
+			<td>{input typ}</td>
+		</tr>
+
+		<tr>
+			<th>{label datum_od /}</th>
+			<td>{input datum_od}</td>
+		</tr>
+
+		<tr>
+			<th>{label datum_do /}</th>
+			<td>{input datum_do}</td>
+		</tr>
+
+		<tr>
+			<th></th>
+			<td>{input zobrazovat}</td>
+		</tr>
+
+		<tr>
+			<th></th>
+			<td>{input vysledky}</td>
+		</tr>
+
+		<tr>
+			<th></th>
+			<td>{input send}</td>
+		</tr>
+	</table>
+{/form}

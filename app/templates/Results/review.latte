@@ -1,0 +1,60 @@
+{block content}
+<h1>Přidat výsledky k závodu {$c->getTitleWithCategory()}</h1>
+<p>Zkontrolujte, zda-li jsou zadané správné údaje. Řádky, ve kterých je nějaký problém, jsou podbarveny červeně. Řádky s varováním žlutě. Pokud údaje neobsahují žádný problém, je možné výsledky závodu uložit do žebříčku pomocí tlačítka <b>Uložit výsledky</b>. Zeleně jsou podbarveny řádky se závodníky, kteří doposud v žebříčku nefigurovali.</p>
+{form confirmResultsForm}
+	<table>
+		<thead>
+		<tr>
+			<th rowspan="2">REG</th>
+			<th rowspan="2">Jméno</th>
+			<th rowspan="2">KAT</th>
+			<th rowspan="2">Tým</th>
+			<th colspan="2">1. závod</th>
+			<th colspan="2">2. závod</th>
+			<th rowspan="2">Upozornění/chyba</th>
+		</tr>
+		<tr>
+			<th>CIPS</th>
+			<th>Umístění</th>
+			<th>CIPS</th>
+			<th>Umístění</th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr n:foreach="$results as $rowId => $v" n:class="$v->getStatus()->isProblem() ? bg-danger : ($v->getStatus()->isWarning() ? bg-warning : ($v->getStatus()->isAdd() ? bg-success : ''))">
+			<td>{$v->getRegistration()}</td>
+			<td>{$v->getFullName()}</td>
+			<td>{if $v->hasCategory()}{$v->getCategory()->toCzechString()}{/if}{if isset($problemCategories[$rowId])}{input 'cat_'.$rowId}{else}&nbsp;{/if}</td>
+			<td>{$v->getTeam()}</td>
+			{if $v->hasRound(1)}
+				<td>{$v->getRound(1)->getCips()}</td>
+				<td>{$v->getRound(1)->getFormattedRank()}</td>
+			{else}
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			{/if}
+			{if $v->hasRound(2)}
+				<td>{$v->getRound(2)->getCips()}</td>
+				<td>{$v->getRound(2)->getFormattedRank()}</td>
+			{else}
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			{/if}
+			<td class="l">{if $v->getStatus()->isNameDifferent()}{var $output = true}Jméno v databázi ({$v->getDifferingName()}) se liší od jména ve výsledcích. Pokud se jedná o překlep v čísle registrace, vyplňte správné číslo registrace v&nbsp;následujícím políčku a poté klikněte na tlačítko <b>Znovu zkontrolovat</b>: {input 'reg_'.$rowId}{/if}
+				{if $v->getStatus()->hasNoCategory()}{if !isset($output)}
+					<br>{/if}Závodník nemá ve výsledcích vyplněnou kategorii a zároveň ji nelze zjistit z dřívějších výsledků.{/if}
+				{if $v->getStatus()->isCategoryNotAllowed()}{if !isset($output)}
+					<br>{/if}Uvedená kategorie není v roce závodu platná.{/if}
+				{if $v->getStatus()->doCategoriesDiffer()}{if !isset($output)}
+					<br>{/if}Kategorie z výsledků neodpovídá dřívějším záznamům. Pokud budete pokračovat, použije se existující kategorie
+					<b>{$v->getDifferingCategory()->toCzechString()}</b>.{/if}
+			</td>
+		</tr>
+		</tbody>
+	</table>
+
+	<p n:if="count($problemCategories) > 0 || count($problemRegistrations) > 0">{input fix class => 'btn btn-warning'}</p>
+	<p n:if="count($problemCategories) === 0">{input save class => 'btn btn-primary'}</p>
+{/form}
+
+<p><a n:href="columns $id">zpět</a></p>

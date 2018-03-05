@@ -1,7 +1,29 @@
-
 {block content}
-<h1>Přidat závod</h1>
+<h1>Přidat nový závod</h1>
 
-{control zavodForm}
+{include 'form-competition.latte'}
 
 <p><a n:href="default">zpět</a></p>
+
+<script>
+    $(function () {
+        $('input.date').each(function (i, el) {
+            el = $(el);
+
+            var value = el.val();
+            el.get(0).type = 'text';
+            el.val(value); // MS Edge workaround
+
+            el.datetimepicker({
+                startDate: el.attr('min'),
+                endDate: el.attr('max'),
+                weekStart: 1,
+				bootcssVer: 3,
+                minView: 'month',
+                format: 'd. m. yyyy',
+                autoclose: true
+            });
+            el.attr('value') && el.datetimepicker('setValue');
+        });
+    });
+</script>

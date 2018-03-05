@@ -2,24 +2,30 @@
 {block content}
 <h1>Seznam závodů roku {$rok}</h1>
 
+{include #flashes}
 
 <table id="seznamZavodu">
-    <tr><th>Název závodu</th><th>Typ závodu</th><th>Datum konání</th><th>Zobr.</th><th>Výsl.</th><th>Editovat</th></tr>
-	<tr n:class="$iterator->odd ? odd : even" n:foreach="$zavody as $z">
-		<td><a n:href="Zavody:detail $z->id">{$z->nazev}{if !empty($z->kategorie)} {$z->kategorie}{/if}</a></td>
-		<td>{$typyZavodu[$z->typ]}</td>
-		<td>{if $z->datum_od == $z->datum_do}{$z->datum_od|date:'j. n. Y'}
-{elseif $z->datum_od->format('n') == $z->datum_do->format('n')}{$z->datum_od|date:'j.'} - {$z->datum_do|date:'j. n. Y'}
-{else}{$z->datum_od|date:'j. n. Y'} - {$z->datum_do|date:'j. n. Y'}
-{/if}
+	<tr>
+		<th>Název závodu</th>
+		<th>Typ závodu</th>
+		<th>Datum konání</th>
+		<th>Zobr.</th>
+		<th>Výsl.</th>
+		<th>Editovat</th>
+	</tr>
+	<tr n:if="count($zavody) === 0"><td colspan="6">Pro tento rok nebyly zadány žádné závody.</td></tr>
+	<tr n:foreach="$zavody as $z" n:class="$iterator->odd ? odd : even">
+		<td><a n:href="Zavody:detail $z->getId(), $rok">{$z->getTitleWithCategory()}</a>
 		</td>
-		<td>{$z->zobrazovat}</td><td>{$z->vysledky}</td>
-		<td><a n:href="Zavody:edit $z->id">edit</a></td>
+		<td>{$typyZavodu[$z->getType()]}</td>
+		<td>{$z->getFormattedDates()}</td>
+		<td>{if $z->isVisible()}ano{else}ne{/if}</td>
+		<td>{if $z->hasResults()}ano{else}ne{/if}</td>
+		<td><a n:href="Zavody:edit $z->getId()">edit</a></td>
 	</tr>
 </table>
 
-{if $isLoggedIn}
-<p><a n:href="add $rok">přidat závod</a></p>
-{/if}
+<p n:if="$isLoggedIn"><a n:href="add $rok" class="btn btn-primary">přidat závod</a></p>
+
 
 <p><a n:href="Homepage:">zpět na žebříček</a></p>
