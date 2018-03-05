@@ -1,0 +1,25 @@
+{block title}Úprava závodníka{/block}
+{block content}
+<h1>Úprava závodníka</h1>
+<h2>{$competitor->getFullName()}</h2>
+
+{include #flashes}
+
+{control changeNameForm}
+
+<h3>Kategorie</h3>
+
+{form changeCategoryForm}
+	<p class="text-danger">Pozor! Změnou kategorie v dřívějších letech může dojít ke změnám v žebříčku.</p>
+<table>
+	<tr n:foreach="$categories as $year => $c">
+		<th>{$year}</th>
+		<td>{$c->toCzechString()}</td>
+		<td>{input 'category_'.$year}</td>
+	</tr>
+</table>
+	<p>{input save class => 'btn btn-primary'}</p>
+{/form}
+
+
+<p><a n:href="Competitors:">zpět na vyhledávání závodníků</a></p>

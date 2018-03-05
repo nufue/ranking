@@ -3,9 +3,11 @@
 <h1>Registrovaní závodníci</h1>
 
 <table>
+	<tr n:if="count($results) === 0"><td>Nepodařilo se najít ani jeden záznam odpovídající hledaným parametrům.</td></tr>
 	<tr n:foreach="$results as $r">
 		<td>{$r->getRegistration()}</td>
 		<td>{$r->getFullName()}</td>
+		<td><a n:href="edit $year, $r->getId()" class="btn btn-primary">upravit</a></td>
 	</tr>
 </table>
 

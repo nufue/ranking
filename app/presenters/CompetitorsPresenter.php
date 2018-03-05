@@ -1,9 +1,15 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Presenters;
 
+use App\Exceptions\CategoryNotFoundException;
+use App\Model\Categories;
+use App\Model\Category;
 use App\Model\Competitors;
+use App\Model\Zavodnici;
 use Nette\Application\UI\Form;
+use Nette\Utils\Html;
 
 final class CompetitorsPresenter extends BasePresenter
 {
@@ -11,36 +17,97 @@ final class CompetitorsPresenter extends BasePresenter
 	/** @var \App\Model\Competitors */
 	private $competitors;
 
-	public function __construct(Competitors $competitors)
+	/** @var Categories */
+	private $categories;
+
+	/** @var int|null */
+	private $competitorId = null;
+
+	/** @var array */
+	private $loadedCategories = [];
+
+	public function __construct(Competitors $competitors, Categories $categories)
 	{
 		parent::__construct();
 		$this->competitors = $competitors;
+		$this->categories = $categories;
 	}
 
-	public function renderDefault(): void
+	public function actionDefault(string $year): void
 	{
-		$this->template->rok = $this->defaultYear->getDefaultYear();
+		$this->template->rok = $year;
 	}
 
-	public function renderResults($term): void
+	public function actionEdit(string $year, string $id): void
+	{
+		$this->competitorId = (int)$id;
+		$this->template->competitor = $c = $this->competitors->getById((int)$id);
+		$this->template->categories = $this->loadedCategories = $this->competitors->loadCategories((int)$id);
+		$this['changeNameForm']->setDefaults(['name' => $c->getFullName()]);
+	}
+
+	public function renderResults(string $year, string $term): void
 	{
 		$this->template->results = $this->competitors->search($term);
-		$this->template->rok = $this->defaultYear->getDefaultYear();
+		$this->template->year = $year;
 	}
 
 	public function createComponentSearchForm(): Form
 	{
-		$form = new Form;
-		$form->addText('search', 'Jméno nebo číslo registrace')->setRequired('Zadejte jméno nebo číslo registrace');
+		$form = new Form();
+		$form->addText('search', 'Jméno nebo číslo registrace')->setRequired('Zadejte jméno nebo číslo registrace')->setHtmlAttribute('autofocus');
 		$form->addSubmit('send', 'Hledat');
-		$form->onSuccess[] = function (Form $form, $values) {
-			$this->searchFormSuccess($form, $values);
+		$form->onSuccess[] = function (Form $form, $values): void {
+			$this->redirect('results', $this->year, $values->search);
 		};
 		return $form;
 	}
 
-	public function searchFormSuccess(Form $form, $values): void
+	public function createComponentChangeNameForm(): Form
 	{
-		$this->redirect('results', $values->search);
+		$form = new Form();
+		$form->addText('name', 'Nové jméno')->setRequired('Vyplňte prosím nové jméno závodníka');
+		$form->addSubmit('save', 'Uložit');
+		$form->onSuccess[] = function (Form $form, $values): void {
+			$this->competitors->changeName($this->competitorId, $values->name);
+			$this->flashMessage('Jméno závodníka bylo změněno.');
+			$this->redirect('this');
+		};
+		return $form;
+	}
+
+	public function createComponentChangeCategoryForm(): Form
+	{
+		$form = new Form();
+		foreach ($this->loadedCategories as $year => $category) {
+			$form->addSelect('category_' . $year, 'Kategorie', $this->categories->getCompetitorCategoriesByYear($year))->setPrompt('-- zvolte novou kategorii --');
+		}
+		$form->addSubmit('save', 'Uložit');
+		$form->onSuccess[] = function (Form $form, $values): void {
+			$this->changeCategoryFormSucceeded($form, $values);
+		};
+		return $form;
+	}
+
+	public function changeCategoryFormSucceeded(Form $form, $values): void
+	{
+		$needsRedirect = false;
+		foreach ($values as $k => $v) {
+			if ($v !== null && preg_match('~^category_(\d+)$~', $k, $m)) {
+				try {
+					$c = Category::fromString($v);
+					$this->competitors->changeCategory($this->competitorId, (int)$m[1], $c);
+					$el = Html::el()->addText('Kategorie v roce '.$m[1].' byla změněna na ')->addHtml(Html::el('b')->addText($c->toCzechString()));
+					$this->flashMessage($el);
+					$needsRedirect = true;
+				} catch (CategoryNotFoundException $exc) {
+					$form[$k]->addError('Nepodařilo se rozpoznat vybranou kategorii u roku '.$m[1]);
+				}
+
+			}
+		}
+		if ($needsRedirect) {
+			$this->redirect('this');
+		}
 	}
 }
