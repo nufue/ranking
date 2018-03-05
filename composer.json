@@ -1,15 +1,19 @@
 {
-	"name": "nette/web-project",
-	"description": "Nette: Standard Web Project",
-	"type": "project",
-	"license": ["MIT", "BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
-	"require": {
-		"php": ">= 7.1.0",
-		"nette/nette": "^2.4",
-		"phpoffice/phpexcel": "^1.8"
-	},
-	"require-dev": {
-		"dg/ftp-deployment": "^2.0",
-		"nette/tester": "~2.0"
-	}
+  "name": "nufue/ranking",
+  "description": "Žebříček LRU plavaná",
+  "type": "project",
+  "license": [
+    "MIT"
+  ],
+  "require": {
+    "php": ">= 7.1.0",
+    "nette/nette": "^2.4",
+    "nextras/forms": "^2.0",
+    "phpoffice/phpspreadsheet": "^1.1"
+  },
+  "require-dev": {
+    "dg/ftp-deployment": "^2.0",
+    "nette/tester": "~2.0",
+    "roave/security-advisories": "dev-master"
+  }
 }
