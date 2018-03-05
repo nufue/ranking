@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Model;
 
@@ -29,6 +30,20 @@ final class Competitor
 		return $c;
 	}
 
+	public function getId(): int {
+		return $this->id;
+	}
 
+	public function getRegistration(): string {
+		return $this->registration;
+	}
+
+	public function getFullName(): string {
+		return $this->fullName;
+	}
+
+	public function isRegistered(): bool {
+		return $this->registered;
+	}
 
 }
