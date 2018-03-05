@@ -1,0 +1,84 @@
+{block title}Tým {$team->teamName} - soupiska | rok {$team->year} | liga {$leagues[$team->league]}{/block}
+{block content}
+<h1>{$team->teamName}</h1>
+
+<table id="hlavickaTymu">
+	<tr>
+		<th>Rok</th>
+		<td>{$team->year}</td>
+	</tr>
+	<tr>
+		<th>Liga</th>
+		<td>{$leagues[$team->league]}</td>
+	</tr>
+</table>
+
+<h2>Závodníci</h2>
+
+<p n:if="count($members) == 0">K tomuto týmu nejsou přiřazeni žádní závodníci.</p>
+{var $index = 1}
+<table n:if="count($members) > 0" id="slozeniTymu">
+	<thead>
+	<tr>
+		<th>Pč</th>
+		<th>REG</th>
+		<th>Jméno</th>
+		<th>Kategorie</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr n:foreach="$members as $m" n:class="$iterator->odd ? odd : even">
+		<td>{$index}</td>
+		<td>{$m->getRegistration()}</td>
+		<td class="vlevo"><a n:href="Competitor: $m->getId(), $team->year">{$m->getFullName()}</a></td>
+		<td>{$m->getCategory()->toCzechString()}</td>
+		{php $index++}
+	</tr>
+	</tbody>
+
+</table>
+
+{if $isLoggedIn}
+	<p><a href="#" id="addFormDivShow">editace závodníků</a></p>
+
+	<div id="addFormDiv">
+		{control addForm}
+
+		<script>
+            var suggestLink = {link Teams:suggest};
+		</script>
+
+		<script type="text/javascript" n:syntax="off">
+            $(function () {
+                $('#addFormDiv').hide();
+                $('#addFormDivShow').click(function () {
+                    $('#addFormDiv').show();
+                    $('#addFormDivShow').parent().hide();
+                });
+                $('.naseptavac').each(function (index) {
+                    $(this).autocomplete({
+                        minLength: 2,
+                        source: function (request, response) {
+                            $.ajax({
+                                url: suggestLink,
+                                data: {typedText: request.term},
+                                success: function (data) {
+                                    response($.map(data.values, function (item) {
+                                        return {
+                                            label: item.cele_jmeno + " (" + item.registrace + ")",
+                                            value: item.cele_jmeno
+                                        }
+                                    }));
+                                }
+                            });
+                        }
+                    });
+                });
+
+
+            });
+		</script>
+	</div>
+{/if}
+
+<p>{if !empty($backlink)}<a href="{$backlink}">zpět</a>{else}<a n:href="default">zpět</a>{/if}</p>

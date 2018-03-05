@@ -1,0 +1,30 @@
+{block title}Týmy roku {$rok} | LRU plavaná{/block}
+{block content}
+<h1>Rok {$rok}</h1>
+
+{var $oldLeague = null}
+<table id="ligovaTabulka">
+	<thead>
+	<tr>
+		<th>Liga</th>
+		<th>Název týmu</th>
+		<th>Závodníků</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr n:if="count($teams) === 0">
+		<td colspan='3'>V tomto roce nebyly zatím zadány žádné týmy.</td>
+	</tr>
+	<tr n:foreach="$teams as $t">
+		{var $zmena = $t->getLeague() !== $oldLeague}
+		<td n:class="$zmena ? borderTop : ''">{$leagues[$t->getLeague()]}</td>
+		<td n:class="vlevo, $zmena ? borderTop : ''"><a n:href="detail $t->getId()">{$t->getName()}</a></td>
+		<td n:class="$zmena ? borderTop : ''">{$t->getCompetitorsCount()}</td>
+		{php $oldLeague = $t->getLeague()}
+	</tr>
+	</tbody>
+</table>
+
+<p n:if="$isLoggedIn"><a n:href="selectLeague" class="btn btn-primary">Přidat týmy</a></p>
+
+{if !empty($backlink)}<p><a href="{$backlink}">zpět</a></p>{else}<p><a n:href="Homepage:">zpět na žebříček</a></p>{/if}
