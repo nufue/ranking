@@ -1,0 +1,6 @@
+parameters:
+	db:
+		server: 		# server address
+		dbname:			# database name
+		user:			# database user
+		password:		# database user's password
