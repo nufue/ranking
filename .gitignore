@@ -4,3 +4,5 @@ vendor/*
 !vendor/bin/deploy.bat
 !vendor/bin/deployment-ec2.ini
 .idea/*
+app/config/authenticator.neon
+app/config/config.local.neon

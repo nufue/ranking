@@ -15,7 +15,8 @@ $configurator->createRobotLoader()
 
 $configurator->addConfig(__DIR__ . '/config/config.neon');
 $configurator->addConfig(__DIR__ . '/config/config.local.neon');
+$configurator->addConfig(__DIR__ . '/config/authenticator.neon');
 
 $container = $configurator->createContainer();
 
-return $container; 
+return $container;
