@@ -28,17 +28,23 @@ database:
 
 extensions:
 	- App\Extensions\DefaultYearExtension
+	nextras.form: Nextras\Forms\Bridges\NetteDI\FormsExtension
 
 services:
 	router: App\RouterFactory::createRouter
 	- App\Model\Teams
-	- App\Model\Kategorie
 	- App\Model\Competitions
-	- App\Model\Zavodnici
+	- App\Model\CompetitionTypes
+	- App\Model\ScoringTables
+	- App\Model\TeamNameOverrides
+	- App\Model\Rankings
 	- App\Model\Ranking
 	- App\Model\Suggest
 	- App\Model\Leagues
 	- App\Model\Competitors
+	- App\Model\ExcelExport
+	- App\Model\CheckedResults
+	- App\Model\Categories
 
 	authenticator:
 		class: Nette\Security\SimpleAuthenticator
