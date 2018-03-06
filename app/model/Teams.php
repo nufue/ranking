@@ -95,7 +95,7 @@ final class Teams extends Base
 			if (count($idZavodnici) > 0) {
 				$dbResult = $this->database->query("SELECT `id_zavodnika`, `kategorie` FROM `zavodnici_kategorie` WHERE `id_zavodnika` IN (?) AND `rok` = ?", array_keys($idZavodnici), (int)$rok);
 				foreach ($dbResult as $row) {
-					$idZavodnici[$row->id_zavodnika] = $row->kategorie;
+					$idZavodnici[$row->id_zavodnika] = Category::fromString($row->kategorie);
 				}
 			}
 		}
