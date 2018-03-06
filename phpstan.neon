@@ -1,0 +1,17 @@
+parameters:
+    autoload_directories:
+        - %rootDir%/../../../app
+
+    universalObjectCratesClasses:
+        - Nette\Database\Row
+        - Nette\Database\IRow
+        - Nette\Security\IIdentity
+
+    fileExtensions:
+    	- php
+    	- phpt
+
+includes:
+	- vendor/phpstan/phpstan-nette/extension.neon
+	- vendor/phpstan/phpstan-nette/rules.neon
+	- vendor/phpstan/phpstan-strict-rules/rules.neon
