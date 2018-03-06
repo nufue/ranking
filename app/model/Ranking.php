@@ -166,7 +166,7 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 			foreach ($z['vysledky'] as $k => $v) {
 				$body1 = $competitors[$id]['vysledky'][$k]['body1'];
 				if ($body1 !== null) {
-					$ind = array_search($body1, $bodyZebricekKopie);
+					$ind = array_search($body1, $bodyZebricekKopie, true);
 					if ($ind !== false) {
 						$competitors[$id]['vysledky'][$k]['body1_zebricek'] = true;
 						unset($bodyZebricekKopie[$ind]);
@@ -174,7 +174,7 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 				}
 				$body2 = $competitors[$id]['vysledky'][$k]['body2'];
 				if ($body2 !== null) {
-					$ind = array_search($body2, $bodyZebricekKopie);
+					$ind = array_search($body2, $bodyZebricekKopie, true);
 					if ($ind !== false) {
 						$competitors[$id]['vysledky'][$k]['body2_zebricek'] = true;
 						unset($bodyZebricekKopie[$ind]);
@@ -291,7 +291,7 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 		foreach ($results['vysledky'] as $k => $v) {
 			$body1 = $results['vysledky'][$k]['body1'];
 			if ($body1 !== null) {
-				$ind = \array_search($body1, $bodyZebricekKopie);
+				$ind = \array_search($body1, $bodyZebricekKopie, true);
 				if ($ind !== false) {
 					$results['vysledky'][$k]['body1_zebricek'] = true;
 					unset($bodyZebricekKopie[$ind]);
@@ -299,7 +299,7 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 			}
 			$body2 = $results['vysledky'][$k]['body2'];
 			if ($body2 !== null) {
-				$ind = \array_search($body2, $bodyZebricekKopie);
+				$ind = \array_search($body2, $bodyZebricekKopie, true);
 				if ($ind !== false) {
 					$results['vysledky'][$k]['body2_zebricek'] = true;
 					unset($bodyZebricekKopie[$ind]);

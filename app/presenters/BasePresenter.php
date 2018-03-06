@@ -54,8 +54,8 @@ abstract class BasePresenter extends Presenter
 		}
 
 		if (!$this->isAjax() && !$deleted) {
-			if (\in_array($absoluteUrl, $bcStorage->breadcrumb)) {
-				$ind = \array_search($absoluteUrl, $bcStorage->breadcrumb);
+			if (\in_array($absoluteUrl, $bcStorage->breadcrumb, true)) {
+				$ind = \array_search($absoluteUrl, $bcStorage->breadcrumb, true);
 				if ($ind !== false)
 					unset($bcStorage->breadcrumb[$ind]);
 			}

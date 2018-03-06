@@ -3,7 +3,7 @@
 namespace App\Model;
 
 use App\Exceptions\TeamNotFoundException;
-use Nette\ArrayHash;
+use Nette\Utils\ArrayHash;
 
 final class Teams extends Base
 {
