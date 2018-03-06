@@ -7,7 +7,6 @@ use App\Exceptions\CategoryNotFoundException;
 use App\Model\Categories;
 use App\Model\Category;
 use App\Model\Competitors;
-use App\Model\Zavodnici;
 use Nette\Application\UI\Form;
 use Nette\Http\IResponse;
 use Nette\Utils\Html;
