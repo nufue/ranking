@@ -12,6 +12,7 @@ use App\Model\ScoringTables;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use App\Model\Ranking;
+use Nette\Bridges\ApplicationLatte\Template;
 
 final class ZavodyPresenter extends BasePresenter
 {
@@ -43,7 +44,8 @@ final class ZavodyPresenter extends BasePresenter
 		$this->scoringTables = $scoringTables;
 	}
 
-	public function actionAdd(string $year) {
+	public function actionAdd(string $year)
+	{
 		$this->year = (int)$year;
 		$this->template->rok = (int)$year;
 	}
@@ -77,7 +79,9 @@ final class ZavodyPresenter extends BasePresenter
 
 	public function renderDetail(string $id, string $year)
 	{
-		$this->getTemplate()->getLatte()->addFilter('rank', function ($rank, $type) {
+		/** @var Template $template */
+		$template = $this->getTemplate();
+		$template->getLatte()->addFilter('rank', function ($rank, $type) {
 			$scoringTable = $this->scoringTables->getByCompetitionType($type);
 			return $scoringTable[(int)$rank] ?? '-';
 		});
@@ -93,14 +97,14 @@ final class ZavodyPresenter extends BasePresenter
 		$this->template->typyZavodu = $this->competitionTypes->getByYear((int)$year);
 	}
 
-	public function createComponentCompetitionForm(): Form
+	public function createComponentCompetitionForm(): \App\Forms\Form
 	{
-		$form = new Form;
+		$form = new \App\Forms\Form();
 		$form->addText('nazev', 'Název závodu', 50)->setAttribute('autofocus')->setRequired('Vyplňte prosím název návodu');
 		$form->addSelect('kategorie', 'Omezení kategorie účastníků', Ranking::$competitionCategories)->setPrompt('-- vyberte, je-li závod omezen na určitou kategorii --');
 		$form->addSelect('typ', 'Typ závodu', $this->competitionTypes->getByYear($this->year))->setPrompt('-- vyberte typ závodu --')->setRequired('Vyberte prosím typ závodu');
-		$form->addDatePicker('datum_od', 'Datum od', 10)->setRequired('Vyberte prosím datum počátku')->setAttribute('placeholder', 'd. m. yyyy');
-		$form->addDatePicker('datum_do', 'Datum do', 10)->setAttribute('placeholder', 'pro jednodenní závody nemusíte vyplňovat');
+		$form->addDatePicker('datum_od', 'Datum od')->setRequired('Vyberte prosím datum počátku')->setAttribute('placeholder', 'd. m. yyyy');
+		$form->addDatePicker('datum_do', 'Datum do')->setAttribute('placeholder', 'pro jednodenní závody nemusíte vyplňovat');
 		$form->addCheckbox('zobrazovat', 'Zobrazovat závod');
 		$form->addCheckbox('vysledky', 'Jsou zadány výsledky');
 

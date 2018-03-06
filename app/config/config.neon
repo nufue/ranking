@@ -28,7 +28,6 @@ database:
 
 extensions:
 	- App\Extensions\DefaultYearExtension
-	nextras.form: Nextras\Forms\Bridges\NetteDI\FormsExtension
 
 services:
 	router: App\RouterFactory::createRouter
