@@ -69,9 +69,11 @@ final class CompetitorsPresenter extends BasePresenter
 		$form->addText('name', 'Nové jméno')->setRequired('Vyplňte prosím nové jméno závodníka');
 		$form->addSubmit('save', 'Uložit');
 		$form->onSuccess[] = function (Form $form, $values): void {
-			$this->competitors->changeName($this->competitorId, $values->name);
-			$this->flashMessage('Jméno závodníka bylo změněno.');
-			$this->redirect('this');
+			if ($this->competitorId !== null) {
+				$this->competitors->changeName($this->competitorId, $values->name);
+				$this->flashMessage('Jméno závodníka bylo změněno.');
+				$this->redirect('this');
+			}
 		};
 		return $form;
 	}
@@ -96,10 +98,12 @@ final class CompetitorsPresenter extends BasePresenter
 			if ($v !== null && preg_match('~^category_(\d+)$~', $k, $m)) {
 				try {
 					$c = Category::fromString($v);
-					$this->competitors->changeCategory($this->competitorId, (int)$m[1], $c);
-					$el = Html::el()->addText('Kategorie v roce '.$m[1].' byla změněna na ')->addHtml(Html::el('b')->addText($c->toCzechString()));
-					$this->flashMessage($el);
-					$needsRedirect = true;
+					if ($this->competitorId !== null) {
+						$this->competitors->changeCategory($this->competitorId, (int)$m[1], $c);
+						$el = Html::el()->addText('Kategorie v roce ' . $m[1] . ' byla změněna na ')->addHtml(Html::el('b')->addText($c->toCzechString()));
+						$this->flashMessage($el);
+						$needsRedirect = true;
+					}
 				} catch (CategoryNotFoundException $exc) {
 					$form[$k]->addError('Nepodařilo se rozpoznat vybranou kategorii u roku '.$m[1]);
 				}

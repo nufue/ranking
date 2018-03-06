@@ -116,7 +116,7 @@ final class ZavodyPresenter extends BasePresenter
 
 	public function competitionFormSucceeded(Form $form, $values): void
 	{
-		if ($this->id && $this->record === null) {
+		if ($this->id !== null && $this->record === null) {
 			throw new BadRequestException;
 		}
 
@@ -129,7 +129,7 @@ final class ZavodyPresenter extends BasePresenter
 		if ($values->kategorie === null)
 			$values->kategorie = '';
 
-		if ($this->id) {
+		if ($this->id !== null && $this->record !== null) {
 			$this->zavody->updateCompetition($this->record->getId(), $values->nazev, $values->kategorie, $values->typ, $values->datum_od, $values->datum_do, $values->zobrazovat, $values->vysledky);
 			$this->flashMessage("Informace o závodu byly upraveny.", "success");
 			$this->redirect("default");

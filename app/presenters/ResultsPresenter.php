@@ -52,11 +52,11 @@ final class ResultsPresenter extends BasePresenter
 	/** @var CheckedResultRow[] */
 	private $results = [];
 
-	/** @var int|null */
-	private $competitionYear = null;
+	/** @var int */
+	private $competitionYear = 0;
 
-	/** @var int|null */
-	private $competitionId = null;
+	/** @var int */
+	private $competitionId = -1;
 
 	public function __construct(Competitions $competitions, Competitors $competitors, CheckedResults $checkedResults, Categories $categories)
 	{
@@ -339,9 +339,7 @@ final class ResultsPresenter extends BasePresenter
 			}
 
 		} else if ($action === 'save') {
-			if ($this->competitionId !== null) {
-				$this->zavody->deleteResults($this->competitionId);
-			}
+			$this->zavody->deleteResults($this->competitionId);
 
 			// všichni závodníci mají kategorii zadanou nebo historicky v databázi
 
@@ -355,7 +353,12 @@ final class ResultsPresenter extends BasePresenter
 					} else {
 						$competitorId = $this->competitors->addNewUnregisteredCompetitor($v->getFullName());
 					}
-					$this->categories->addCompetitorToCategory($competitorId, $v->getCategory(), $this->competitionYear);
+					if ($v->getCategory() !== null) {
+						$this->categories->addCompetitorToCategory($competitorId, $v->getCategory(), $this->competitionYear);
+					} else {
+						$form->addError('K závodníkovi '.$v->getFullName().' se nepodařilo najít platnou kategorii.');
+						return;
+					}
 				} else {
 					try {
 						if (preg_match('~^\d+$~', $v->getRegistration())) {
@@ -369,7 +372,12 @@ final class ResultsPresenter extends BasePresenter
 					}
 				}
 				if ($v->getStatus()->isAddCategory()) {
-					$this->categories->addCompetitorToCategory($competitorId, $v->getCategory(), $this->competitionYear);
+					if ($v->getCategory() !== null) {
+						$this->categories->addCompetitorToCategory($competitorId, $v->getCategory(), $this->competitionYear);
+					} else {
+						$form->addError('Nepodařilo se najít platnou kategorii k závodníkovi s ID = '.$competitorId);
+						return;
+					}
 				}
 
 				$cips2 = $v->hasRound(2) ? $v->getRound(2)->getCips() : null;

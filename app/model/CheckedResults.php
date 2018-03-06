@@ -44,7 +44,7 @@ final class CheckedResults
 					}
 					try {
 						$competitorCategory = $this->competitors->getCategoryByCompetitor($competitor->getId(), $year);
-						if ($category->getCategory() === $competitorCategory->getCategory()) {
+						if ($category !== null && $category->getCategory() === $competitorCategory->getCategory()) {
 							$status = CheckStatus::NO_PROBLEM;
 						} else {
 							$differingCategory = $competitorCategory;
@@ -61,7 +61,7 @@ final class CheckedResults
 				try {
 					$zavodnik = $this->competitors->getUnregisteredIdByName($r['prijmeni']);
 					$competitorCategory = $this->competitors->getCategoryByCompetitor($zavodnik, $year);
-					if ($category->getCategory() === $competitorCategory->getCategory()) {
+					if ($category !== null && $category->getCategory() === $competitorCategory->getCategory()) {
 						$status = CheckStatus::NO_PROBLEM;
 					} else {
 						$differingCategory = $competitorCategory;
@@ -73,7 +73,7 @@ final class CheckedResults
 					$status = $hasCategory ? CheckStatus::NEW : CheckStatus::NO_CATEGORY_SPECIFIED;
 				}
 			}
-			if ($hasCategory && !isset($allowedCategories[$category->getCategory()])) {
+			if ($hasCategory && $category !== null && !isset($allowedCategories[$category->getCategory()])) {
 				$status = CheckStatus::CATEGORY_NOT_ALLOWED;
 			}
 			$checkedResult = new CheckedResultRow($r['registrace'], $r['prijmeni'], $r['tym'], $category, new CheckStatus($status, $differingName !== null));

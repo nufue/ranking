@@ -11,7 +11,8 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 final class ExcelExport
 {
 
-	public function doSomething2(?\DateTimeInterface $datumPlatnosti, int $year, array $rankingResults): string {
+	public function doSomething2(?\DateTimeInterface $datumPlatnosti, int $year, array $rankingResults): string
+	{
 		$spreadsheet = new Spreadsheet();
 		$spreadsheet->getProperties()->setCreator('Jiří Hrazdil');
 
@@ -50,7 +51,7 @@ final class ExcelExport
 
 	}
 
-	private function addVysledky(Worksheet $sheet, $data, string $nadpis, ?\DateTimeInterface $datumPlatnosti, string $dataFilterArg): void
+	private function addVysledky(Worksheet $sheet, $data, string $nadpis, \DateTimeInterface $datumPlatnosti, string $dataFilterArg): void
 	{
 		$rowCnt = 1;
 
@@ -74,16 +75,17 @@ final class ExcelExport
 		$sheet->mergeCells('A' . $rowCnt . ':I' . $rowCnt);
 
 		$rowCnt++;
-		if ($datumPlatnosti !== null) {
-			$sheet->setCellValue('A' . $rowCnt, 'platný k ' . $datumPlatnosti->format('j. n. Y'));
-		}
+		$sheet->setCellValue('A' . $rowCnt, 'platný k ' . $datumPlatnosti->format('j. n. Y'));
 		$sheet->getStyle('A' . $rowCnt)->getFont()->setSize(12);
 		$sheet->getStyle('A' . $rowCnt)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 		$sheet->mergeCells('A' . $rowCnt . ':I' . $rowCnt);
 
 		$rowCnt++;
 		$sheet->setCellValue('A' . $rowCnt, 'Aktuální žebříček je dostupný na http://www.plavana.info/');
-		$sheet->getCell('A' . $rowCnt)->getHyperlink()->setUrl('http://www.plavana.info/' . (!empty($dataFilterArg) ? $dataFilterArg : '') . '?utm_source=xls&utm_medium=link&utm_campaign=zebricek' . $datumPlatnosti->format('Ymd'));
+		$cell = $sheet->getCell('A' . $rowCnt);
+		if ($cell !== null) {
+			$cell->getHyperlink()->setUrl('http://www.plavana.info/' . (!empty($dataFilterArg) ? $dataFilterArg : '') . '?utm_source=xls&utm_medium=link&utm_campaign=zebricek' . $datumPlatnosti->format('Ymd'));
+		}
 		$sheet->getStyle('A' . $rowCnt)->getFont()->setSize(12);
 		$sheet->getStyle('A' . $rowCnt)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 		$sheet->mergeCells('A' . $rowCnt . ':I' . $rowCnt);
