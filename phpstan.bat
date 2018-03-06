@@ -1,1 +1,1 @@
-vendor/bin/phpstan.bat analyse --level 2 -c phpstan.neon app tests
+vendor/bin/phpstan.bat analyse --level 4 -c phpstan.neon app tests

@@ -91,7 +91,6 @@ final class ZavodyPresenter extends BasePresenter
 			throw new BadRequestException('Závod nenalezen', 0, $exc);
 		}
 		$this->template->zavod = $competition;
-		if ($year === null) $year = $competition->getYear();
 		$this->template->rok = $year;
 		$this->template->zavodnici = $this->competitors->loadCompetitorsForCompetition((int)$id);
 		$this->template->typyZavodu = $this->competitionTypes->getByYear((int)$year);
