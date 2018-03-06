@@ -13,6 +13,7 @@ use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use App\Model\Ranking;
 use Nette\Bridges\ApplicationLatte\Template;
+use Nette\Http\IResponse;
 
 final class ZavodyPresenter extends BasePresenter
 {
@@ -42,6 +43,14 @@ final class ZavodyPresenter extends BasePresenter
 		$this->competitors = $competitors;
 		$this->competitionTypes = $competitionTypes;
 		$this->scoringTables = $scoringTables;
+	}
+
+	public function startup(): void
+	{
+		parent::startup();
+		if (\in_array($this->getAction(), ['add', 'edit']) && !$this->getUser()->isInRole('admin')) {
+			throw new BadRequestException('Pro přidávání nebo úpravu závodů musíte být správce.', IResponse::S403_FORBIDDEN);
+		}
 	}
 
 	public function actionAdd(string $year)

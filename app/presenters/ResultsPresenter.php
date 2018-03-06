@@ -12,6 +12,7 @@ use App\Model\Competitors;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Forms\Rendering\DefaultFormRenderer;
+use Nette\Http\IResponse;
 use Nette\Http\Session;
 use Nette\Http\SessionSection;
 
@@ -65,6 +66,14 @@ final class ResultsPresenter extends BasePresenter
 		$this->competitors = $competitors;
 		$this->checkedResults = $checkedResults;
 		$this->categories = $categories;
+	}
+
+	public function startup(): void
+	{
+		parent::startup();
+		if (!$this->getUser()->isInRole('admin')) {
+			throw new BadRequestException('Pro přidávání výsledků závodů musíte být správce.', IResponse::S403_FORBIDDEN);
+		}
 	}
 
 	public function actionAdd(string $id): void

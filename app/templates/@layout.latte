@@ -48,7 +48,7 @@
 				<ul class="nav navbar-nav">
 					<li n:class="$presenter->isLinkCurrent('Homepage:') ? active"><a n:href="Homepage:">Žebříček</a>
 					</li>
-					{if $isLoggedIn}
+					{if $isAdmin}
 						<li n:class="$presenter->isLinkCurrent('Teams:') ? active"><a n:href="Teams:">Týmy</a></li>
 						<li n:class="$presenter->isLinkCurrent('Rosters:') ? active"><a n:href="Rosters:">Soupisky</a></li>
 						<li n:class="$presenter->isLinkCurrent('Zavody:') ? active"><a n:href="Zavody:">Závody</a></li>

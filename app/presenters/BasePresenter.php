@@ -26,6 +26,7 @@ abstract class BasePresenter extends Presenter
 		$this->template->currentYear = (int)$this->getParameter('year');
 
 		$this->template->isLoggedIn = $this->getUser()->isLoggedIn();
+		$this->template->isAdmin = $this->getUser()->isInRole('admin');
 		$userName = '';
 		if ($this->getUser()->getIdentity() !== null) {
 			$userName = $this->getUser()->getIdentity()->getId();

@@ -25,6 +25,6 @@
 	</tbody>
 </table>
 
-<p n:if="$isLoggedIn"><a n:href="selectLeague" class="btn btn-primary">Přidat týmy</a></p>
+<p n:if="$isAdmin"><a n:href="selectLeague" class="btn btn-primary">Přidat týmy</a></p>
 
 {if !empty($backlink)}<p><a href="{$backlink}">zpět</a></p>{else}<p><a n:href="Homepage:">zpět na žebříček</a></p>{/if}

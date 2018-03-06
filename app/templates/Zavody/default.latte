@@ -11,7 +11,7 @@
 		<th>Datum konání</th>
 		<th>Zobr.</th>
 		<th>Výsl.</th>
-		<th>Editovat</th>
+		<th n:if="$isAdmin">Upravit</th>
 	</tr>
 	<tr n:if="count($zavody) === 0"><td colspan="6">Pro tento rok nebyly zadány žádné závody.</td></tr>
 	<tr n:foreach="$zavody as $z" n:class="$iterator->odd ? odd : even">
@@ -21,11 +21,11 @@
 		<td>{$z->getFormattedDates()}</td>
 		<td>{if $z->isVisible()}ano{else}ne{/if}</td>
 		<td>{if $z->hasResults()}ano{else}ne{/if}</td>
-		<td><a n:href="Zavody:edit $z->getId()">edit</a></td>
+		<td n:if="$isAdmin"><a n:href="Zavody:edit $z->getId()">upravit</a></td>
 	</tr>
 </table>
 
-<p n:if="$isLoggedIn"><a n:href="add $rok" class="btn btn-primary">přidat závod</a></p>
+<p n:if="$isAdmin"><a n:href="add $rok" class="btn btn-primary">přidat závod</a></p>
 
 
 <p><a n:href="Homepage:">zpět na žebříček</a></p>

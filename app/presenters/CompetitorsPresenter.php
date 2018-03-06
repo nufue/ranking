@@ -9,6 +9,7 @@ use App\Model\Category;
 use App\Model\Competitors;
 use App\Model\Zavodnici;
 use Nette\Application\UI\Form;
+use Nette\Http\IResponse;
 use Nette\Utils\Html;
 
 final class CompetitorsPresenter extends BasePresenter
@@ -31,6 +32,14 @@ final class CompetitorsPresenter extends BasePresenter
 		parent::__construct();
 		$this->competitors = $competitors;
 		$this->categories = $categories;
+	}
+
+	public function startup(): void
+	{
+		parent::startup();
+		if (!$this->getUser()->isInRole('admin')) {
+			throw new BadRequestException('Pro správu závodníků musíte být správce.', IResponse::S403_FORBIDDEN);
+		}
 	}
 
 	public function actionDefault(string $year): void

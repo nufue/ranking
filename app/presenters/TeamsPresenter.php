@@ -8,8 +8,10 @@ use App\Model\Competitors;
 use App\Model\Leagues;
 use App\Model\Suggest;
 use App\Model\Team;
+use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use App\Model\Teams;
+use Nette\Http\IResponse;
 
 final class TeamsPresenter extends BasePresenter
 {
@@ -45,6 +47,13 @@ final class TeamsPresenter extends BasePresenter
 		$this->suggest = $suggest;
 		$this->leagues = $leagues;
 		$this->competitors = $competitors;
+	}
+
+	public function startup(): void {
+		parent::startup();
+		if (!\in_array($this->getAction(), ['default', 'detail'], true) && !$this->getUser()->isInRole('admin')) {
+			throw new BadRequestException('Pro vstup do přidávání týmů musíte mít oprávnění správce.', IResponse::S403_FORBIDDEN);
+		}
 	}
 
 	public function actionDefault(string $year): void
