@@ -228,7 +228,9 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 
 	private function loadAllResultsForCompetitorAndYear($competitorId, int $rok, $omezeni = null): array
 	{
-		$results = ['zavodu' => 0, 'body_celkem' => [], 'vysledky' => []];
+		$competitionCount = 0;
+		$totalPoints = [];
+		$competitionResults = [];
 
 		$query = "SELECT
 					`zav`.`id` `id_zavodu`, `zav`.`nazev` `nazev_zavodu`, `zav`.`typ` `typ`, `zav`.`kategorie` `kategorie_zavodu`, `zz`.`tym`, `cips1`, `umisteni1`, `cips2`, `umisteni2`
@@ -253,61 +255,61 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 		$result = $this->database->query($query, $competitorId, $rok);
 
 		foreach ($result as $row) {
-			$results['vysledky'][$row->id_zavodu] = ['nazev_zavodu' => $row->nazev_zavodu, 'tym' => $row['tym'], 'typ_zavodu' => $row->typ, 'kategorie_zavodu' => $row->kategorie_zavodu, 'id_zavodu' => $row->id_zavodu, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2, 'cips1' => $row->cips1, 'cips2' => $row->cips2];
+			$competitionResults[$row->id_zavodu] = ['nazev_zavodu' => $row->nazev_zavodu, 'tym' => $row['tym'], 'typ_zavodu' => $row->typ, 'kategorie_zavodu' => $row->kategorie_zavodu, 'id_zavodu' => $row->id_zavodu, 'umisteni1' => $row->umisteni1, 'umisteni2' => $row->umisteni2, 'cips1' => $row->cips1, 'cips2' => $row->cips2];
 			if ($row->umisteni1 !== null)
-				$results['zavodu']++;
+				$competitionCount++;
 			if ($row->umisteni2 !== null)
-				$results['zavodu']++;
+				$competitionCount++;
 		}
 
-		foreach ($results['vysledky'] as $k => $v) {
+		foreach ($competitionResults as $k => $v) {
 			$typZavodu = $v['typ_zavodu'];
 			$body1 = $this->getPoints($typZavodu, $v['umisteni1']);
 			$body2 = $this->getPoints($typZavodu, $v['umisteni2']);
 			if ($v['umisteni1'] !== null) {
-				$results['vysledky'][$k]['body1'] = $body1;
-				$results['vysledky'][$k]['body1_zebricek'] = false;
-				$results['vysledky'][$k]['cips1'] = $v['cips1'];
-				$results['body_celkem'][] = $body1;
+				$competitionResults[$k]['body1'] = $body1;
+				$competitionResults[$k]['body1_zebricek'] = false;
+				$competitionResults[$k]['cips1'] = $v['cips1'];
+				$totalPoints[] = $body1;
 				$results['cips_celkem'][] = $v['cips1'];
 			} else {
-				$results['vysledky'][$k]['body1'] = null;
-				$results['vysledky'][$k]['body1_zebricek'] = false;
+				$competitionResults[$k]['body1'] = null;
+				$competitionResults[$k]['body1_zebricek'] = false;
 			}
 			if ($v['umisteni2'] !== null) {
-				$results['vysledky'][$k]['body2'] = $body2;
-				$results['vysledky'][$k]['cips2'] = $v['cips2'];
-				$results['vysledky'][$k]['body2_zebricek'] = false;
-				$results['body_celkem'][] = $body2;
+				$competitionResults[$k]['body2'] = $body2;
+				$competitionResults[$k]['cips2'] = $v['cips2'];
+				$competitionResults[$k]['body2_zebricek'] = false;
+				$totalPoints[] = $body2;
 				$results['cips_celkem'][] = $v['cips2'];
 			} else {
-				$results['vysledky'][$k]['body2'] = null;
-				$results['vysledky'][$k]['body2_zebricek'] = false;
+				$competitionResults[$k]['body2'] = null;
+				$competitionResults[$k]['body2_zebricek'] = false;
 			}
 		}
-		$results['body_zebricek'] = $this->getTopValuesFromArray($results['body_celkem'], 12);
+		$results['body_zebricek'] = $this->getTopValuesFromArray($totalPoints, 12);
 
 		$bodyZebricekKopie = $results['body_zebricek'];
-		foreach ($results['vysledky'] as $k => $v) {
-			$body1 = $results['vysledky'][$k]['body1'];
+		foreach ($competitionResults as $k => $v) {
+			$body1 = $competitionResults[$k]['body1'];
 			if ($body1 !== null) {
 				$ind = \array_search($body1, $bodyZebricekKopie, true);
 				if ($ind !== false) {
-					$results['vysledky'][$k]['body1_zebricek'] = true;
+					$competitionResults[$k]['body1_zebricek'] = true;
 					unset($bodyZebricekKopie[$ind]);
 				}
 			}
-			$body2 = $results['vysledky'][$k]['body2'];
+			$body2 = $competitionResults[$k]['body2'];
 			if ($body2 !== null) {
 				$ind = \array_search($body2, $bodyZebricekKopie, true);
 				if ($ind !== false) {
-					$results['vysledky'][$k]['body2_zebricek'] = true;
+					$competitionResults[$k]['body2_zebricek'] = true;
 					unset($bodyZebricekKopie[$ind]);
 				}
 			}
 		}
 
-		return $results;
+		return ['zavodu' => $competitionCount, 'body_celkem' => $totalPoints, 'vysledky' => $competitionResults];
 	}
 
 	private function getTopValuesFromArray(array $input, int $count): array

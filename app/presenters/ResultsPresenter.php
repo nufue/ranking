@@ -12,6 +12,7 @@ use App\Model\Competitors;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Forms\Rendering\DefaultFormRenderer;
+use Nette\Http\Session;
 use Nette\Http\SessionSection;
 
 final class ResultsPresenter extends BasePresenter
@@ -88,7 +89,9 @@ final class ResultsPresenter extends BasePresenter
 
 	private function getResultsSection(int $competitionId): SessionSection
 	{
-		return $this->getSession()->getSection('results_' . $competitionId);
+		/** @var Session $session */
+		$session = $this->getSession();
+		return $session->getSection('results_' . $competitionId);
 	}
 
 	public function importFormSucceeded(Form $form, $values): void

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Presenters;
 
 use Nette\Application\UI\Presenter;
+use Nette\Http\Session;
 
 abstract class BasePresenter extends Presenter
 {
@@ -32,7 +33,9 @@ abstract class BasePresenter extends Presenter
 
 		$this->template->userName = $userName;
 
-		$bcStorage = $this->getSession('breadcrumb');
+		/** @var Session $session */
+		$session = $this->getSession();
+		$bcStorage = $session->getSection('breadcrumb');
 		if ($bcStorage->breadcrumb === null) {
 			$bcStorage->breadcrumb = [];
 		}
@@ -67,7 +70,8 @@ abstract class BasePresenter extends Presenter
 		$bcStorage->breadcrumb = \array_values($bcStorage->breadcrumb);
 	}
 
-	public function handlePrev() {
+	public function handlePrev()
+	{
 		--$this->year;
 		$params = $this->getParameters();
 		$params['year'] = $this->year;
@@ -75,7 +79,8 @@ abstract class BasePresenter extends Presenter
 		$this->redirect('this', $params);
 	}
 
-	public function handleNext() {
+	public function handleNext()
+	{
 		++$this->year;
 		$params = $this->getParameters();
 		$params['year'] = $this->year;
