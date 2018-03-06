@@ -1,4 +1,5 @@
 vendor/*
 .idea/*
+deploy/*
 app/config/authenticator.neon
 app/config/config.local.neon
