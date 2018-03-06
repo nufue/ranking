@@ -9,6 +9,7 @@ use App\Model\CheckedResultRow;
 use App\Model\CheckedResults;
 use App\Model\Competitions;
 use App\Model\Competitors;
+use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Forms\Rendering\DefaultFormRenderer;

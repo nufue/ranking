@@ -48,7 +48,7 @@ final class ZavodyPresenter extends BasePresenter
 	public function startup(): void
 	{
 		parent::startup();
-		if (\in_array($this->getAction(), ['add', 'edit']) && !$this->getUser()->isInRole('admin')) {
+		if (\in_array($this->getAction(), ['add', 'edit'], true) && !$this->getUser()->isInRole('admin')) {
 			throw new BadRequestException('Pro přidávání nebo úpravu závodů musíte být správce.', IResponse::S403_FORBIDDEN);
 		}
 	}
