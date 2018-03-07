@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Presenters;
 
 use App\Exceptions\CategoryNotFoundException;
+use App\Exceptions\RegistrationAlreadyExistsException;
 use App\Model\Categories;
 use App\Model\Category;
 use App\Model\Competitors;
@@ -82,6 +83,24 @@ final class CompetitorsPresenter extends BasePresenter
 				$this->competitors->changeName($this->competitorId, $values->name);
 				$this->flashMessage('Jméno závodníka bylo změněno.');
 				$this->redirect('this');
+			}
+		};
+		return $form;
+	}
+
+	protected function createComponentChangeRegistrationForm(): Form {
+		$form = new Form();
+		$form->addText('registration', 'Nové číslo registrace')->setRequired('Vyplňte prosím nové číslo registrace');
+		$form->addSubmit('save', 'Uložit');
+		$form->onSuccess[] = function(Form $form, $values): void {
+			if ($this->competitorId !== null) {
+				try {
+					$this->competitors->changeRegistration($this->competitorId, $values->registration);
+					$this->flashMessage('Číslo registrace závodníka bylo změněno.');
+					$this->redirect('this');
+				} catch (RegistrationAlreadyExistsException $exc) {
+					$form->addError($exc->getMessage().'. Změna nebyla provedena.');
+				}
 			}
 		};
 		return $form;

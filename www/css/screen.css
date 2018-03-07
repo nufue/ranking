@@ -93,3 +93,12 @@ a {
 a.btn {
     text-decoration: none;
 }
+
+ul.error {
+    list-style: none;
+    padding-left: 0px;
+}
+
+ul.error li {
+    color: #f00;
+}

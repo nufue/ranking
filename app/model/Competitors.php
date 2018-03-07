@@ -6,6 +6,7 @@ namespace App\Model;
 use App\Exceptions\CategoryForCompetitorNotFoundException;
 use App\Exceptions\CategoryNotFoundException;
 use App\Exceptions\CompetitorNotFoundException;
+use App\Exceptions\RegistrationAlreadyExistsException;
 use App\Exceptions\UnregisteredCompetitorNotFoundException;
 use Nette\Database\Connection;
 
@@ -51,6 +52,15 @@ final class Competitors extends Base
 	public function changeName(int $id, string $name): void
 	{
 		$this->database->query("UPDATE `zavodnici` SET `cele_jmeno` = ? WHERE `id` = ?", $name, $id);
+	}
+
+	public function changeRegistration(int $id, string $registration): void {
+		$existing = $this->database->query("SELECT `cele_jmeno` FROM `zavodnici` WHERE `registrace` = ?", $registration)->fetch();
+		if ($existing === false) {
+			$this->database->query("UPDATE `zavodnici` SET `registrace` = ? WHERE `id` = ?", $registration, $id);
+		} else {
+			throw new RegistrationAlreadyExistsException('Závodník s registrací číslo '.$registration.' již v systému existuje pod jménem '.$existing->cele_jmeno);
+		}
 	}
 
 	public function changeCategory(int $id, int $year, Category $category): void
