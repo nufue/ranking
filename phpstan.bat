@@ -1,1 +1,0 @@
-vendor/bin/phpstan.bat analyse --level 7 -c phpstan.neon app tests
