@@ -65,6 +65,8 @@ Každé importované výsledky musí obsahovat minimálně tyto sloupce:
 
 Pro každý záznam je třeba ověřit, zda-li:
 - se jedná o registrovaného nebo neregistrovaného závodníka
+- jméno z výsledků odpovídá uloženému jménu z databáze
+- ve výsledcích je uvedena kategorie nebo ji lze dohledat z dřívějšího závodu ve stejném roce
 
 ### Neregistrovaný závodník
 Ověří se, zda-li existuje v tabulce `zavodnici` dřívější záznam se stejným jménem.
@@ -75,11 +77,22 @@ V ostatních případech se zahlásí _soft-error_.
 Pokud záznam se jménem v databázi neexistuje, ověří se, že ve vstupních datech je zadána platná kategorie. Pokud ano, založí se nové záznamy v tabulkách `zavodnici` a `zavodnici_kategorie`. V ostatních případech se zahlásí _soft-error_.
 
 ### Registrovaný závodník
-Ověří se, zda-li zadané číslo registrace existuje v tabulce `zavodnici`. Pokud ano, ověří se existence záznamu kategorie v databázi.
+Ověří se, zda-li zadané číslo registrace existuje v tabulce `zavodnici`.
 
-Pokud se podle čísla registrace závodníka v tabulce `zavodnici` vyhledat nepodaří, prohledá se též tabulka `registrace`. V takovém případě však musí být ve vstupních datech zadána hodnota `kategorie`. 
+Pokud ano, ověří se shoda jména - pokud se jméno neshoduje, je vypsáno upozornění. Obvykle je neshoda způsobena jednou z následujících příčin:
+- překlep v zadaném čísle registrace (v upozornění se zobrazí úplně jiné jméno než je ve výsledcích) - v takovém případě se do zobrazeného textového pole vyplní správné číslo registrace
+- překlep v zadaném jméně - můžeme ignorovat, v žebříčku se použije dříve zadané jméno (pokud je špatně, je možné jej změnit - viz níže)
 
-## Změny
+Dále se ověří existence záznamu kategorie v databázi. Pokud záznam kategorie existuje, avšak nesouhlasí se vstupními údaji, je vypsáno upozornění.
+
+Pokud zadané číslo registrace v tabulce `zavodnici` neexistuje a zároveň ve vstupních datech není zadána kategorie, zobrazí se formulář pro nastavení kategorie u konkrétního závodníka - bez jejího vyplnění není možné výsledky uložit.
+
+## Provádění změn
+### Úprava jména závodníka, jeho kategorie nebo čísla registrace
+Přihlášený správce v horní liště klikne na odkaz `Závodníci`, pomocí formuláře vyhledá závodníka buď podle čísla registrace nebo části jména.
+
+U některého z nalezených záznamů klikne na _Upravit_, zobrazí se stránka s možností úpravy jména, zadáním nového čísla registrace (používat s rozmyslem) a úpravou kategorie v jednotlivém roce.
+
 ### Přidání nové ligy
 Doplní se nový záznam do tabulky `leagues`. Je vhodné vyplnit sloupec `year_from` rokem, od kterého liga existuje, aby se nezobrazovala v dřívějších letech.
 
@@ -90,6 +103,7 @@ Přejmenování stávající ligy se řeší ukončením platnosti (vyplněním 
 Přidá se nový záznam do tabulky `kategorie`. Pokud se vznikem nové kategorie vznikne také nový druh závodu, postupuje se podle návodu níže.
 
 ### Přidání nového bodovacího schématu
+Do tabulky `scoring_tables` se přidá nový záznam s textovým popisem bodovacího schématu. Následně se do tabulky `scoring_tables_rows` přidají záznamy určující body (`points`) pro jednotlivá umístění (`rank`) v rámci bodovacího schématu (`id`).
 
 ### Přidání nového typu závodu
 Přidá se nový záznam do tabulky `competition_types`. Dále se novému typu závodu přiřadí bodovací schéma.
