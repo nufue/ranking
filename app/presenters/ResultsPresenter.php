@@ -390,10 +390,12 @@ final class ResultsPresenter extends BasePresenter
 					}
 				}
 
+				$cips1 = $v->hasRound(1) ? $v->getRound(1)->getCips() : null;
+				$umisteni1 = $v->hasRound(1) ? $v->getRound(1)->getRank() : null;
 				$cips2 = $v->hasRound(2) ? $v->getRound(2)->getCips() : null;
 				$umisteni2 = $v->hasRound(2) ? $v->getRound(2)->getRank() : null;
 
-				$this->zavody->addVysledek($this->competitionId, $competitorId, $v->getTeam(), $v->getRound(1)->getCips(), $v->getRound(1)->getRank(), $cips2, $umisteni2);
+				$this->zavody->addVysledek($this->competitionId, $competitorId, $v->getTeam(), $cips1, $umisteni1, $cips2, $umisteni2);
 				$countSuccess++;
 			}
 			if ($countSuccess > 0) {
