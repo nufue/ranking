@@ -12,6 +12,7 @@
 		<th>Zobr.</th>
 		<th>Výsl.</th>
 		<th n:if="$isAdmin">Upravit</th>
+		<th n:if="$isAdmin">Přidat výsledky</th>
 	</tr>
 	<tr n:if="count($zavody) === 0"><td colspan="6">Pro tento rok nebyly zadány žádné závody.</td></tr>
 	<tr n:foreach="$zavody as $z" n:class="$iterator->odd ? odd : even">
@@ -22,6 +23,7 @@
 		<td>{if $z->isVisible()}ano{else}ne{/if}</td>
 		<td>{if $z->hasResults()}ano{else}ne{/if}</td>
 		<td n:if="$isAdmin"><a n:href="Zavody:edit $z->getId()">upravit</a></td>
+		<td n:if="$isAdmin"><a n:href="Results:add $z->getId()">{if $z->hasResults()}znovu nahrát výsledky{else}přidat výsledky{/if}</a></td>
 	</tr>
 </table>
 
