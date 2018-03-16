@@ -14,6 +14,9 @@
 - v souboru `app/config/year.neon` změnit výchozí rok
 
 ## Struktura databáze
+### Tabulka `competition_categories`
+Obsahuje kategorie určující započítávání závodníků do žebříčku. Každý závod má přiřazenu právě jednu kategorii. Sloupec `output_description` obsahuje text, který se ve výpisu připojí k názvu závodu. Sloupec `select_description` obsahuje text, který se zobrazí v drop-down prvku v přidávání nebo editaci závodu. Podle pole `order` jsou v drop-down prvku záznamy seřazeny. Platnost jednotlivých záznamů je možno ovlivnit nastavením sloupců `year_from` a `year_to`. 
+
 ### Tabulka `competition_types`
 Obsahuje jednotlivé typy závodů. Sloupce `year_from` a `year_to` umožňují postihnout platnost některých druhů závodů pouze v určitých ročnících (což se uplatní například při změnách juniorských kategorií nebo přidání nového typu závodu od určitého ročníku).
 
@@ -50,7 +53,8 @@ Obsahuje kategorii pro konkrétního závodníka v konkrétním roce.
 ### Tabulka `zavodnici_zavody`
 Obsahuje výsledky závodníků v jednotlivých závodech. Protože většina závodů je dvoukolových, obsahuje sloupce pro dvě kola (`cips1`, `umisteni1`, `cips2`, `umisteni2`). V případě, že se závodník příslušného kola neúčastnil, uvede se do příslušné dvojice sloupců hodnota `NULL`. Pokud má závod více než dvě kola, je třeba založit v tabulce `zavody` více závodů (jeden závod na 1. a 2. kolo, druhý závod na 3. kolo). 
 ### Tabulka `zavody`
-Obsahuje všechny v systému zadané závody. Každý závod má nějakou kategorii (`competition_types`). Některé závody mohou být omezeny co do kategorií závodníků, kteří se jich mohou zúčastnit - v takovém případě se nezapočtou do celkového žebříčku, nýbrž pouze do žebříčku příslušné kategorie (např. _U15_).
+Obsahuje všechny v systému zadané závody. Každý závod je nějakého druhu (`competition_types`), přičemž druh určuje, jaké bodovací schéma se použije pro započtení výsledku závodu do žebříčku.
+Některé závody mohou být omezeny co do kategorií závodníků (`competition_categories`), kteří se jich mohou zúčastnit - v takovém případě se nezapočtou do celkového žebříčku, nýbrž pouze do žebříčku příslušné kategorie (např. _U15_).
 
 ## Import dat
 ### Povinná pole

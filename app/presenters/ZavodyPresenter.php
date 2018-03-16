@@ -5,15 +5,16 @@ namespace App\Presenters;
 
 use App\Exceptions\CompetitionNotFoundException;
 use App\Model\Competition;
+use App\Model\CompetitionCategories;
 use App\Model\Competitions;
 use App\Model\CompetitionTypes;
 use App\Model\Competitors;
 use App\Model\ScoringTables;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
-use App\Model\Ranking;
 use Nette\Bridges\ApplicationLatte\Template;
 use Nette\Http\IResponse;
+use App\Forms as AF;
 
 final class ZavodyPresenter extends BasePresenter
 {
@@ -30,19 +31,23 @@ final class ZavodyPresenter extends BasePresenter
 	/** @var CompetitionTypes */
 	private $competitionTypes;
 
+	/** @var CompetitionCategories */
+	private $competitionCategories;
+
 	/** @var Competitors */
 	private $competitors;
 
 	/** @var ScoringTables */
 	private $scoringTables;
 
-	public function __construct(Competitions $competitions, Competitors $competitors, CompetitionTypes $competitionTypes, ScoringTables $scoringTables)
+	public function __construct(Competitions $competitions, Competitors $competitors, CompetitionTypes $competitionTypes, ScoringTables $scoringTables, CompetitionCategories $competitionCategories)
 	{
 		parent::__construct();
 		$this->competitions = $competitions;
 		$this->competitors = $competitors;
 		$this->competitionTypes = $competitionTypes;
 		$this->scoringTables = $scoringTables;
+		$this->competitionCategories = $competitionCategories;
 	}
 
 	public function startup(): void
@@ -77,7 +82,7 @@ final class ZavodyPresenter extends BasePresenter
 		$this->template->rok = $c->getYear();
 		$defaults = [
 			'nazev' => $c->getTitle(),
-			'kategorie' => $c->getCategory(),
+			'kategorie' => $c->getCategoryId(),
 			'typ' => $c->getType(),
 			'datum_od' => $c->getFrom()->format('j. n. Y'),
 			'datum_do' => $c->getTo()->format('j. n. Y'),
@@ -106,11 +111,11 @@ final class ZavodyPresenter extends BasePresenter
 		$this->template->competitionTypes = $this->competitionTypes->getByYear((int)$year);
 	}
 
-	public function createComponentCompetitionForm(): \App\Forms\Form
+	public function createComponentCompetitionForm(): AF\Form
 	{
-		$form = new \App\Forms\Form();
+		$form = new AF\Form();
 		$form->addText('nazev', 'Název závodu', 50)->setAttribute('autofocus')->setRequired('Vyplňte prosím název návodu');
-		$form->addSelect('kategorie', 'Omezení kategorie účastníků', Ranking::$competitionCategories)->setPrompt('-- vyberte, je-li závod omezen na určitou kategorii --');
+		$form->addSelect('kategorie', 'Omezení kategorie účastníků', $this->competitionCategories->getByYearForSelect($this->year))->setPrompt('-- vyberte, je-li závod omezen na určitou kategorii --');
 		$form->addSelect('typ', 'Typ závodu', $this->competitionTypes->getByYear($this->year))->setPrompt('-- vyberte typ závodu --')->setRequired('Vyberte prosím typ závodu');
 		$form->addDatePicker('datum_od', 'Datum od', 50)->setRequired('Vyberte prosím datum počátku')->setAttribute('placeholder', 'd. m. yyyy');
 		$form->addDatePicker('datum_do', 'Datum do', 50)->setAttribute('placeholder', 'pro jednodenní závody nemusíte vyplňovat');

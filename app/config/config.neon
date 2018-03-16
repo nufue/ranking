@@ -34,6 +34,7 @@ services:
 	- App\Model\Teams
 	- App\Model\Competitions
 	- App\Model\CompetitionTypes
+	- App\Model\CompetitionCategories
 	- App\Model\ScoringTables
 	- App\Model\TeamNameOverrides
 	- App\Model\Rankings

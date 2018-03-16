@@ -33,7 +33,7 @@
 		<th>Celkem bodů do žebříčku</th>
 		<th n:class="$zobrazitZavody ? thickRight : ''">Min. body do žeb.</th>
 		<th n:if="$zobrazitZavody" n:foreach="$zavody as $idZavodu => $z">
-			<a n:href="Zavody:detail $idZavodu">{$z['nazev']}{if !empty($z['kategorie'])} {$z['kategorie']}{/if}</a>
+			<a n:href="Zavody:detail $idZavodu">{$z['title_with_category']}</a>
 		</th>
 	</tr>
 	</thead>

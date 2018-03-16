@@ -15,7 +15,9 @@ final class Competition
 	/** @var string */
 	private $title;
 	/** @var string */
-	private $category;
+	private $categoryId;
+	/** @var string */
+	private $categoryDescription;
 	/** @var string */
 	private $type;
 	/** @var \DateTimeInterface */
@@ -37,7 +39,8 @@ final class Competition
 		$c->id = (int)$row->id;
 		$c->year = (int)$row->rok;
 		$c->title = $row->nazev;
-		$c->category = $row->kategorie ?? '';
+		$c->categoryId = $row->categoryId ?? '';
+		$c->categoryDescription = $row->categoryDescription ?? '';
 		$c->type = $row->typ;
 		$c->from = $row->datum_od;
 		$c->to = $row->datum_do;
@@ -53,7 +56,7 @@ final class Competition
 
 	public function getTitleWithCategory(): string
 	{
-		return trim($this->title . ' ' . $this->category);
+		return trim($this->title . ' ' . $this->categoryDescription);
 	}
 
 	public function getId(): int
@@ -61,9 +64,14 @@ final class Competition
 		return $this->id;
 	}
 
-	public function getCategory(): string
+	public function getCategoryId(): string
 	{
-		return $this->category;
+		return $this->categoryId;
+	}
+
+	public function getCategoryDescription(): string
+	{
+		return $this->categoryDescription;
 	}
 
 	public function getType(): string

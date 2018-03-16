@@ -24,20 +24,6 @@ final class Ranking extends Base
 		$this->teamNameOverrides = $teamNameOverrides;
 	}
 
-	public static $competitionCategories = [
-		'' => 'bez omezení',
-		'u10' => 'U10',
-		'u12' => 'U12',
-		'u14' => 'U14',
-		'u15' => 'U15',
-		'u18' => 'U18',
-		'u20' => 'U20',
-		'u23' => 'U23',
-		'u25' => 'U25',
-		'ž' => 'ženy',
-		'h' => 'hendikepovaní',
-	];
-
 	public function getValidityDate(int $year) {
 		return $this->database->query("SELECT MAX(`datum_do`) `datum_platnosti` FROM `zavody` WHERE `rok` = ? AND zobrazovat = 'ano' AND vysledky = 'ano'", $year)->fetchField();
 	}
@@ -46,7 +32,7 @@ final class Ranking extends Base
 		$competitions = [];
 		$visibleCompetitions = $this->competitions->loadVisibleCompetitions($year);
 		foreach ($visibleCompetitions as $c) {
-			$competitions[$c->getId()] = ['typ' => $c->getType(), 'nazev' => $c->getTitle(), 'kategorie' => $c->getCategory()];
+			$competitions[$c->getId()] = ['type' => $c->getType(), 'title_with_category' => $c->getTitle()];
 		}
 		return $competitions;
 	}

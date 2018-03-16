@@ -3,6 +3,30 @@ SET time_zone = '+00:00';
 SET foreign_key_checks = 0;
 SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
+DROP TABLE IF EXISTS `competition_categories`;
+CREATE TABLE `competition_categories` (
+  `id` varchar(20) COLLATE utf8_czech_ci NOT NULL,
+  `output_description` varchar(100) COLLATE utf8_czech_ci DEFAULT NULL,
+  `select_description` varchar(100) COLLATE utf8_czech_ci DEFAULT NULL,
+  `order` smallint(6) NOT NULL,
+  `year_from` int(11) DEFAULT NULL,
+  `year_to` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+
+INSERT INTO `competition_categories` (`id`, `output_description`, `select_description`, `order`, `year_from`, `year_to`) VALUES
+('',  '', 'bez omezení',  0,  NULL, NULL),
+('u10', 'U10',  'U10',  1,  NULL, 2012),
+('u12', 'U12',  'U12',  2,  2013, 2016),
+('u14', 'U14',  'U14',  3,  NULL, 2016),
+('u15', 'U15',  'U15',  4,  2017, NULL),
+('u18', 'U18',  'U18',  5,  NULL, 2016),
+('u20', 'U20',  'U20',  6,  2017, NULL),
+('u23', 'U23',  'U23',  7,  NULL, 2016),
+('u25', 'U25',  'U25',  8,  2017, NULL),
+('zeny',  'ženy', 'ženy', 9,  NULL, NULL),
+('hendikep',  'hendikepovaní',  'hendikepovaní',  10, NULL, NULL);
+
 DROP TABLE IF EXISTS `competition_types`;
 CREATE TABLE `competition_types` (
   `id` varchar(20) COLLATE utf8_czech_ci NOT NULL,
@@ -323,6 +347,8 @@ CREATE TABLE `zavody` (
   `vysledky` enum('ano','ne') COLLATE utf8_czech_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `rok` (`rok`),
-  KEY `typ2` (`typ`),
-  CONSTRAINT `zavody_ibfk_1` FOREIGN KEY (`typ`) REFERENCES `competition_types` (`id`)
+  KEY `typ` (`typ`),
+  KEY `kategorie` (`kategorie`),
+  CONSTRAINT `zavody_ibfk_1` FOREIGN KEY (`typ`) REFERENCES `competition_types` (`id`),
+  CONSTRAINT `zavody_ibfk_2` FOREIGN KEY (`kategorie`) REFERENCES `competition_categories` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
