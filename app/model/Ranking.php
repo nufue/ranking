@@ -104,7 +104,7 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 			foreach ($z['vysledky'] as $k => $v) {
 				$idZavodu = $v['zavod'];
 				$kategorieZavodu = $v['kategorie_zavodu'];
-				$typZavodu = $competitions[$idZavodu]['typ'];
+				$typZavodu = $competitions[$idZavodu]['type'];
 
 				$body1 = $this->getPoints($typZavodu, $v['umisteni1']);
 				$body2 = $this->getPoints($typZavodu, $v['umisteni2']);
