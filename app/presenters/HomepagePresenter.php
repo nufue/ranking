@@ -54,8 +54,6 @@ final class HomepagePresenter extends BasePresenter
 		$selectedYear = (int)$year;
 		$competitions = $this->ranking->getCompetitions($selectedYear);
 		$datumPlatnosti = $this->ranking->getValidityDate($selectedYear);
-
-		$zebricekCelkovy = $this->ranking->getRanking($selectedYear, $competitions, new RankingType(RankingType::TOTAL) /* zadny konkretni typ */);
 		$rankings = $this->rankings->getByYear((int)$year);
 		$allRankings = [];
 		foreach ($rankings as $shortcut => $fullName) {
