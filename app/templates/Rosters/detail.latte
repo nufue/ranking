@@ -1,29 +1,29 @@
-{block title}Soupisky {$rok} | LRU plavaná{/block}
+{block title}Soupisky {$year} | LRU plavaná{/block}
 {block content}
-<h1>Soupisky - rok {$rok} - {$nazevLigy}</h1>
+<h1>Soupisky - rok {$year} - {$leagueName}</h1>
 
-<p n:if="count($soupisky) === 0">Pro rok {$rok} a ligu {$nazevLigy} nebyly nalezeny žádné soupisky.</p>
+<p n:if="count($rosters) === 0">Pro rok {$year} a ligu {$leagueName} nebyly nalezeny žádné soupisky.</p>
 
 <table>
-	{foreach $soupisky as $idTymu => $tym}
+	{foreach $rosters as $team}
 		<tr>
-			<th rowspan="13">{$tym['nazev']}</th>
-			{php $first = array_shift($tym['clenove'])}
+			<th rowspan="13">{$team['name']}</th>
+			{php $first = array_shift($team['members'])}
 			{var $poradi = 1}
 			<td>{=$poradi++}</td>
-			<td>{$first['registrace']}</td>
-			<td>{$first['jmeno']}</td>
-			<td>{if $first['registrace'] === null}kategorie nenalezena{else}{$first['kategorie']->toShortString()}{/if}</td>
+			<td>{$first['registration']}</td>
+			<td>{$first['name']}</td>
+			<td>{if $first['registration'] === null}kategorie nenalezena{else}{$first['category']->toShortString()}{/if}</td>
 		</tr>
-		{foreach $tym['clenove'] as $clen}
+		{foreach $team['members'] as $member}
 			<tr>
 				<td>{=$poradi++}</td>
-				<td>{$clen['registrace']}</td>
-				<td>{$clen['jmeno']}</td>
-				<td>{if $clen['kategorie'] === null}kategorie nenalezena{else}{$clen['kategorie']->toShortString()}{/if}</td>
+				<td>{$member['registration']}</td>
+				<td>{$member['name']}</td>
+				<td>{if $member['category'] === null}kategorie nenalezena{else}{$member['category']->toShortString()}{/if}</td>
 			</tr>
 		{/foreach}
-		{for $i = 1; $i < 13 - count($tym['clenove']); $i++}
+		{for $i = 1; $i < 13 - count($team['members']); $i++}
 			<tr>
 				<td>{=$poradi++}</td>
 				<td></td>
@@ -37,13 +37,13 @@
 <p>&nbsp;</p>
 
 <table>
-	{foreach $soupisky as $idTymu => $tym}
-		{foreach $tym['clenove'] as $clen}
+	{foreach $rosters as $team}
+		{foreach $team['members'] as $member}
 			<tr>
-				<td>{$clen['registrace']}</td>
-				<td>{$clen['jmeno']}</td>
-				<td>{if $clen['kategorie'] === null}kategorie nenalezena{else}{$clen['kategorie']->toShortString()}{/if}</td>
-				<td>{$tym['nazev']}</td>
+				<td>{$member['registration']}</td>
+				<td>{$member['name']}</td>
+				<td>{if $member['category'] === null}kategorie nenalezena{else}{$member['category']->toShortString()}{/if}</td>
+				<td>{$team['name']}</td>
 			</tr>
 		{/foreach}
 	{/foreach}

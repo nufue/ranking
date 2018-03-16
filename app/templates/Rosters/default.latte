@@ -1,9 +1,9 @@
-{block title}Soupisky {$rok} | LRU plavaná{/block}
+{block title}Soupisky {$year} | LRU plavaná{/block}
 {block content}
-<h1>Soupisky - Rok {$rok}</h1>
+<h1>Soupisky - Rok {$year}</h1>
 
-<ul n:inner-foreach="$ligy as $k => $l">
-	<li><a n:href="Rosters:detail $rok, $k">{$l}</a></li>
+<ul n:inner-foreach="$leagues as $k => $l">
+	<li><a n:href="Rosters:detail $year, $k">{$l}</a></li>
 </ul>
 
 

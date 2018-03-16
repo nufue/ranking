@@ -81,7 +81,7 @@ final class Teams extends Base
 		$dbResult = $this->database->query("SELECT `id`, `nazev_tymu` FROM `tymy` WHERE `nazev_tymu` != '' AND `rok` = ? AND `liga` = ? ORDER BY `kod`", (int)$rok, $liga)->fetchAll();
 
 		foreach ($dbResult as $row) {
-			$result[$row->id] = ['nazev' => $row->nazev_tymu, 'clenove' => []];
+			$result[$row->id] = ['name' => $row->nazev_tymu, 'members' => []];
 		}
 
 		$idZavodnici = [];
@@ -89,7 +89,7 @@ final class Teams extends Base
 		if (count($result) > 0) {
 			$dbResult = $this->database->query("SELECT `z`.`id`, `z`.`registrace`, `z`.`cele_jmeno`, `tz`.`id_tymu` FROM `zavodnici` `z` JOIN `tymy_zavodnici` `tz` ON `z`.`id` = `tz`.`id_zavodnika` WHERE `tz`.`id_tymu` IN (?)", array_keys($result));
 			foreach ($dbResult as $row) {
-				$result[$row->id_tymu]['clenove'][$row->id] = ['registrace' => $row->registrace, 'jmeno' => $row->cele_jmeno, 'kategorie' => null];
+				$result[$row->id_tymu]['members'][$row->id] = ['registration' => $row->registrace, 'name' => $row->cele_jmeno, 'category' => null];
 				$idZavodnici[$row->id] = null;
 			}
 			if (count($idZavodnici) > 0) {
@@ -101,9 +101,9 @@ final class Teams extends Base
 		}
 
 		foreach ($result as $idTymu => $tym) {
-			foreach ($tym['clenove'] as $idZavodnika => $zavodnik) {
+			foreach ($tym['members'] as $idZavodnika => $zavodnik) {
 				if (isset($idZavodnici[$idZavodnika])) {
-					$result[$idTymu]['clenove'][$idZavodnika]['kategorie'] = $idZavodnici[$idZavodnika];
+					$result[$idTymu]['members'][$idZavodnika]['category'] = $idZavodnici[$idZavodnika];
 				}
 			}
 		}

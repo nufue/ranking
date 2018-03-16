@@ -25,7 +25,7 @@ final class ZavodyPresenter extends BasePresenter
 	private $record;
 
 	/** @var \App\Model\Competitions */
-	private $zavody;
+	private $competitions;
 
 	/** @var CompetitionTypes */
 	private $competitionTypes;
@@ -39,7 +39,7 @@ final class ZavodyPresenter extends BasePresenter
 	public function __construct(Competitions $competitions, Competitors $competitors, CompetitionTypes $competitionTypes, ScoringTables $scoringTables)
 	{
 		parent::__construct();
-		$this->zavody = $competitions;
+		$this->competitions = $competitions;
 		$this->competitors = $competitors;
 		$this->competitionTypes = $competitionTypes;
 		$this->scoringTables = $scoringTables;
@@ -61,18 +61,19 @@ final class ZavodyPresenter extends BasePresenter
 
 	public function renderDefault(string $year)
 	{
-		$this->template->zavody = $this->zavody->loadAllCompetitions((int)$year);
-		$this->template->rok = $year;
-		$this->template->typyZavodu = $this->competitionTypes->getByYear((int)$year);;
+		$this->template->competitions = $this->competitions->loadAllCompetitions((int)$year);
+		$this->template->year = $year;
+		$this->template->competitionTypes = $this->competitionTypes->getByYear((int)$year);;
 	}
 
-	public function actionEdit(string $id)
+	public function actionEdit(string $year, string $id)
 	{
 		try {
-			$this->record = $c = $this->zavody->getCompetition((int)$id);
+			$this->record = $c = $this->competitions->getCompetition((int)$id);
 		} catch (CompetitionNotFoundException $exc) {
 			throw new BadRequestException('Závod nenalezen', 0, $exc);
 		}
+		$this->year = (int)$year;
 		$this->template->rok = $c->getYear();
 		$defaults = [
 			'nazev' => $c->getTitle(),
@@ -95,14 +96,14 @@ final class ZavodyPresenter extends BasePresenter
 			return $scoringTable[(int)$rank] ?? '-';
 		});
 		try {
-			$competition = $this->zavody->getCompetition((int)$id);
+			$competition = $this->competitions->getCompetition((int)$id);
 		} catch (CompetitionNotFoundException $exc) {
 			throw new BadRequestException('Závod nenalezen', 0, $exc);
 		}
-		$this->template->zavod = $competition;
-		$this->template->rok = $year;
-		$this->template->zavodnici = $this->competitors->loadCompetitorsForCompetition((int)$id);
-		$this->template->typyZavodu = $this->competitionTypes->getByYear((int)$year);
+		$this->template->competition = $competition;
+		$this->template->year = $year;
+		$this->template->competitors = $this->competitors->loadCompetitorsForCompetition((int)$id);
+		$this->template->competitionTypes = $this->competitionTypes->getByYear((int)$year);
 	}
 
 	public function createComponentCompetitionForm(): \App\Forms\Form
@@ -139,11 +140,11 @@ final class ZavodyPresenter extends BasePresenter
 			$values->kategorie = '';
 
 		if ($this->id !== null && $this->record !== null) {
-			$this->zavody->updateCompetition($this->record->getId(), $values->nazev, $values->kategorie, $values->typ, $values->datum_od, $values->datum_do, $values->zobrazovat, $values->vysledky);
+			$this->competitions->updateCompetition($this->record->getId(), $values->nazev, $values->kategorie, $values->typ, $values->datum_od, $values->datum_do, $values->zobrazovat, $values->vysledky);
 			$this->flashMessage("Informace o závodu byly upraveny.", "success");
 			$this->redirect("default");
 		} else {
-			$this->zavody->addCompetition($values->nazev, $values->kategorie, $values->typ, $values->datum_od, $values->datum_do, $values->zobrazovat, $values->vysledky);
+			$this->competitions->addCompetition($values->nazev, $values->kategorie, $values->typ, $values->datum_od, $values->datum_do, $values->zobrazovat, $values->vysledky);
 			$this->flashMessage("Závod byl přidán.", "success");
 			$this->redirect("default", ['rok' => $values->datum_od->format('Y')]);
 		}

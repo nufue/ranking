@@ -17,7 +17,7 @@ final class TeamsPresenter extends BasePresenter
 {
 
 	/** @var \App\Model\Teams */
-	private $tymy;
+	private $teams;
 
 	/** @var \App\Model\Suggest */
 	private $suggest;
@@ -43,7 +43,7 @@ final class TeamsPresenter extends BasePresenter
 	public function __construct(Teams $teams, Suggest $suggest, Leagues $leagues, Competitors $competitors)
 	{
 		parent::__construct();
-		$this->tymy = $teams;
+		$this->teams = $teams;
 		$this->suggest = $suggest;
 		$this->leagues = $leagues;
 		$this->competitors = $competitors;
@@ -59,17 +59,17 @@ final class TeamsPresenter extends BasePresenter
 	public function actionDefault(string $year): void
 	{
 		$this->template->leagues = $this->leagues->getLeaguesForYear((int)$year);
-		$this->template->rok = $year;
-		$this->template->teams = $this->tymy->loadTeamsByYear((int)$year);
+		$this->template->year = $year;
+		$this->template->teams = $this->teams->loadTeamsByYear((int)$year);
 	}
 
 	public function actionDetail(string $id): void
 	{
 		$this->teamId = (int)$id;
-		$this->template->team = $ti = $this->tymy->getTeamInfo((int)$id);
-		$this->template->rok = $this->year = $ti->year;
+		$this->template->team = $ti = $this->teams->getTeamInfo((int)$id);
+		$this->year = $ti->year;
 		$this->template->leagues = $this->leagues->getLeaguesForYear($this->year);
-		$this->template->members = $m = $this->tymy->loadMembers((int)$id);
+		$this->template->members = $m = $this->teams->loadMembers((int)$id);
 		$index = 1;
 		$defaults = [];
 		foreach ($m as $z) {
@@ -89,10 +89,10 @@ final class TeamsPresenter extends BasePresenter
 	{
 		$this->year = (int)$year;
 		$this->league = $league;
-		$this->tymy->generateMissingTeams((int)$year, $league, (int)$count);
+		$this->teams->generateMissingTeams((int)$year, $league, (int)$count);
 		$this->template->leagueName = $this->leagues->getName($league);
 		$this->template->year = $year;
-		$this->loadedTeams = $this->tymy->loadByYearAndLeague((int)$year, $league);
+		$this->loadedTeams = $this->teams->loadByYearAndLeague((int)$year, $league);
 		$defaults = [];
 		foreach ($this->loadedTeams as $t) {
 			$defaults['team_' . $t->getId()] = $t->getName();
@@ -131,7 +131,7 @@ final class TeamsPresenter extends BasePresenter
 	{
 		foreach ($values as $k => $v) {
 			if (preg_match('~^team_(\d+)$~', $k, $m)) {
-				$this->tymy->rename((int)$m[1], $v);
+				$this->teams->rename((int)$m[1], $v);
 			}
 		}
 		$this->redirect('this');
@@ -154,7 +154,7 @@ final class TeamsPresenter extends BasePresenter
 	public function addFormSubmitted(Form $form, $values): void
 	{
 		if ($this->teamId !== null) {
-			$this->tymy->removeAllMembersFromTeam($this->teamId);
+			$this->teams->removeAllMembersFromTeam($this->teamId);
 			foreach ($values as $k => $v) {
 				if (mb_substr($k, 0, 8) !== 'zavodnik') {
 					continue;
@@ -168,7 +168,7 @@ final class TeamsPresenter extends BasePresenter
 						$zavodnik = $this->competitors->getByName($v);
 					}
 
-					$this->tymy->addTeamMember($this->teamId, $zavodnik->getId());
+					$this->teams->addTeamMember($this->teamId, $zavodnik->getId());
 					$category = $this->competitors->getCompetitorCategory($this->year, $zavodnik->getId());
 					$this->competitors->setCompetitorCategory($this->year, $zavodnik->getId(), $category);
 					$this->flashMessage('Závodník ' . $v . ' byl přidán do týmu ID = ' . $this->teamId);

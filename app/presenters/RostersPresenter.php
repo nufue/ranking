@@ -24,15 +24,15 @@ final class RostersPresenter extends BasePresenter
 
 	public function renderDefault($year): void
 	{
-		$this->template->ligy = $this->leagues->getLeaguesForYear((int)$year);
-		$this->template->rok = $year;
+		$this->template->leagues = $this->leagues->getLeaguesForYear((int)$year);
+		$this->template->year = $year;
 	}
 
 	public function renderDetail($year, $liga): void
 	{
-		$this->template->nazevLigy = $this->leagues->getName($liga);
-		$this->template->rok = $year;
-		$this->template->soupisky = $this->teams->loadRoasterForLeague($year, $liga);
+		$this->template->leagueName = $this->leagues->getName($liga);
+		$this->template->year = $year;
+		$this->template->rosters = $this->teams->loadRoasterForLeague($year, $liga);
 	}
 
 }
