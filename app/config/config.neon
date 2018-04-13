@@ -30,7 +30,7 @@ extensions:
 	- App\Extensions\DefaultYearExtension
 
 services:
-	router: App\RouterFactory::createRouter
+	router: App\Router\RouterFactory::createRouter
 	- App\Model\Teams
 	- App\Model\Competitions
 	- App\Model\CompetitionTypes
