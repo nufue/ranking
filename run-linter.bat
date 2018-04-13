@@ -1,0 +1,1 @@
+./vendor/bin/parallel-lint app tests
