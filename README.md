@@ -4,12 +4,14 @@
 - [PHP 7.1](https://secure.php.net/)
 - databáze kompabitilní s MySQL (MariaDB)
 - [composer](https://getcomposer.org/)
+- webový server Apache se zapnutým `mod_rewrite` nebo nginx (s konfigurací pro vytváření pěkných URL)
+- splněné požadavky [Nette Requirements Checkeru](https://github.com/nette/sandbox/blob/master/www/checker/index.php)
 
 ## Instalace
-- stáhnout z Gitu: `git clone https://github.com/nufue/ranking`
-- nainstalovat závislosti pomocí `composer install --no-dev`
+- stáhnout zdrojový kód z Gitu: `git clone https://github.com/nufue/ranking`
+- v adresáři se staženým zdrojovým kódem nainstalovat závislosti pomocí `composer install --no-dev`
 - vytvořit databázi (základní struktura je v `db/schema.sql`)
-- přejmenovat `app/config/config.local.example.neon` na `config.local.neon` a vyplnit v něm údaje k databázi
+- přejmenovat `app/config/config.local.example.neon` na `config.local.neon` a vyplnit v něm přístupové údaje k databázi
 - přejmenovat `app/config/authenticator.example.neon` na `authenticator.neon` a definovat v něm alespoň jednu dvojici `uživatel:heslo` účtu správce a zároveň roli `uživatel:role` (kde `role` je 'admin')
 - v souboru `app/config/year.neon` změnit výchozí rok
 
