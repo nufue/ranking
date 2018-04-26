@@ -46,12 +46,13 @@ final class Teams extends Base
 	 */
 	public function loadMembers(int $teamId): array {
 		$result = [];
-		$members = $this->database->query("SELECT `z`.`id`, `z`.`cele_jmeno`, `z`.`registrace`, `z`.`registrovany`, `zk`.`kategorie`, `zk`.`rok`
+		$members = $this->database->query("SELECT `z`.`id`, `z`.`cele_jmeno`, `z`.`registrace`, `z`.`registrovany`,
+			(SELECT `zk`.`kategorie` FROM `zavodnici_kategorie` `zk` WHERE `z`.`id` = `zk`.`id_zavodnika` AND `zk`.`rok` = `t`.`rok`) `kategorie`,
+			`t`.`rok` 
 			FROM `zavodnici` `z`
-			LEFT JOIN `zavodnici_kategorie` `zk` ON `z`.`id` = `zk`.`id_zavodnika`
 			JOIN `tymy_zavodnici` `tz` ON `tz`.`id_zavodnika` = `z`.`id`
-			JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id`
-			WHERE `tz`.`id_tymu` = ? AND `zk`.`rok` = `t`.`rok`", $teamId)->fetchAll();
+ 			JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id`
+			WHERE `tz`.`id_tymu` = ?", $teamId)->fetchAll();
 		foreach ($members as $m) {
 			$competitor = Competitor::fromRow($m);
 			$category = Category::fromString($m->kategorie);
@@ -104,6 +105,8 @@ final class Teams extends Base
 			foreach ($tym['members'] as $idZavodnika => $zavodnik) {
 				if (isset($idZavodnici[$idZavodnika])) {
 					$result[$idTymu]['members'][$idZavodnika]['category'] = $idZavodnici[$idZavodnika];
+				} else {
+					$result[$idTymu]['members'][$idZavodnika]['category'] = Category::fromString(null);
 				}
 			}
 		}

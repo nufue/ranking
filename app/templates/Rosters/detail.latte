@@ -13,14 +13,14 @@
 			<td>{=$poradi++}</td>
 			<td>{$first['registration']}</td>
 			<td>{$first['name']}</td>
-			<td>{if $first['registration'] === null}kategorie nenalezena{else}{$first['category']->toShortString()}{/if}</td>
+			<td>{if $first['registration'] === null}{else}{$first['category']->toShortString()}{/if}</td>
 		</tr>
 		{foreach $team['members'] as $member}
 			<tr>
 				<td>{=$poradi++}</td>
 				<td>{$member['registration']}</td>
 				<td>{$member['name']}</td>
-				<td>{if $member['category'] === null}kategorie nenalezena{else}{$member['category']->toShortString()}{/if}</td>
+				<td>{$member['category']->toShortString()}</td>
 			</tr>
 		{/foreach}
 		{for $i = 1; $i < 13 - count($team['members']); $i++}

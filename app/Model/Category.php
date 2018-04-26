@@ -27,6 +27,7 @@ final class Category
 	private const U23_WOMEN = 'u23_women';
 	private const U25_MEN = 'u25';
 	private const U25_WOMEN = 'u25_women';
+	private const NOT_SET = 'not_set';
 
 	private $category;
 
@@ -66,6 +67,9 @@ final class Category
 	 */
 	public static function fromString(?string $input): Category
 	{
+		if ($input === null) {
+			return new Category(self::NOT_SET);
+		}
 		$input = str_replace(['ž', ' '], ['z', ''], mb_strtolower($input));
 		if (\in_array($input, ['m', 'muz', self::MEN], true))
 			return new Category(self::MEN);
@@ -131,11 +135,12 @@ final class Category
 			self::U23_WOMEN => 'U23 ženy',
 			self::U25_MEN => 'U25',
 			self::U25_WOMEN => 'U25 ženy',
+			self::NOT_SET => 'kategorie nezadána',
 		];
 		return $categories[$this->category];
 	}
 
-	public function toDbString(): string
+	public function toDbString(): ?string
 	{
 		$categories = [
 			self::MEN => 'muz',
@@ -157,6 +162,7 @@ final class Category
 			self::U23_WOMEN => 'u23_zena',
 			self::U25_MEN => 'u25',
 			self::U25_WOMEN => 'u25_zena',
+			self::NOT_SET => NULL,
 		];
 		return $categories[$this->category];
 	}
@@ -182,6 +188,7 @@ final class Category
 			self::U23_WOMEN => 'U23Ž',
 			self::U25_MEN => 'U25',
 			self::U25_WOMEN => 'U25Ž',
+			self::NOT_SET => 'nezadána',
 		];
 		return $categories[$this->category];
 	}

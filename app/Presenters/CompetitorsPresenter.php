@@ -52,7 +52,11 @@ final class CompetitorsPresenter extends BasePresenter
 	{
 		$this->competitorId = (int)$id;
 		$this->template->competitor = $c = $this->competitors->getById((int)$id);
-		$this->template->categories = $this->loadedCategories = $this->competitors->loadCategories((int)$id);
+		$this->loadedCategories = $this->competitors->loadCategories((int)$id);
+		if (!isset($this->loadedCategories[$year])) {
+			$this->loadedCategories[$year] = Category::fromString(null);
+		}
+		$this->template->categories = $this->loadedCategories;
 		$this['changeNameForm']->setDefaults(['name' => $c->getFullName()]);
 	}
 

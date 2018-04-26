@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Presenters;
 
+use App\Exceptions\CategoryForCompetitorNotFoundException;
 use App\Exceptions\CompetitorNotFoundException;
 use App\Model\Competitors;
 use App\Model\Leagues;
@@ -169,9 +170,13 @@ final class TeamsPresenter extends BasePresenter
 					}
 
 					$this->teams->addTeamMember($this->teamId, $zavodnik->getId());
-					$category = $this->competitors->getCompetitorCategory($this->year, $zavodnik->getId());
-					$this->competitors->setCompetitorCategory($this->year, $zavodnik->getId(), $category);
-					$this->flashMessage('Závodník ' . $v . ' byl přidán do týmu ID = ' . $this->teamId);
+					try {
+						$category = $this->competitors->getCompetitorCategory($this->year, $zavodnik->getId());
+						$this->competitors->setCompetitorCategory($this->year, $zavodnik->getId(), $category);
+						$this->flashMessage('Závodník ' . $v . ' byl přidán do týmu ID = ' . $this->teamId);
+					} catch (CategoryForCompetitorNotFoundException $exc) {
+						$this->flashMessage('Závodník '.$v.' byl přidán do týmu ID = '. $this->teamId.', avšak nepodařilo se pro něj najít kategorii.');
+					}
 
 				} catch (CompetitorNotFoundException $exc) {
 					$this->flashMessage('Závodníka ' . $v . ' se nepodařilo vyhledat.', 'error');

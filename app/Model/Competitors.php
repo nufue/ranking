@@ -65,7 +65,7 @@ final class Competitors extends Base
 
 	public function changeCategory(int $id, int $year, Category $category): void
 	{
-		$this->database->query("UPDATE `zavodnici_kategorie` SET `kategorie` = ? WHERE `id_zavodnika` = ? AND `rok` = ?", $category->toDbString(), $id, $year);
+		$this->database->query("INSERT INTO `zavodnici_kategorie` SET `kategorie` = ?, `id_zavodnika` = ?, `rok` = ? ON DUPLICATE KEY UPDATE `kategorie` = ?", $category->toDbString(), $id, $year, $category->toDbString());
 	}
 
 	/**
@@ -151,7 +151,10 @@ final class Competitors extends Base
 
 	public function getCompetitorWithCategoryById(int $id, int $year): CompetitorWithCategoryAndYear
 	{
-		$row = $this->database->query("SELECT `id`, `registrace`, `cele_jmeno`, `registrovany`, `kategorie` FROM `zavodnici` `z` LEFT JOIN `zavodnici_kategorie` `zk` ON `id` = `zk`.`id_zavodnika` WHERE `id` = ? AND `rok` = ?", $id, $year)->fetch();
+		$row = $this->database->query("SELECT `id`, `registrace`, `cele_jmeno`, `registrovany`,
+			(SELECT `kategorie` FROM `zavodnici_kategorie` `zk` WHERE `zk`.`id_zavodnika` = `id` AND `zk`.`rok` = ?) `kategorie`
+			FROM `zavodnici` `z`
+			WHERE `id` = ?", $year, $id)->fetch();
 		if ($row !== false) {
 			$competitor = Competitor::fromRow($row);
 			$category = Category::fromString($row->kategorie);
