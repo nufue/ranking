@@ -9,7 +9,7 @@
 
 ## Instalace
 - stáhnout zdrojový kód z Gitu: `git clone https://github.com/nufue/ranking`
-- v adresáři se staženým zdrojovým kódem nainstalovat závislosti pomocí `composer install --no-dev`
+- v adresáři se staženým zdrojovým kódem nainstalovat závislosti pomocí `composer install --no-dev` (tento krok vytvoří složku `vendor` a její obsah)
 - vytvořit databázi (základní struktura je v `db/schema.sql`)
 - přejmenovat `app/config/config.local.example.neon` na `config.local.neon` a vyplnit v něm přístupové údaje k databázi
 - přejmenovat `app/config/authenticator.example.neon` na `authenticator.neon` a definovat v něm alespoň jednu dvojici `uživatel:heslo` účtu správce a zároveň roli `uživatel:role` (kde `role` je 'admin')
