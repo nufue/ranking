@@ -15,6 +15,9 @@
 - přejmenovat `app/config/authenticator.example.neon` na `authenticator.neon` a definovat v něm alespoň jednu dvojici `uživatel:heslo` účtu správce a zároveň roli `uživatel:role` (kde `role` je 'admin')
 - v souboru `app/config/year.neon` změnit výchozí rok
 
+## Zabezpečení instalace
+Pokud provozujete aplikace na serveru Apache a nemáte nasměrován `DocumentRoot` do složky `www`, je nutné do složek `app`, `bin`, `config`, `db`, `logs`, `temp` a `vendor` umístit soubor `.htaccess` s obsahem `Deny from all`, jinak bude vaše konfigurace (např. údaje pro připojení k databázi) přístupná lidem, kteří odhadnout správnou adresu.
+
 ## Struktura databáze
 ### Tabulka `competition_categories`
 Obsahuje kategorie určující započítávání závodníků do žebříčku. Každý závod má přiřazenu právě jednu kategorii. Sloupec `output_description` obsahuje text, který se ve výpisu připojí k názvu závodu. Sloupec `select_description` obsahuje text, který se zobrazí v drop-down prvku v přidávání nebo editaci závodu. Podle pole `order` jsou v drop-down prvku záznamy seřazeny. Platnost jednotlivých záznamů je možno ovlivnit nastavením sloupců `year_from` a `year_to`. 
