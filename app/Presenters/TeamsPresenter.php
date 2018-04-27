@@ -9,6 +9,7 @@ use App\Model\Competitors;
 use App\Model\Leagues;
 use App\Model\Suggest;
 use App\Model\Team;
+use App\Model\TeamMembersCount;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use App\Model\Teams;
@@ -17,17 +18,20 @@ use Nette\Http\IResponse;
 final class TeamsPresenter extends BasePresenter
 {
 
-	/** @var \App\Model\Teams */
+	/** @var Teams */
 	private $teams;
 
-	/** @var \App\Model\Suggest */
+	/** @var Suggest */
 	private $suggest;
 
-	/** @var \App\Model\Leagues */
+	/** @var Leagues */
 	private $leagues;
 
-	/** @var \App\Model\Competitors */
+	/** @var Competitors */
 	private $competitors;
+
+	/** @var TeamMembersCount */
+	private $teamMembersCount;
 
 	/** @var int|null */
 	private $teamId;
@@ -41,16 +45,21 @@ final class TeamsPresenter extends BasePresenter
 	/** @var null|string */
 	private $league = null;
 
-	public function __construct(Teams $teams, Suggest $suggest, Leagues $leagues, Competitors $competitors)
+	/** @var int|null */
+	private $teamMembersMaxCount;
+
+	public function __construct(Teams $teams, Suggest $suggest, Leagues $leagues, Competitors $competitors, TeamMembersCount $teamMembersCount)
 	{
 		parent::__construct();
 		$this->teams = $teams;
 		$this->suggest = $suggest;
 		$this->leagues = $leagues;
 		$this->competitors = $competitors;
+		$this->teamMembersCount = $teamMembersCount;
 	}
 
-	public function startup(): void {
+	public function startup(): void
+	{
 		parent::startup();
 		if (!\in_array($this->getAction(), ['default', 'detail'], true) && !$this->getUser()->isInRole('admin')) {
 			throw new BadRequestException('Pro vstup do přidávání týmů musíte mít oprávnění správce.', IResponse::S403_FORBIDDEN);
@@ -68,9 +77,11 @@ final class TeamsPresenter extends BasePresenter
 	{
 		$this->teamId = (int)$id;
 		$this->template->team = $ti = $this->teams->getTeamInfo((int)$id);
-		$this->year = $ti->year;
+		$this->year = (int)$ti->year;
+		$this->teamMembersMaxCount = $this->teamMembersCount->getByYear($this->year);
 		$this->template->leagues = $this->leagues->getLeaguesForYear($this->year);
 		$this->template->members = $m = $this->teams->loadMembers((int)$id);
+		$this->teamMembersMaxCount = \max(\count($m), $this->teamMembersMaxCount);
 		$index = 1;
 		$defaults = [];
 		foreach ($m as $z) {
@@ -141,7 +152,7 @@ final class TeamsPresenter extends BasePresenter
 	public function createComponentAddForm(): Form
 	{
 		$form = new Form();
-		for ($i = 1; $i <= 13; $i++) {
+		for ($i = 1; $i <= $this->teamMembersMaxCount; $i++) {
 			$form->addText('zavodnik' . $i, $i, 40)->getControlPrototype()->addAttributes(['class' => 'naseptavac']);
 		}
 
@@ -175,7 +186,7 @@ final class TeamsPresenter extends BasePresenter
 						$this->competitors->setCompetitorCategory($this->year, $zavodnik->getId(), $category);
 						$this->flashMessage('Závodník ' . $v . ' byl přidán do týmu ID = ' . $this->teamId);
 					} catch (CategoryForCompetitorNotFoundException $exc) {
-						$this->flashMessage('Závodník '.$v.' byl přidán do týmu ID = '. $this->teamId.', avšak nepodařilo se pro něj najít kategorii.');
+						$this->flashMessage('Závodník ' . $v . ' byl přidán do týmu ID = ' . $this->teamId . ', avšak nepodařilo se pro něj najít kategorii.');
 					}
 
 				} catch (CompetitorNotFoundException $exc) {

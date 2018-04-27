@@ -40,6 +40,9 @@ Provazuje `competition_types_scoring` a `scoring_tables_rows`.
 ### Tabulka `scoring_tables_rows`
 Obsahuje bodové hodnoty jednotlivých umístění, rozlišených dle typu bodovací tabulky (odkaz do `scoring_tables`). Vstupem pro tuto tabulku je příloha č. 2 Soutěžního řádu - _Bodové hodnocení závodů  LRU – plavaná_. 
 
+### Tabulka `team_members_count`
+Obsahuje počet členů ligových družstev s uvedením platnosti od (`year_from`) a platnosti do (`year_to`). Oba sloupce mohou nabývat hodnoty `NULL`, což znamená, že platnost od/do není omezena. 
+
 ### Tabulka `team_name_override`
 Slouží k přepsání automaticky vypočteného názvu týmu v žebříčku. U závodníků, kteří jsou napsáni na soupisce ligového týmu, se použije název ligového týmu. Pokud je závodník zapsán na soupisky více týmů v jednom roce (obvykle 1. a v 2. lize), použije se název týmu, ve kterém je zapsán na procentuelně vyšším místě. Pokud by takto určený název týmu nebyl žádoucí, je možné záznamem do této tabulky pro konkrétního závodníka a rok specifikovat konkrétní zázev týmu, který se má v žebříčku zobrazovat.  
 

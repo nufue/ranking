@@ -7,7 +7,7 @@
 <table>
 	{foreach $rosters as $team}
 		<tr>
-			<th rowspan="13">{$team['name']}</th>
+			<th rowspan="{$teamMembersMaxCount}">{$team['name']}</th>
 			{php $first = array_shift($team['members'])}
 			{var $poradi = 1}
 			<td>{=$poradi++}</td>
@@ -23,7 +23,7 @@
 				<td>{$member['category']->toShortString()}</td>
 			</tr>
 		{/foreach}
-		{for $i = 1; $i < 13 - count($team['members']); $i++}
+		{for $i = 1; $i < $teamMembersMaxCount - count($team['members']); $i++}
 			<tr>
 				<td>{=$poradi++}</td>
 				<td></td>

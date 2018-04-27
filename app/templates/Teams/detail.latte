@@ -15,7 +15,7 @@
 
 <h2>Závodníci</h2>
 
-<p n:if="count($members) == 0">K tomuto týmu nejsou přiřazeni žádní závodníci.</p>
+<p n:if="count($members) === 0">K tomuto týmu nejsou přiřazeni žádní závodníci.</p>
 {var $index = 1}
 <table n:if="count($members) > 0" id="slozeniTymu">
 	<thead>
