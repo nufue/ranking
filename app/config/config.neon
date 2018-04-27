@@ -46,3 +46,4 @@ services:
 	- App\Model\CheckedResults
 	- App\Model\Categories
 	- App\Model\TeamMembersCount
+	- App\Model\CountedCompetitions

@@ -31,6 +31,9 @@ Pokud by nastala situace, že je třeba obnovit typu závodu, který je již uko
 ### Tabulka `competition_types_scoring`
 Provazuje `competition_types` a `scoring_tables`.
 
+### Tabulka `counted_competitions`
+Obsahuje počet nejlepších výsledků závodních kol, které se počítají do žebříčku s uvedením platnosti od (`year_from`) a platnosti do (`year_to`). Oba sloupce mohou nabývat hodnoty `NULL`, což znamená, že platnost od/do není omezena. 
+
 ### Tabulka `kategorie`
 Obsahuje kategorie, jichž může být závodník členem.
 

@@ -16,12 +16,16 @@ final class Ranking extends Base
 	/** @var TeamNameOverrides */
 	private $teamNameOverrides;
 
-	public function __construct(Connection $database, Competitions $competitions, ScoringTables $scoringTables, TeamNameOverrides $teamNameOverrides)
+	/** @var CountedCompetitions */
+	private $countedCompetitions;
+
+	public function __construct(Connection $database, Competitions $competitions, ScoringTables $scoringTables, TeamNameOverrides $teamNameOverrides, CountedCompetitions $countedCompetitions)
 	{
 		parent::__construct($database);
 		$this->competitions = $competitions;
 		$this->scoringTables = $scoringTables;
 		$this->teamNameOverrides = $teamNameOverrides;
+		$this->countedCompetitions = $countedCompetitions;
 	}
 
 	public function getValidityDate(int $year) {
@@ -39,6 +43,7 @@ final class Ranking extends Base
 
 	public function getRanking(int $year, array $competitions, RankingType $type): array
 	{
+		$countedCompetitions = $this->countedCompetitions->getByYear($year);
 		$competitors = [];
 		$query = "SELECT `z`.`cele_jmeno`, `z`.`registrace`, `zz`.`id_zavodnika`, `zz`.`id_zavodu`, `zav`.`kategorie` `kategorie_zavodu`, `zz`.`tym`, `zk`.`kategorie`, `cips1`, `umisteni1`, `cips2`, `umisteni2` FROM `zavodnici_zavody` `zz` JOIN `zavodnici` `z` ON `zz`.`id_zavodnika` = `z`.`id` JOIN `zavody` `zav` ON `zz`.`id_zavodu` = `zav`.`id` JOIN `zavodnici_kategorie` `zk` ON `zz`.`id_zavodnika` = `zk`.`id_zavodnika` WHERE `zk`.`rok` = `zav`.`rok` AND `z`.`registrovany` = 'A' AND (`cips1` IS NOT NULL OR `cips2` IS NOT NULL) AND (`zav`.`zobrazovat` = 'ano') AND (`zav`.`vysledky` = 'ano') AND `zav`.`rok` = ? ";
 		$args = [$year];
@@ -136,11 +141,11 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 			}
 		}
 		foreach ($competitors as $id => $z) {
-			if (count($competitors[$id]['body_zebricek']) > 12) {
+			if (count($competitors[$id]['body_zebricek']) > $countedCompetitions) {
 				rsort($competitors[$id]['body_zebricek']);
-				$competitors[$id]['body_zebricek'] = array_slice($competitors[$id]['body_zebricek'], 0, 12);
+				$competitors[$id]['body_zebricek'] = array_slice($competitors[$id]['body_zebricek'], 0, $countedCompetitions);
 			}
-			if (count($competitors[$id]['body_zebricek']) > 11) {
+			if (count($competitors[$id]['body_zebricek']) > $countedCompetitions - 1) {
 				$temp = array_values($competitors[$id]['body_zebricek']);
 				rsort($temp);
 				$competitors[$id]['min_body_zebricek'] = array_pop($temp) + 1;
@@ -214,6 +219,8 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 
 	private function loadAllResultsForCompetitorAndYear($competitorId, int $rok, $omezeni = null): array
 	{
+		$countedCompetitions = $this->countedCompetitions->getByYear($rok);
+
 		$competitionCount = 0;
 		$totalPoints = [];
 		$competitionResults = [];
@@ -273,7 +280,7 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 				$competitionResults[$k]['body2_zebricek'] = false;
 			}
 		}
-		$results['body_zebricek'] = $this->getTopValuesFromArray($totalPoints, 12);
+		$results['body_zebricek'] = $this->getTopValuesFromArray($totalPoints, $countedCompetitions);
 
 		$bodyZebricekKopie = $results['body_zebricek'];
 		foreach ($competitionResults as $k => $v) {
@@ -300,7 +307,7 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 
 	private function getTopValuesFromArray(array $input, int $count): array
 	{
-		if (\count($input) > 12) {
+		if (\count($input) > $count) {
 			rsort($input);
 		}
 		return \array_slice($input, 0, $count);
