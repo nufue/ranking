@@ -5,4 +5,8 @@ services:
 			# pairs of user:password
 			# e.g.
 			# joe: passw0rd
+		], [
+			# pairs of user: role
+			# e.g.
+			# joe: admin
 		]]
