@@ -3,3 +3,4 @@ vendor/*
 deploy/*
 app/config/authenticator.neon
 app/config/config.local.neon
+app/config/analytics.neon

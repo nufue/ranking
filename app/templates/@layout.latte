@@ -25,9 +25,9 @@
 	<script type="text/javascript" src="{$basePath}/js/bootstrap-datetimepicker.min.js"></script>
 	<script type="text/javascript" src="{$basePath}/js/netteForms.js"></script>
 	{block head}{/block}
-	<script type="text/javascript">
+	<script type="text/javascript" n:if="$analyticsEnabled">
         var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-532488-36']);
+        _gaq.push(['_setAccount', {$analyticsCode}]);
         _gaq.push(['_trackPageview']);
         (function () {
             var ga = document.createElement('script');

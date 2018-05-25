@@ -3,19 +3,24 @@ declare(strict_types=1);
 
 namespace App\Presenters;
 
+use App\Model\DefaultYear;
+use App\Model\GoogleAnalyticsConfig;
 use Nette\Application\UI\Presenter;
 use Nette\Http\Session;
 
 abstract class BasePresenter extends Presenter
 {
 
-	/** @var \App\Model\DefaultYear @inject */
+	/** @var DefaultYear @inject */
 	public $defaultYear;
+
+	/** @var GoogleAnalyticsConfig @inject */
+	public $googleAnalyticsConfig;
 
 	/** @var int @persistent */
 	public $year;
 
-	public function startup()
+	public function startup(): void
 	{
 		parent::startup();
 		if ($this->getParameter('year') === null) {
@@ -24,6 +29,8 @@ abstract class BasePresenter extends Presenter
 			$this->redirect('this', $params);
 		}
 		$this->template->currentYear = (int)$this->getParameter('year');
+		$this->template->analyticsEnabled = $this->googleAnalyticsConfig->isEnabled();
+		$this->template->analyticsCode = $this->googleAnalyticsConfig->getCode();
 
 		$this->template->isLoggedIn = $this->getUser()->isLoggedIn();
 		$this->template->isAdmin = $this->getUser()->isInRole('admin');

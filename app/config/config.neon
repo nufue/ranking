@@ -28,6 +28,7 @@ database:
 
 extensions:
 	- App\Extensions\DefaultYearExtension
+	- App\Extensions\GoogleAnalyticsExtension
 
 services:
 	router: App\Router\RouterFactory::createRouter

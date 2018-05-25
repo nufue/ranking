@@ -15,6 +15,13 @@
 - přejmenovat `app/config/authenticator.example.neon` na `authenticator.neon` a definovat v něm alespoň jednu dvojici `uživatel:heslo` účtu správce a zároveň roli `uživatel:role` (kde `role` je 'admin')
 - v souboru `app/config/year.neon` změnit výchozí rok
 
+## Konfigurace sledování Google Analytics
+Pokud chcete sledovat návštěvnost webových stránek, postupujte podle následujících kroků:
+- přejmenovat `app/config/analytics.example.neon` na `analytics.neon`
+- přidat si v [Google Analytics](https://www.google.com/analytics/) nový profil pro sledování webu, získat kód `Tracking ID` (ve formátu UA-xxxxxx-x)
+- v souboru `app/config/analytics.neon` změnit `enabled: false` na `enabled: true` a do řádku `code: 'UA-xxxxxxx-x'` zadat získaný `Tracking ID`
+- promazat nacachovanou konfiguraci v adresáři `temp/cache/Nette.Configurator`
+
 ## Zabezpečení instalace
 Pokud provozujete aplikace na serveru Apache a nemáte nasměrován `DocumentRoot` do složky `www`, je nutné do složek `app`, `bin`, `config`, `db`, `logs`, `temp` a `vendor` umístit soubor `.htaccess` s obsahem `Deny from all`, jinak bude vaše konfigurace (např. údaje pro připojení k databázi) přístupná lidem, kteří odhadnout správnou adresu.
 

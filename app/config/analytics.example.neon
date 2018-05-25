@@ -1,0 +1,2 @@
+enabled: false			# vkládat kód Google Analytics do stránek (true = ano, false = ne)
+code: 'UA-xxxxxxx-x'	# doplnit kód Google Analytics
