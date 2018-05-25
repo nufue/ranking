@@ -1,0 +1,33 @@
+{block title}Seznam závodů v roce {$year}{/block}
+{block content}
+<h1>Seznam závodů roku {$year}</h1>
+
+{include #flashes}
+
+<table id="seznamZavodu">
+	<tr>
+		<th>Název závodu</th>
+		<th>Typ závodu</th>
+		<th>Datum konání</th>
+		<th>Zobr.</th>
+		<th>Výsl.</th>
+		<th n:if="$isAdmin">Upravit</th>
+		<th n:if="$isAdmin">Přidat výsledky</th>
+	</tr>
+	<tr n:if="count($competitions) === 0"><td colspan="6">Pro tento rok nebyly zadány žádné závody.</td></tr>
+	<tr n:foreach="$competitions as $c" n:class="$iterator->odd ? odd : even">
+		<td><a n:href="Zavody:detail $c->getId(), $year">{$c->getTitleWithCategory()}</a>
+		</td>
+		<td>{$competitionTypes[$c->getType()]}</td>
+		<td>{$c->getFormattedDates()}</td>
+		<td>{if $c->isVisible()}ano{else}ne{/if}</td>
+		<td>{if $c->hasResults()}ano{else}ne{/if}</td>
+		<td n:if="$isAdmin"><a n:href="Zavody:edit $year, $c->getId()">upravit</a></td>
+		<td n:if="$isAdmin"><a n:href="Results:add $c->getId()">{if $c->hasResults()}znovu nahrát výsledky{else}přidat výsledky{/if}</a></td>
+	</tr>
+</table>
+
+<p n:if="$isAdmin"><a n:href="add $year" class="btn btn-primary">přidat závod</a></p>
+
+
+<p><a n:href="Homepage:">zpět na žebříček</a></p>

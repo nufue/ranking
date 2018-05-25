@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="robots" content="{$robots}" n:ifset="$robots">
+
+	<title>{block title}{/block}</title>
+
+	<link rel="stylesheet" href="{$basePath}/css/bootstrap.css">
+	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/screen.css?20180307" type="text/css">
+
+	<link rel="stylesheet" media="print" href="{$basePath}/css/print.css" type="text/css">
+	<link rel="stylesheet" media="screen" href="{$basePath}/css/bootstrap-datetimepicker.min.css">
+
+	<script type="text/javascript" src="{$basePath}/js/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="{$basePath}/js/jquery-ui-1.12.1.custom.min.js"></script>
+	<script type="text/javascript" src="{$basePath}/js/bootstrap.min.js"></script>
+
+	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/redmond/jquery-ui-1.12.1.custom.css"
+		  type="text/css">
+
+
+	<script type="text/javascript" src="{$basePath}/js/bootstrap-datetimepicker.min.js"></script>
+	<script type="text/javascript" src="{$basePath}/js/netteForms.js"></script>
+	{block head}{/block}
+	<script type="text/javascript" n:if="$analyticsEnabled">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', {$analyticsCode}]);
+        _gaq.push(['_trackPageview']);
+        (function () {
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
+	</script>
+</head>
+
+<body>
+<div class="container-fluid">
+	<nav class="navbar navbar-default">
+		<div class="container-fluid">
+			<div class="collapse navbar-collapse" id="bs-navbar-collapse-1">
+				<ul class="nav navbar-nav">
+					<li n:class="$presenter->isLinkCurrent(':Front:Homepage:') ? active"><a n:href=":Front:Homepage: $currentYear">Žebříček</a>
+					</li>
+					{if $isAdmin}
+						<li n:class="$presenter->isLinkCurrent(':Front:Teams:') ? active"><a n:href=":Front:Teams: $currentYear">Týmy</a></li>
+						<li n:class="$presenter->isLinkCurrent(':Front:Rosters:') ? active"><a n:href=":Front:Rosters: $currentYear">Soupisky</a></li>
+						<li n:class="$presenter->isLinkCurrent(':Front:Zavody:') ? active"><a n:href=":Front:Zavody: $currentYear">Závody</a></li>
+						<li n:class="$presenter->isLinkCurrent(':Front:Competitors:') ? active"><a n:href=":Front:Competitors: $currentYear">Závodníci</a></li>
+						<li n:class="$presenter->isLinkCurrent(':Admin:Config:*') ? active"><a n:href=":Admin:Config:">Nastavení</a></li>
+					{/if}
+					<li><a n:href="prev!">rok {=$currentYear-1}</a></li>
+					<li><p class="navbar-text">aktuální rok: {$currentYear}</p></li>
+					<li><a n:href="next!">rok {=$currentYear+1}</a></li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					{if $isLoggedIn}
+						<li><p class="navbar-text">Přihlášen: {$userName}</p></li>
+						<li><a n:href=":Front:Sign:out">odhlásit</a></li>
+					{/if}
+					<li n:if="!$isLoggedIn"><a n:href=":Front:Sign:in">Přihlášení správce</a></li>
+				</ul>
+
+			</div><!-- /.navbar-collapse -->
+		</div><!-- /.container-fluid -->
+	</nav>
+	{define flashes}
+		<div n:foreach="$flashes as $flash" class="alert alert-{$flash->type}">{$flash->message}</div>{/define}
+	{include content}
+</div>
+</body>
+</html>
