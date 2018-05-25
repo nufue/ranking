@@ -47,3 +47,4 @@ services:
 	- App\Model\Categories
 	- App\Model\TeamMembersCount
 	- App\Model\CountedCompetitions
+	- App\Model\Years

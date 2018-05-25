@@ -53,7 +53,7 @@
 						<li n:class="$presenter->isLinkCurrent('Rosters:') ? active"><a n:href="Rosters:">Soupisky</a></li>
 						<li n:class="$presenter->isLinkCurrent('Zavody:') ? active"><a n:href="Zavody:">Závody</a></li>
 						<li n:class="$presenter->isLinkCurrent('Competitors:') ? active"><a n:href="Competitors:">Závodníci</a></li>
-
+						<li n:class="$presenter->isLinkCurrent('Config:*') ? active"><a n:href="Config:">Nastavení</a></li>
 					{/if}
 					<li><a n:href="prev!">rok {=$currentYear-1}</a></li>
 					<li><p class="navbar-text">aktuální rok: {$currentYear}</p></li>

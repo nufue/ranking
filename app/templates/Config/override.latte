@@ -1,0 +1,59 @@
+{block content}
+<h1>Přepsání názvu týmu u závodníka v žebříčku</h1>
+
+{include #flashes}
+
+<p>Do pole <em>Závodník</em> napište buď číslo registrace nebo prvních pár písmen příjmení.</p>
+{control overrideForm}
+<div id='formError' style="display: none; font-weight: bold; color: #f00"></div>
+
+<h2>Již zadané</h2>
+
+<table>
+	<tr n:foreach="$overrides as $o">
+		<td>{$o['registration']}</td>
+		<td>{$o['fullName']}</td>
+		<td>{$o['team']}</td>
+		<td>{$o['year']}</td>
+		<td><a n:href="remove! $o['id'], $o['year']">odstranit</a></td>
+	</tr>
+</table>
+
+<script>
+    var suggestLink = {link Config:suggest};
+</script>
+
+<script type="text/javascript" n:syntax="off">
+    $(function () {
+        $('.naseptavac').each(function (index) {
+            $(this).autocomplete({
+                minLength: 2,
+                source: function (request, response) {
+                    $.ajax({
+                        url: suggestLink,
+                        data: {typedText: request.term},
+                        success: function (data) {
+                            response($.map(data.values, function (item) {
+                                return {
+                                    label: item.cele_jmeno + " (" + item.registrace + ")",
+                                    value: item.cele_jmeno
+                                }
+                            }));
+                        }
+                    });
+                },
+				search: function(event, ui) {
+					$('#formError').hide();
+				},
+				response: function(event, ui) {
+                    if (ui.content.length === 0) {
+						$('#formError').html('Nepodařilo se najít žádného závodníka odpovídajícího parametrům');
+						$('#formError').show();
+					}
+				}
+            });
+        });
+
+
+    });
+</script>
