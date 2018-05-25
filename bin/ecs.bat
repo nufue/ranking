@@ -1,0 +1,4 @@
+@setlocal DISABLEDELAYEDEXPANSION
+@SET PARENT_DIR=%~dp0..
+@SET BIN_TARGET=%PARENT_DIR%\vendor\bin\ecs.bat
+%BIN_TARGET% check %PARENT_DIR%\app
