@@ -22,6 +22,12 @@ final class MemberCountPresenter extends BasePresenter
 	/** @var null|int */
 	private $maxYearFrom = null;
 
+	/** @var null|int */
+	private $editId = null;
+
+	/** @var array */
+	private $mc = [];
+
 	public function __construct(TeamMembersCount $teamMembersCount)
 	{
 		parent::__construct();
@@ -46,27 +52,76 @@ final class MemberCountPresenter extends BasePresenter
 		}
 	}
 
+	public function actionEdit(string $id): void
+	{
+		$this->editId = (int)$id;
+		$this->template->memberCount = $this->mc = $this->teamMembersCount->getAll();
+		$this->getComponent('addForm')->setDefaults([
+			'count' => $this->mc[$this->editId]->count,
+			'year_from' => $this->mc[$this->editId]->year_from,
+			'year_to' => $this->mc[$this->editId]->year_to,
+		]);
+	}
+
 	protected function createComponentAddForm(): Form
 	{
 		$form = new Form();
 		$form->addInteger('count', 'Maximální počet členů týmu')
 			->setDefaultValue(15)
 			->addRule($form::RANGE, 'Maximální počet členů týmu musí být mezi %d a %d.', [1, 30]);
-		$form->addText('year_from', 'Rok počátku platnosti nové hodnoty', 4)->setType('number')->setAttribute('min', $this->maxYearFrom ?? 2018)->setAttribute('max', 2050);
-		$form->addText('year_to', 'Rok konce platnosti nové hodnoty', 4)->setType('number')->setAttribute('min', $this->maxYearFrom ?? 2018)->setAttribute('max', 2050);
+		$from = $form->addText('year_from', 'Rok počátku platnosti nové hodnoty', 4)->setType('number')->setAttribute('min', $this->maxYearFrom ?? 2018)->setAttribute('max', 2050);
+		$to = $form->addText('year_to', 'Rok konce platnosti nové hodnoty', 4)->setType('number')->setAttribute('min', $this->maxYearFrom ?? 2018)->setAttribute('max', 2050);
+		if ($this->editId !== null) {
+			$from->setDisabled();
+		}
 		$form->addSubmit('save', 'Uložit');
 		$form->onValidate[] = function (Form $form): void {
 			$values = $form->getValues();
-			if ($values->year_from !== '' && $values->year_to !== '' && (int)$values->year_from > (int)$values->year_to) {
+			if ($this->editId !== null) {
+				$values->year_from = $this->mc[$this->editId]->year_from;
+			} else {
+				$values->year_from = $values->year_from === '' ? null : (int)$values->year_from;
+			}
+			$values->year_to = $values->year_to === '' ? null : (int)$values->year_to;
+			if ($values->year_from !== null && $values->year_to !== null && $values->year_from > $values->year_to) {
 				$form->addError('Rok konce platnosti nesmí být menší než rok počátku platnosti.');
 			}
-			if ($this->teamMembersCount->overlaps($values->year_from === '' ? null : (int)$values->year_from, $values->year_to === '' ? null : (int)$values->year_to)) {
+			if ($this->teamMembersCount->overlaps($values->year_from, $values->year_to, $this->editId)) {
 				$form->addError('Zadané rozpětí roků se překrývá s dříve zadanými hodnotami.');
 			}
 		};
 		$form->onSuccess[] = function (Form $form, $values): void {
-			\Tracy\Debugger::dump($values);
+			if ($this->editId !== null) {
+				$values->year_from = $this->mc[$this->editId]->year_from;
+			} else {
+				$values->year_from = $values->year_from === '' ? null : (int)$values->year_from;
+			}
+			$values->year_from = $values->year_from === '' ? null : (int)$values->year_from;
+			$values->year_to = $values->year_to === '' ? null : (int)$values->year_to;
+			if ($this->editId !== null) {
+				$this->teamMembersCount->update($this->editId, $values->year_to, (int)$values->count);
+			} else {
+				$this->teamMembersCount->add($values->year_from, $values->year_to, (int)$values->count);
+			}
+			$msg = Html::el()->addText('Pro rozmezí roků od ')
+				->addHtml($this->getFormattedYear($values->year_from))
+				->addText(' do ')
+				->addHtml($this->getFormattedYear($values->year_to))
+				->addText(' byl nastaven maximální počet členů týmu ')
+				->addHtml(Html::el('b')->setText($values->count))
+				->addText('.');
+			$this->flashMessage($msg);
+			$this->redirect('this');
 		};
 		return $form;
+	}
+
+	private function getFormattedYear(?int $year): Html
+	{
+		if ($year !== null) {
+			return Html::el('b')->setText($year);
+		}
+
+		return Html::el('em')->setText('nezadáno');
 	}
 }

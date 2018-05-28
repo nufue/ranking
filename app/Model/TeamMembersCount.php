@@ -2,8 +2,19 @@
 
 namespace App\Model;
 
+use Nette\Database\Connection;
+
 final class TeamMembersCount extends Base
 {
+
+	/** @var YearsOverlap */
+	private $yearsOverlap;
+
+	public function __construct(Connection $db, YearsOverlap $yearsOverlap)
+	{
+		parent::__construct($db);
+		$this->yearsOverlap = $yearsOverlap;
+	}
 
 	public function getByYear(int $year): int
 	{
@@ -19,33 +30,28 @@ final class TeamMembersCount extends Base
 		return $this->database->query("SELECT `id`, `count`, `year_from`, `year_to` FROM `team_members_count` ORDER BY `year_from`, `year_to`")->fetchPairs('id');
 	}
 
-	public function overlaps(?int $from, ?int $to): bool
+	public function add(?int $from, ?int $to, int $count): void
 	{
-		foreach ($this->getAll() as $mc) {
-			if ($this->yearsOverlap($mc->year_from, $mc->year_to, $from, $to)) {
-				return true;
-			}
+		if ($from !== null) {
+			$this->database->query("UPDATE `team_members_count` SET `year_to` = ? WHERE `year_to` IS NULL", $from - 1);
 		}
-		return false;
+		$this->database->query("INSERT INTO `team_members_count`(`count`, `year_from`, `year_to`) VALUES (?, ?, ?)", $count, $from, $to);
 	}
 
-	private function yearsOverlap(?int $from1, ?int $to1, ?int $from2, ?int $to2): bool {
-		if ($from1 === null && $from2 === null)
-			return true;
-		if ($to1 === null && $to2 === null)
-			return true;
-		if ($to1 === null && $from2 > $from1)
-			return false;
-		if ($from1 !== null && $to1 === null && $to2 !== null)
-			return $from1 < $to2;
-		if ($to1 !== null && $from1 === null && $from2 !== null)
-			return $to1 > $from2;
-		if ($from1 !== null && $to1 !== null && $from2 === null && $to2 !== null)
-			return $to2 > $from1;
-		if ($from1 !== null && $to1 !== null && $from2 !== null && $to2 === null)
-			return $from2 < $to1;
-		if ($from1 !== null && $to1 !== null && $from2 !== null && $to2 !== null) {
-			return ($to2 >= $from1 && $to2 <= $to1) || ($from2 >= $from1 && $from2 <= $to1);
+	public function update(int $id, ?int $to, int $count): void
+	{
+		$this->database->query("UPDATE `team_members_count` SET `count` = ?, `year_to` = ? WHERE `id` = ?", $count, $to, $id);
+	}
+
+	public function overlaps(?int $from, ?int $to, ?int $editId): bool
+	{
+		foreach ($this->getAll() as $id => $mc) {
+			if ($editId === $id) {
+				continue;
+			}
+			if ($this->yearsOverlap->isOverlapped($mc->year_from, $mc->year_to, $from, $to)) {
+				return true;
+			}
 		}
 		return false;
 	}

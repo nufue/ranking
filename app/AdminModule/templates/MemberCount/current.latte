@@ -1,0 +1,19 @@
+<h2>Již zadané</h2>
+
+<table>
+	<thead>
+	<tr>
+		<th>Platnost od</th>
+		<th>Platnost do</th>
+		<th>Počet</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr n:foreach="$memberCount as $mc">
+		<td>{if $mc['year_from'] !== null}{$mc['year_from']}{else}<em>nezadáno</em>{/if}</td>
+		<td>{if $mc['year_to'] !== null}{$mc['year_to']}{else}<em>nezadáno</em>{/if}</td>
+		<td>{$mc['count']}</td>
+		<td><a n:href="edit $mc['id']">upravit</a></td>
+	</tr>
+	</tbody>
+</table>

@@ -49,3 +49,4 @@ services:
 	- App\Model\TeamMembersCount
 	- App\Model\CountedCompetitions
 	- App\Model\Years
+	- App\Model\YearsOverlap
