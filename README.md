@@ -134,7 +134,13 @@ Přidá se nový záznam do tabulky `competition_types`. Dále se novému typu z
 Přidá se nový záznam do tabulky `competition_types_scoring`. 
 
 ### Změna týmu zobrazovaného v žebříčku
-Přidá se nový záznam do tabulky `team_name_override`.
+Přidá se nový záznam do tabulky `team_name_override`. Správce má po přihlášení k dispozici editační rozhraní v sekci `Nastavení`.
+
+### Změna počtu započítávaných závodů
+Přidá se nový záznam do tabulky `counted_competitions`. Správce má po přihlášení k dispozici editační rozhraní v sekci `Nastavení`.
+
+### Změna maximálního počtu členů týmu
+Přidá se nový záznam do tabulky `team_members_count`. Správce má po přihlášení k dispozici editační rozhraní v sekci `Nastavení`.
 
 ## Oprávnění
 Zobrazení žebříčku, výsledků jednotlivého závodu nebo jednotlivého závodníka je možné bez přihlášení.
