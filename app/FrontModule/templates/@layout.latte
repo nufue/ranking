@@ -46,14 +46,14 @@
 		<div class="container-fluid">
 			<div class="collapse navbar-collapse" id="bs-navbar-collapse-1">
 				<ul class="nav navbar-nav">
-					<li n:class="$presenter->isLinkCurrent(':Front:Homepage:') ? active"><a n:href=":Front:Homepage:">Žebříček</a>
+					<li n:class="$presenter->isLinkCurrent(':Front:Homepage:*') ? active"><a n:href=":Front:Homepage:">Žebříček</a>
 					</li>
 					{if $isAdmin}
-						<li n:class="$presenter->isLinkCurrent(':Front:Teams:') ? active"><a n:href=":Front:Teams:">Týmy</a></li>
-						<li n:class="$presenter->isLinkCurrent(':Front:Rosters:') ? active"><a n:href=":Front:Rosters:">Soupisky</a></li>
-						<li n:class="$presenter->isLinkCurrent(':Front:Zavody:') ? active"><a n:href=":Front:Zavody:">Závody</a></li>
-						<li n:class="$presenter->isLinkCurrent(':Front:Competitors:') ? active"><a n:href=":Front:Competitors:">Závodníci</a></li>
-						<li n:class="$presenter->isLinkCurrent(':Admin:Config:*') ? active"><a n:href=":Admin:Config:">Nastavení</a></li>
+						<li n:class="$presenter->isLinkCurrent(':Front:Teams:*') ? active"><a n:href=":Front:Teams:">Týmy</a></li>
+						<li n:class="$presenter->isLinkCurrent(':Front:Rosters:*') ? active"><a n:href=":Front:Rosters:">Soupisky</a></li>
+						<li n:class="$presenter->isLinkCurrent(':Front:Zavody:*') ? active"><a n:href=":Front:Zavody:">Závody</a></li>
+						<li n:class="$presenter->isLinkCurrent(':Front:Competitors:*') ? active"><a n:href=":Front:Competitors:">Závodníci</a></li>
+						<li><a n:href=":Admin:Config:">Nastavení</a></li>
 					{/if}
 					<li><a n:href="prev!">rok {=$currentYear-1}</a></li>
 					<li><p class="navbar-text">aktuální rok: {$currentYear}</p></li>

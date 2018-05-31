@@ -8,11 +8,16 @@ use Nette\Security\AuthenticationException;
 
 final class SignPresenter extends BasePresenter
 {
+
+	/** @persistent */
+	public $backlink = '';
+
 	protected function createComponentSignInForm(): Form
 	{
-		$form = new Form;
+		$form = new Form();
 		$form->addText('username', 'Uživatelské jméno:')
-			->setRequired('Zadejte prosím uživatelské jméno.');
+			->setRequired('Zadejte prosím uživatelské jméno.')
+			->setAttribute('autofocus');
 
 		$form->addPassword('password', 'Heslo:')
 			->setRequired('Zadejte prosím heslo.');
@@ -22,24 +27,20 @@ final class SignPresenter extends BasePresenter
 		$form->addSubmit('send', 'Přihlásit');
 
 		$form->onSuccess[] = function (Form $form, $values) {
-			$this->signInFormSuccess($form, $values);
+			try {
+				if ($values->remember) {
+					$this->getUser()->setExpiration('+ 14 days', false);
+				} else {
+					$this->getUser()->setExpiration('+ 20 minutes', true);
+				}
+				$this->getUser()->login($values->username, $values->password);
+				$this->restoreRequest($this->backlink);
+				$this->redirect('Homepage:');
+			} catch (AuthenticationException $e) {
+				$form->addError($e->getMessage());
+			}
 		};
 		return $form;
-	}
-
-	public function signInFormSuccess(Form $form, $values): void
-	{
-		try {
-			if ($values->remember) {
-				$this->getUser()->setExpiration('+ 14 days', false);
-			} else {
-				$this->getUser()->setExpiration('+ 20 minutes', true);
-			}
-			$this->getUser()->login($values->username, $values->password);
-			$this->redirect('Homepage:');
-		} catch (AuthenticationException $e) {
-			$form->addError($e->getMessage());
-		}
 	}
 
 	public function actionOut(): void

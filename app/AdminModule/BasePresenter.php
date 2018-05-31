@@ -31,7 +31,8 @@ abstract class BasePresenter extends Presenter
 			$this->redirect('this', $params);
 		}
 		if (!$this->getUser()->isInRole('admin')) {
-			throw new BadRequestException('Pro přístup do nastavení musíte být správce.', IResponse::S403_FORBIDDEN);
+			$this->flashMessage('Pro přístup do administrace musíte být přihlášen jako správce.');
+			$this->redirect(':Front:Sign:in', ['backlink' => $this->storeRequest()]);
 		}
 		$this->template->currentYear = (int)$this->getParameter('year');
 		$this->template->analyticsEnabled = $this->googleAnalyticsConfig->isEnabled();
