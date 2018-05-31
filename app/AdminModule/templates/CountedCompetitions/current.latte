@@ -1,0 +1,19 @@
+<h2>Již zadané</h2>
+
+<table>
+	<thead>
+	<tr>
+		<th>Platnost od</th>
+		<th>Platnost do</th>
+		<th>Počet</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr n:foreach="$countedCompetitions as $cc">
+		<td>{if $cc['year_from'] !== null}{$cc['year_from']}{else}<em>nezadáno</em>{/if}</td>
+		<td>{if $cc['year_to'] !== null}{$cc['year_to']}{else}<em>nezadáno</em>{/if}</td>
+		<td>{$cc['count']}</td>
+		<td><a n:href="edit $cc['id']">upravit</a></td>
+	</tr>
+	</tbody>
+</table>

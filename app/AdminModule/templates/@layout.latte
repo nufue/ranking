@@ -53,7 +53,7 @@
 						<li n:class="$presenter->isLinkCurrent(':Front:Rosters:') ? active"><a n:href=":Front:Rosters: $currentYear">Soupisky</a></li>
 						<li n:class="$presenter->isLinkCurrent(':Front:Zavody:') ? active"><a n:href=":Front:Zavody: $currentYear">Závody</a></li>
 						<li n:class="$presenter->isLinkCurrent(':Front:Competitors:') ? active"><a n:href=":Front:Competitors: $currentYear">Závodníci</a></li>
-						<li n:class="$presenter->isLinkCurrent(':Admin:Config:*') ? active"><a n:href=":Admin:Config:">Nastavení</a></li>
+						<li n:class="$presenter->isLinkCurrent(':Admin:Config:*') || $presenter->isLinkCurrent(':Admin:CountedCompetitions:*') || $presenter->isLinkCurrent(':Admin:TeamNameOverride:*') || $presenter->isLinkCurrent(':Admin:MemberCount:*') ? active"><a n:href=":Admin:Config:">Nastavení</a></li>
 					{/if}
 					<li><a n:href="prev!">rok {=$currentYear-1}</a></li>
 					<li><p class="navbar-text">aktuální rok: {$currentYear}</p></li>

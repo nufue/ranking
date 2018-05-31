@@ -1,0 +1,14 @@
+{block content}
+<h1>Úprava počtu závodů započítávaných do žebříčku</h1>
+
+{include 'current.latte'}
+
+<p><a n:href="add" class="btn btn-primary">Přidat nový záznam</a></p>
+
+{include #flashes}
+
+<p>Zadejte počet závodů, které se mají započítávat do žebříčku a volitelně i rok počátku a konce platnosti nové hodnoty. Zadané roky se nesmí
+	překrývat s již vyplněnými hodnotami. Když nevyplníte rok konce platnosti, není platnost omezena.</p>
+{control addForm}
+
+<p style="margin-top: 6em"><a n:href=":Admin:Config:" class="btn btn-default">zpět do Nastavení</a></p>

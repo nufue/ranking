@@ -49,6 +49,9 @@ final class TeamMembersCount extends Base
 			if ($editId === $id) {
 				continue;
 			}
+			if ($mc->year_to === null && $from > $mc->year_from) {
+				continue;
+			}
 			if ($this->yearsOverlap->isOverlapped($mc->year_from, $mc->year_to, $from, $to)) {
 				return true;
 			}
