@@ -101,7 +101,7 @@ final class CheckedResults
 
 	private function checkNames(string $fromInput, string $fromEntity): bool
 	{
-		$replacements = ['dr.', 'ml.', 'ing.', 'dis.', 'st.', 'bc.'];
+		$replacements = ['dr.', 'ml.', 'ing.', 'dis.', 'st.', 'bc.', 'mgr.'];
 		$entityName = $this->trimUnicode(\str_replace($replacements, '', \mb_strtolower(\str_replace('  ', ' ', $fromEntity))));
 		$inputName = $this->trimUnicode(\str_replace($replacements, '', \mb_strtolower(\str_replace('  ', ' ', $fromInput))));
 
