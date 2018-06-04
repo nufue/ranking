@@ -267,8 +267,8 @@ final class ResultsPresenter extends BasePresenter
 			$cips1 = trim($row[$columns['cips1']]);
 			$umisteni1 = trim($row[$columns['umisteni1']]);
 
-			$cips2 = isset($columns['cips2']) ? trim($row[$columns['cips2']]) : '';
-			$umisteni2 = isset($columns['umisteni2']) ? trim($row[$columns['umisteni2']]) : '';
+			$cips2 = isset($columns['cips2'], $row[$columns['cips2']]) ? trim($row[$columns['cips2']]) : '';
+			$umisteni2 = isset($columns['umisteni2'], $row[$columns['umisteni2']]) ? trim($row[$columns['umisteni2']]) : '';
 
 			$vysledky[$id] = ['prijmeni' => $prijmeni, 'registrace' => $registrace, 'kategorie' => $kategorie, 'tym' => $tym, 'cips1' => $cips1, 'umisteni1' => $umisteni1, 'cips2' => $cips2, 'umisteni2' => $umisteni2];
 			$id++;
