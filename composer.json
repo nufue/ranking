@@ -25,7 +25,7 @@
     "phpoffice/phpspreadsheet": "^1.1"
   },
   "require-dev": {
-    "dg/ftp-deployment": "^2.0",
+    "dg/ftp-deployment": "^3.0",
     "nette/tester": "~2.0",
     "roave/security-advisories": "dev-master",
     "phpstan/phpstan": "^0.9.2",
