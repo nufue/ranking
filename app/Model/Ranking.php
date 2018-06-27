@@ -48,11 +48,11 @@ final class Ranking extends Base
 		$query = "SELECT `z`.`cele_jmeno`, `z`.`registrace`, `zz`.`id_zavodnika`, `zz`.`id_zavodu`, `zav`.`kategorie` `kategorie_zavodu`, `zz`.`tym`, `zk`.`kategorie`, `cips1`, `umisteni1`, `cips2`, `umisteni2` FROM `zavodnici_zavody` `zz` JOIN `zavodnici` `z` ON `zz`.`id_zavodnika` = `z`.`id` JOIN `zavody` `zav` ON `zz`.`id_zavodu` = `zav`.`id` JOIN `zavodnici_kategorie` `zk` ON `zz`.`id_zavodnika` = `zk`.`id_zavodnika` WHERE `zk`.`rok` = `zav`.`rok` AND `z`.`registrovany` = 'A' AND (`cips1` IS NOT NULL OR `cips2` IS NOT NULL) AND (`zav`.`zobrazovat` = 'ano') AND (`zav`.`vysledky` = 'ano') AND `zav`.`rok` = ? ";
 		$args = [$year];
 		if (\count($type->getDbCategoryValues()) > 0) {
-			$query .= " AND `zk`.`kategorie` IN (?) AND `zav`.`kategorie` != 'ženy'";
+			$query .= " AND `zk`.`kategorie` IN (?) AND `zav`.`kategorie` != 'zeny'";
 			$args[] = $type->getDbCategoryValues();
 		}
 		if ($type->getValue() === RankingType::WOMEN) {
-			$query .= " AND `zk`.`kategorie` IN ('u10_zena', 'u14_zena', 'u18_zena', 'u23_zena', 'zena', 'u12_zena', 'u15_zena', 'u20_zena', 'u25_zena') AND (`zav`.`kategorie` = '' OR `zav`.`kategorie` = 'ženy')";
+			$query .= " AND `zk`.`kategorie` IN ('u10_zena', 'u14_zena', 'u18_zena', 'u23_zena', 'zena', 'u12_zena', 'u15_zena', 'u20_zena', 'u25_zena') AND (`zav`.`kategorie` = '' OR `zav`.`kategorie` = 'zeny')";
 		}
 
 		$result = $this->database->queryArgs($query . " ORDER BY `zav`.`datum_od`, `zav`.`nazev`", $args);
@@ -239,9 +239,9 @@ FROM `tymy_zavodnici` `tz` JOIN `tymy` `t` ON `tz`.`id_tymu` = `t`.`id` WHERE `t
 		if ($omezeni === null)
 			$query .= " AND `zav`.`kategorie` = ''";
 		if ($omezeni === 'ženy')
-			$query .= " AND `zk`.`kategorie` IN ('u10_zena', 'u14_zena', 'u18_zena', 'u23_zena', 'zena', 'u12_zena', 'u15_zena', 'u20_zena', 'u25_zena') AND (`zav`.`kategorie` = '' OR `zav`.`kategorie` = 'ženy')";
+			$query .= " AND `zk`.`kategorie` IN ('u10_zena', 'u14_zena', 'u18_zena', 'u23_zena', 'zena', 'u12_zena', 'u15_zena', 'u20_zena', 'u25_zena') AND (`zav`.`kategorie` = '' OR `zav`.`kategorie` = 'zeny')";
 		if ($omezeni[0] === 'u')
-			$query .= " AND `zk`.`kategorie` IN ('" . $omezeni . "', '" . $omezeni . "_zena') AND `zav`.`kategorie` != 'ženy'";
+			$query .= " AND `zk`.`kategorie` IN ('" . $omezeni . "', '" . $omezeni . "_zena') AND `zav`.`kategorie` != 'zeny'";
 
 		$query .= " ORDER BY `zav`.`datum_od`, `zav`.`nazev`";
 
