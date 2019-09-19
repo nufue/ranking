@@ -13,7 +13,7 @@ php:
 
 
 application:
-	errorPresenter: Error
+	errorPresenter: Front:Error
 	mapping:
 		*: App\*Module\Presenters\*Presenter
 
